@@ -1,0 +1,11 @@
+{
+  "dependencies": {
+    "bedrock-protocol": "^3.33.1",
+    "dotenv": "^16.3.1",
+    "mongoose": "^8.0.4",
+    "node-fetch": "^2.6.11",
+    "prismarine-auth": "^2.3.0",
+    "prompt-sync": "^4.2.0",
+    "uuid": "^9.0.1"
+  }
+}
