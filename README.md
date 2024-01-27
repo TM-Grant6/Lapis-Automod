@@ -12,4 +12,4 @@ Lapis helps protect your Minecraft realm by moderating actions.
 Feel free to contribute by creating a pull request.
 
 ## License
-This project is licensed under the [insert license name here]. Please see the [LICENSE](./LICENSE) file for more details.
+This project is licensed under the GPL-3.0 License. Please see the [LICENSE](./LICENSE) file for more details.
