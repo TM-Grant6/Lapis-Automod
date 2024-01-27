@@ -48,7 +48,7 @@ module.exports.moderate = async (realmData) => {
             CurrentInputMode: getInputMode(config.deviceOS),
             DefaultInputMode: getInputMode(config.deviceOS),
             DeviceId: getDeviceId(config.deviceOS),
-            DeviceModel: 'Project: IPJ',
+            DeviceModel: 'Lapis',
             DeviceOS: config.deviceOS,
             PlatformOnlineId: (config.deviceOS === 12) ? generateRandomString(19, "1234567890") : "",
             PlatformUserId: (config.deviceOS === 12) ? uuidv4() : "",
@@ -166,7 +166,7 @@ module.exports.moderate = async (realmData) => {
         if (
             client.profile.xuid === xuid ||
             xuid?.length !== 16 ||
-            !xuid?.startsWith("2") // USSR Forgot to put a ! in front of this.
+            !xuid?.startsWith("2")
         ) return;
 
         const dbAccount = await accountsModel.findOne({
@@ -178,7 +178,6 @@ module.exports.moderate = async (realmData) => {
         const accounts = await accountsModel.find({}).exec();
 
         accounts.forEach(dbAccount => {
-            // const otherXuid = dbAccount.xuid;
             const linkedDeviceIds = dbAccount.deviceIds;
             const gamertags = dbAccount.gamertags;
             const lastGamertag = gamertags[gamertags.length - 1];
@@ -316,17 +315,6 @@ module.exports.moderate = async (realmData) => {
 
         process.on("warning", (warning) => {
             console.warn(warning);
-
-            const embed = {
-                title: "Warning",
-                description: `Name: ${warning.name}\nMessage: ${warning.message}\n\nStack:\n\`\`\`${warning.stack}\`\`\``,
-                timestamp: new Date(),
-                color: 16729871,
-                author: {
-                    name: "Crashary",
-                    icon_url: "https://cdn.crashary.uk/Crashary.webp"
-                }
-            };
         });
 
         process.on("unhandledRejection", (error) => {
