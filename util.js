@@ -1,58 +1,6 @@
 const { NIL, v3: uuidv3, v4: uuidv4, v5: uuidv5 } = require("uuid");
 const {	accountsModel } = require("./database.js");
 
-require("dotenv").config();
-
-let { WEBHOOK_URL: URL } = process.env;
-
-if (!URL) {
-  console.error("You must include a URL in the .env file.");
-  process.exit(0);
-}
-
-function getCacheFactory(dbAccount) {
-	if (typeof dbAccount.linkData === "undefined") {
-		dbAccount.linkData = {};
-	}
-
-	class CacheFactory {
-		async getCached() {
-			return dbAccount.linkData;
-		}
-		async setCached(value) {
-			dbAccount.linkData = value || {};
-
-			try {
-				await dbAccount.save();
-			} catch {
-				dbAccount = await accountsModel.findOne({ xuid: dbAccount.xuid });
-				dbAccount.linkData = value || {};
-				await dbAccount.save();
-			}
-		}
-		async setCachedPartial(value) {
-			dbAccount.linkData = {
-				...dbAccount.linkData,
-				...value
-			};
-
-			try {
-				await dbAccount.save();
-			} catch {
-				dbAccount = await accountsModel.findOne({ id: dbAccount.xuid });
-				dbAccount.linkData = {
-					...dbAccount.linkData,
-					...value
-				};
-				await dbAccount.save();
-			}
-		}
-	}
-	return function () {
-		return new CacheFactory(); 
-	};
-}
-
 // Check for UUID version 3
 function isUUIDv3(uuid) {
     return /^[0-9a-f]{8}-[0-9a-f]{4}-3[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(uuid);
@@ -117,25 +65,13 @@ async function getInputMode(deviceOS) {
 	}
 }
 
-function sendEmbed(params) {
-	fetch(URL, {
-	  method: "POST",
-	  headers: {
-		"Content-type": "application/json",
-	  },
-	  body: JSON.stringify(params),
-	}).catch((error) => console.error(error));
-  }
-
 module.exports = {
-	getCacheFactory,
-    generateRandomString,
-    getDeviceId,
-    getInputMode,
-	sendEmbed,
+    	generateRandomString,
+    	getDeviceId,
+    	getInputMode,
 	isUUIDv3,
 	isUUIDv4,
 	isUUIDv4WithoutDashes,
 	isUUIDv5,
-    isValidPlatformChatId
+    	isValidPlatformChatId
 };
