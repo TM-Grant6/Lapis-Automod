@@ -4,14 +4,7 @@ const { Authflow, Titles } = require("prismarine-auth");
 
 const { moderate } = require("./moderate.js");
 
-/* const flow = new Authflow(undefined, "./authCache", {
-	flow: "live",
-	authTitle: Titles.MinecraftNintendoSwitch,
-	deviceType: "Nintendo",
-	doSisuAuth: true
-}); */
-
-const flow = new Authflow(undefined, "./devAuthCache", {
+const flow = new Authflow(undefined, "./authCache", {
 	flow: "live",
 	authTitle: Titles.MinecraftNintendoSwitch,
 	deviceType: "Nintendo",
