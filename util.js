@@ -1,5 +1,4 @@
 const { NIL, v3: uuidv3, v4: uuidv4, v5: uuidv5 } = require("uuid");
-const {	accountsModel } = require("./database.js");
 
 // Check for UUID version 3
 function isUUIDv3(uuid) {
