@@ -132,6 +132,5 @@ async function logXboxUserData(user, source) {
 }
 
 module.exports = {
-    getXboxAccountDataBulk,
-    getEmail
+    getXboxAccountDataBulk
 }
