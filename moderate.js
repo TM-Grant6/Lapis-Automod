@@ -96,7 +96,7 @@ module.exports.moderate = async (realmData) => {
 
             if (!player.skin_data.skin_id.includes(player.skin_data.play_fab_id)) {
                 console.log(`[${player.xbox_user_id}] Bad skin information [T1]`);
-                client.sendCommand(`kick "${player.xbox_user_id}" Invaild skin information sent.\nThis could be because you haven't connected to PlayFab API correctly. Try relaunching Minecraft. [T1]`, 0)
+                client.sendCommand(`kick "${player.xbox_user_id}" Invaild skin information sent.\nThis could be because you haven't connected to PlayFab API correctly.\nTry relaunching Minecraft. [T1]`, 0)
             }
 
             if (player.skin_data.full_skin_id != player.skin_data.skin_id) {
@@ -116,10 +116,10 @@ module.exports.moderate = async (realmData) => {
 
             if (!player.skin_data.skin_resource_pack.includes(player.skin_data.play_fab_id)) {
                 console.log(`[${player.xbox_user_id}] Bad skin information [T5]`);
-                client.sendCommand(`kick "${player.xbox_user_id}" Invaild skin information sent.\nThis could be because you haven't connected to PlayFab API correctly. Try relaunching Minecraft. [T5]`, 0)
+                client.sendCommand(`kick "${player.xbox_user_id}" Invaild skin information sent.\nThis could be because you haven't connected to PlayFab API correctly.\nTry relaunching Minecraft. [T5]`, 0)
             }
 
-            if (player.skin_data.play_fab_id > 16) {
+            if (player.skin_data.play_fab_id > 16 || player.skin_data.play_fab_id < 16) {
                 console.log(`[${player.xbox_user_id}] Bad skin information [T6]`);
                 client.sendCommand(`kick "${player.xbox_user_id}" Invaild skin information sent. [T6]`, 0)
             }
@@ -136,7 +136,7 @@ module.exports.moderate = async (realmData) => {
 
             if (player.skin_data.premium === true && player.skin_data.skin_resource_pack.includes('"default" : "geometry.n3"\n') || player.skin_data.skin_id.includes('#')) {
                  console.log(`[${player.xbox_user_id}] Bad skin information [T9]`);
-                 client.sendCommand(`kick "${player.xbox_user_id}" Invaild skin information sent.\nThis could be because you are using a custom skin. Try changing to steve. [T9]`, 0)
+                 client.sendCommand(`kick "${player.xbox_user_id}" Invaild skin information sent.\nThis could be because you are using a custom skin.\nTry changing to steve. [T9]`, 0)
             }
         }
 
@@ -160,6 +160,8 @@ module.exports.moderate = async (realmData) => {
             }
             return value;
         })) */
+
+        console.log(`[${packet.username}] Joined on ${packet.device_os} (${packet.device_id})`)
 
         const xuid = userMap[username];
 
