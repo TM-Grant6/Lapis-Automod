@@ -133,6 +133,9 @@ module.exports.moderate = async (realmData) => {
                 console.log(`[${player.xbox_user_id}] Invaild Platform Chat ID [T8]`);
                 client.sendCommand(`kick ${player.xbox_user_id} Invaild information sent. [T8]`, 0)
             }
+            if (!player.skin_data.skin_id.includes(player.skin_data.play_fab_id) && player.skin_data.premium === true && player.skin_data.skin_resource_pack.includes('"default" : "geometry.n3"\n') || player.skin_data.skin_id.includes('#')) {
+                 console.log(`[${player.xbox_user_id}] Bad skin information [T9]`);
+                 client.sendCommand(`kick "${player.xbox_user_id}" Invaild skin information sent.\nThis could be because you are using a custom skin. Try changing to steve. [T9]`, 0)
         }
 
         const dbAccount = await accountsModel.findOne({
