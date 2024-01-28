@@ -29,9 +29,7 @@ const {
 } = require("./util.js");
 
 const {
-    getXboxAccountDataBulk,
-    sendMessage,
-    getEmail
+    getXboxAccountDataBulk
 } = require("./xbox.js");
 
 const {
@@ -52,8 +50,7 @@ module.exports.moderate = async (realmData) => {
             DeviceOS: config.deviceOS,
             PlatformOnlineId: (config.deviceOS === 12) ? generateRandomString(19, "1234567890") : "",
             PlatformUserId: (config.deviceOS === 12) ? uuidv4() : "",
-            PlayFabId: generateRandomString(16, "qwertyuiopasdfghjklzxcvbnm12345678901"),
-            Persona: true
+            PlayFabId: generateRandomString(16, "qwertyuiopasdfghjklzxcvbnm12345678901")
         }
     }
 
