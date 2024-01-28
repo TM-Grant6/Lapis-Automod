@@ -104,12 +104,12 @@ module.exports.moderate = async (realmData) => {
                 client.sendCommand(`kick "${player.xbox_user_id}" Invaild skin information sent. [T2]`, 0)
             }
 
-            if (player.skin_data.skin_data.width > 512) {
+            if (player.skin_data.skin_data.width > 512 || player.skin_data.skin_data.height < 256 {
                 console.log(`[${player.xbox_user_id}] Bad skin information [T3]`);
                 client.sendCommand(`kick "${player.xbox_user_id}" Invaild skin information sent. [T3]`, 0)
             }
 
-            if (player.skin_data.skin_data.height > 512) {
+            if (player.skin_data.skin_data.height > 512 || player.skin_data.skin_data.height < 256) {
                 console.log(`[${player.xbox_user_id}] Bad skin information [T4]`);
                 client.sendCommand(`kick "${player.xbox_user_id}" Invaild skin information sent. [T4]`, 0)
             }
