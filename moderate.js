@@ -19,8 +19,6 @@ const {
     generateRandomString,
     getDeviceId,
     getInputMode,
-    getCacheFactory,
-    sendEmbed,
     isUUIDv3,
     isUUIDv4,
     isUUIDv4WithoutDashes,
