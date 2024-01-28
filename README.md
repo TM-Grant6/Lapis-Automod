@@ -2,7 +2,6 @@
 Lapis helps protect your Minecraft realm by moderating actions.
 
 <p align="center">
-    <img src="https://img.shields.io/github/downloads/w0ahL/Lapis/total?style=for-the-badge" alt="Downloads">   
     <img src="https://img.shields.io/github/issues/w0ahL/Lapis?label=ISSUES%20OPEN&style=for-the-badge" alt="Issues Open">  
     <img src="https://img.shields.io/github/commit-activity/m/w0ahL/Lapis?style=for-the-badge" alt="Commits Per Week"> 
     <img src="https://img.shields.io/github/last-commit/w0ahL/Lapis?style=for-the-badge" alt="Last Commit">
