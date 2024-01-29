@@ -28,7 +28,7 @@ Lapis Automod helps protect your Minecraft realm by moderating actions.
   - Check for unsupported or unknown device models and kick the player as necessary.
 
 ## How to Contribute
-Feel free to contribute by creating a pull request.
+Feel free to contribute by creating a pull request anytime.
 
 ## License
 This project is licensed under the GPL-3.0 License. Please see the [LICENSE](./LICENSE) file for more details.
