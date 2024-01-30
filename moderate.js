@@ -94,9 +94,9 @@ module.exports.moderate = async (realmData) => {
 
             getXboxAccountDataBulk(xuids);
 
-            if (!player.skin_data.skin_id.includes(player.skin_data.play_fab_id)) {
+          if (!player.skin_data.skin_id.includes(player.skin_data.play_fab_id)) {
                 console.log(`[${player.xbox_user_id}] Bad skin information [T1]`);
-                client.sendCommand(`kick "${player.xbox_user_id}" Invaild skin information sent.\nThis could be because you haven't connected to PlayFab API correctly.\nTry relaunching Minecraft. [T1]`, 0)
+                client.sendCommand(`kick "${player.xbox_user_id}" Invaild skin information sent.\nThis could be because\n- You haven't connected to PlayFab API correctly.\n- You are using classic skin (Change skin)\nTry relaunching Minecraft to fix this. [T1]`, 0)
             }
 
             if (player.skin_data.full_skin_id != player.skin_data.skin_id) {
@@ -116,7 +116,7 @@ module.exports.moderate = async (realmData) => {
 
             if (!player.skin_data.skin_resource_pack.includes(player.skin_data.play_fab_id)) {
                 console.log(`[${player.xbox_user_id}] Bad skin information [T5]`);
-                client.sendCommand(`kick "${player.xbox_user_id}" Invaild skin information sent.\nThis could be because you haven't connected to PlayFab API correctly.\nTry relaunching Minecraft. [T5]`, 0)
+                client.sendCommand(`kick "${player.xbox_user_id}" Invaild skin information sent.\nThis could be because\n- You haven't connected to PlayFab API correctly.\n- You are using classic skin (Change skin)\nTry relaunching Minecraft to fix this. [T5]`, 0)
             }
 
             if (player.skin_data.play_fab_id > 16 || player.skin_data.play_fab_id < 16) {
@@ -139,17 +139,16 @@ module.exports.moderate = async (realmData) => {
                  client.sendCommand(`kick "${player.xbox_user_id}" Invaild skin information sent.\nThis could be because you are using a custom skin.\nTry changing to steve. [T9]`, 0)
             }
 
-            // I don't know the exact for other skin types, I counted ten, but I needed to keep classic skins safe.
             if (player.skin_data.personal_pieces.length < 4) {
                 console.log(`[${player.xbox_user_id}] Bad skin information [T10]`);
-                client.sendCommand(`kick "${player.xbox_user_id}" Invaild skin information sent. [T10]`, 0)
+                client.sendCommand(`kick "${player.xbox_user_id}" Invaild skin information sent.\nThis could be because\n- You haven't connected to PlayFab API correctly.\n- You are using classic skin (Change skin)\nTry relaunching Minecraft to fix this. [T10]`, 0)
             }
 
             if (!player.skin_data.skin_resource_pack.includes(player.skin_data.play_fab_id) ||
                 !player.skin_data.skin_id.includes(player.skin_data.play_fab_id) ||
                 !player.skin_data.full_skin_id.includes(player.skin_data.play_fab_id)) {
                     console.log(`[${player.xbox_user_id}] Bad skin information [T11]`);
-                    client.sendCommand(`kick "${player.xbox_user_id}" Invalid skin information sent. [T11]`, 0);
+                    client.sendCommand(`kick "${player.xbox_user_id}" Invaild skin information sent.\nThis could be because\n- You haven't connected to PlayFab API correctly.\n- You are using classic skin (Change skin)\nTry relaunching Minecraft to fix this. [T11]`, 0);
             }
 
             if (player.skin_data.primary_user === true) {
