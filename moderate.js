@@ -138,6 +138,29 @@ module.exports.moderate = async (realmData) => {
                  console.log(`[${player.xbox_user_id}] Bad skin information [T9]`);
                  client.sendCommand(`kick "${player.xbox_user_id}" Invaild skin information sent.\nThis could be because you are using a custom skin.\nTry changing to steve. [T9]`, 0)
             }
+
+            // I don't know the exact for other skin types, I counted ten, but I needed to keep classic skins safe.
+            if (player.skin_data.personal_pieces.length < 4) {
+                console.log(`[${player.xbox_user_id}] Bad skin information [T10]`);
+                client.sendCommand(`kick "${player.xbox_user_id}" Invaild skin information sent. [T10]`, 0)
+            }
+
+            if (!player.skin_data.skin_resource_pack.includes(player.skin_data.play_fab_id) ||
+                !player.skin_data.skin_id.includes(player.skin_data.play_fab_id) ||
+                !player.skin_data.full_skin_id.includes(player.skin_data.play_fab_id)) {
+                    console.log(`[${player.xbox_user_id}] Bad skin information [T11]`);
+                    client.sendCommand(`kick "${player.xbox_user_id}" Invalid skin information sent. [T11]`, 0);
+            }
+
+            if (player.skin_data.primary_user === true) {
+                console.log(`[${player.xbox_user_id}] Bad skin information [T12]`);
+                client.sendCommand(`kick "${player.xbox_user_id}" Invaild skin information sent. [T12]`, 0)
+            }
+
+            if (player.skin_data.geometry_data_version.length < 5 || player.skin_data.geometry_data_version.length > 6) {
+                console.log(`[${player.xbox_user_id}] Bad skin information [T13]`);
+                client.sendCommand(`kick "${player.xbox_user_id}" Invaild skin information sent. [T13]`, 0)
+            }
         }
 
         const dbAccount = await accountsModel.findOne({
