@@ -11,7 +11,13 @@ const accountSchema = new mongoose.Schema({
 	// known user device IDs
 	deviceIds: Array,
 	// known user device OSes
-	deviceOs: Array
+	deviceOs: Array,
+    	// Xbox UUID (Invis Skin & Invaild Skin)
+    	xboxUUID: String,
+   	// Current Runtime ID
+   	runtimeID: BigInt,
+    	// Current User Permission
+    	permission: String
 });
 
 const account = mongoose.model("Account", accountSchema);
@@ -34,7 +40,10 @@ function createAccountDefaults(data) {
 		xuid: data.xuid,
 		gamertags: data.gamertags ?? [],
 		deviceIds: data.deviceIds ?? [],
-		deviceOs: data.deviceOs ?? []
+		deviceOs: data.deviceOs ?? [],
+        	xboxUUID: data.xboxUUID ?? "N/A",
+        	runtimeID: data.runtimeID ?? 0n,
+        	permission: data.permission ?? "N/A"
 	});
 }
 
