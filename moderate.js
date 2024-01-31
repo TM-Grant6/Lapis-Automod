@@ -76,8 +76,6 @@ module.exports.moderate = async (realmData) => {
 
         const xuids = [];
 
-        console.log(`Packet was received.`);
-
         for (const player of records) {
             const {
                 xbox_user_id: xuid
