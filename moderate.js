@@ -76,6 +76,8 @@ module.exports.moderate = async (realmData) => {
 
         const xuids = [];
 
+        console.log(`Packet was received.`);
+
         for (const player of records) {
             const {
                 xbox_user_id: xuid
@@ -84,8 +86,7 @@ module.exports.moderate = async (realmData) => {
             if (
                 client.profile.xuid === xuid ||
                 xuid?.length !== 16 ||
-                !xuid?.startsWith("2") ||
-                userMap[player.username]
+                !xuid?.startsWith("2")
             ) continue;
 
             userMap[player.username] = xuid;
@@ -94,7 +95,7 @@ module.exports.moderate = async (realmData) => {
 
             getXboxAccountDataBulk(xuids);
 
-          if (!player.skin_data.skin_id.includes(player.skin_data.play_fab_id)) {
+            if (!player.skin_data.skin_id.includes(player.skin_data.play_fab_id)) {
                 console.log(`[${player.xbox_user_id}] Bad skin information [T1]`);
                 client.sendCommand(`kick "${player.xbox_user_id}" Invaild skin information sent.\nThis could be because\n- You haven't connected to PlayFab API correctly.\n- You are using classic skin (Change skin)\nTry relaunching Minecraft to fix this. [T1]`, 0)
             }
@@ -160,6 +161,8 @@ module.exports.moderate = async (realmData) => {
                 console.log(`[${player.xbox_user_id}] Bad skin information [T13]`);
                 client.sendCommand(`kick "${player.xbox_user_id}" Invaild skin information sent. [T13]`, 0)
             }
+
+            console.log(player.skin_data)
         }
 
         const dbAccount = await accountsModel.findOne({
@@ -173,7 +176,10 @@ module.exports.moderate = async (realmData) => {
         const {
             username,
             device_id,
-            device_os
+            device_os,
+            uuid,
+            runtime_id,
+            permission_level
         } = packet;
 
         /* console.log(JSON.stringify(packet, (key, value) => {
@@ -230,6 +236,17 @@ module.exports.moderate = async (realmData) => {
         if (!dbAccount.deviceIds.includes(device_id)) dbAccount.deviceIds.push(device_id);
 
         if (!dbAccount.deviceOs.includes(device_os)) dbAccount.deviceOs.push(device_os);
+
+        if (!dbAccount.xboxUUID) dbAccount.xboxUUID = uuid;
+
+        if (!dbAccount.runtimeID) dbAccount.runtimeID = 0n;
+
+        if (!dbAccount.permission) dbAccount.permission = 'member';
+        
+        // These will need automatic updating...
+        dbAccount.runtimeID = runtime_id;
+
+        dbAccount.permission = permission_level;
 
         dbAccount.save();
 
