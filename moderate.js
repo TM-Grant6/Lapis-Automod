@@ -76,6 +76,8 @@ module.exports.moderate = async (realmData) => {
 
         const xuids = [];
 
+        console.log(`Packet was received.`);
+
         for (const player of records) {
             const {
                 xbox_user_id: xuid
@@ -150,14 +152,14 @@ module.exports.moderate = async (realmData) => {
                     client.sendCommand(`kick "${player.xbox_user_id}" Invaild skin information sent.\nThis could be because\n- You haven't connected to PlayFab API correctly.\n- You are using classic skin (Change skin)\nTry relaunching Minecraft to fix this. [T11]`, 0);
             }
 
-            if (player.skin_data.primary_user === true) {
+            /* if (player.skin_data.primary_user === true) {
                 console.log(`[${player.xbox_user_id}] Bad skin information [T12]`);
                 client.sendCommand(`kick "${player.xbox_user_id}" Invaild skin information sent. [T12]`, 0)
-            }
+            } */ // this can actually false kick someone lol
 
             if (player.skin_data.geometry_data_version.length < 5 || player.skin_data.geometry_data_version.length > 6) {
-                console.log(`[${player.xbox_user_id}] Bad skin information [T13]`);
-                client.sendCommand(`kick "${player.xbox_user_id}" Invaild skin information sent. [T13]`, 0)
+                console.log(`[${player.xbox_user_id}] Bad skin information [T12]`);
+                client.sendCommand(`kick "${player.xbox_user_id}" Invaild skin information sent. [T12]`, 0)
             }
 
             console.log(player.skin_data)
@@ -318,6 +320,61 @@ module.exports.moderate = async (realmData) => {
             client.sendCommand(`kick ${xuid} Invaild information sent. [T7]`, 0)
         }
     });
+
+    client.on('player_skin', async (packet) => {
+        const dbAccount = await accountsModel.findOne({
+            xboxUUID: packet.uuid
+        });
+
+        if (!dbAccount) return;
+
+        console.log(packet);
+
+        if (!packet.skin.skin_id.includes(packet.skin.play_fab_id)) {
+            console.log(`[${dbAccount.xuid}] Bad skin information [T1]`);
+            client.sendCommand(`kick "${dbAccount.xuid}" Invaild skin information sent.\nThis could be because\n- You are using classic skin (Change skin)\nTry relaunching Minecraft to fix this. [T1]`, 0)
+        }
+
+        if (packet.skin.full_skin_id != packet.skin.skin_id) {
+            console.log(`[${dbAccount.xuid}] Full Skin ID & Skin ID do not match. [T2]`);
+            client.sendCommand(`kick "${dbAccount.xuid}" Invaild skin information sent. [T2]`, 0)
+        }
+
+        if (packet.skin.skin_data.width > 512 || packet.skin.skin_data.width < 64) {
+            console.log(`[${dbAccount.xuid}] Bad skin information [T3]`);
+            client.sendCommand(`kick "${dbAccount.xuid}" Invaild skin information sent. [T3]`, 0)
+        }
+
+        if (packet.skin.skin_data.height > 512 || packet.skin.skin_data.height < 64) {
+            console.log(`[${dbAccount.xuid}] Bad skin information [T4]`);
+            client.sendCommand(`kick "${dbAccount.xuid}" Invaild skin information sent. [T4]`, 0)
+        }
+
+        if (!packet.skin.skin_resource_pack.includes(packet.skin.play_fab_id)) {
+            console.log(`[${dbAccount.xuid}] Bad skin information [T5]`);
+            client.sendCommand(`kick "${dbAccount.xuid}" Invaild skin information sent.\nThis could be because\n- You are using classic skin (Change skin)\nTry relaunching Minecraft to fix this. [T5]`, 0)
+        }
+
+        if (packet.skin.play_fab_id > 16 || packet.skin.play_fab_id < 16) {
+            console.log(`[${dbAccount.xuid}] Bad skin information [T6]`);
+            client.sendCommand(`kick "${dbAccount.xuid}" Invaild skin information sent.\nThis could be because you are using classic skin. (Change skin) [T6]`, 0)
+        }
+
+		if (packet.skin.premium === true && packet.skin.skin_resource_pack.includes('"default" : "geometry.n3"\n') || packet.skin.skin_id.includes('#')) {
+            console.log(`[${dbAccount.xuid}] Bad skin information [T7]`);
+            client.sendCommand(`kick "${dbAccount.xuid}" Invaild skin information sent.\nThis could be because you are using a custom skin.\nTry changing to steve. [T7]`, 0)
+    	}
+
+        if (packet.skin.personal_pieces.length < 4) {
+            console.log(`[${dbAccount.xuid}] Bad skin information [T8]`);
+            client.sendCommand(`kick "${dbAccount.xuid}" Invaild skin information sent.\nThis could be because you are using classic skin. (Change skin) [T8]`, 0)
+        }
+
+        if (!packet.skin.skin_resource_pack.includes(packet.skin.play_fab_id) || !packet.skin.skin_id.includes(packet.skin.play_fab_id) || !packet.skin.full_skin_id.includes(packet.skin.play_fab_id)) {
+            console.log(`[${dbAccount.xuid}] Bad skin information [T9]`);
+            client.sendCommand(`kick "${dbAccount.xuid}" Invaild skin information sent.\nThis could be because\n- You are using classic skin (Change skin)\nTry relaunching Minecraft to fix this. [T9]`, 0);
+        }
+    })
 
     client.on('start_game', async () => {
         console.log(`Joined`);
