@@ -161,6 +161,10 @@ module.exports.moderate = async (realmData) => {
                 console.log(`[${player.xbox_user_id}] Bad skin information [T12]`);
                 client.sendCommand(`kick "${player.xbox_user_id}" Invaild skin information sent. [T12]`, 0)
             }
+		   if (player.skin_data.skin_resource_pack.includes(' "default" : "geometry.humanoid"\n')) {
+			      console.log(`[${player.xbox_user_id}] Bad skin information [T13]`);
+                client.sendCommand(`kick "${player.xbox_user_id}" Invaild skin information sent.\nThis could be becuase\nYou are wearing a corrupt skin or invisible skin.\nTry changing skins to fix this. [T13] `, 0)
+		   }
 
             console.log(player.skin_data)
         }
@@ -374,6 +378,10 @@ module.exports.moderate = async (realmData) => {
             console.log(`[${dbAccount.xuid}] Bad skin information [T9]`);
             client.sendCommand(`kick "${dbAccount.xuid}" Invaild skin information sent.\nThis could be because\n- You are using classic skin (Change skin)\nTry relaunching Minecraft to fix this. [T9]`, 0);
         }
+	       if (player.skin_data.skin_resource_pack.includes(' "default" : "geometry.humanoid"\n')) {
+			      console.log(`[${player.xbox_user_id}] Bad skin information [T10]`);
+                client.sendCommand(`kick "${dbAccount.xuid}" Invaild skin information sent.\nThis could be becuase\nYou are wearing a corrupt skin or invisible skin.\nTry changing skins to fix this. [T10] `, 0)
+		   }
     })
 
     client.on('start_game', async () => {
