@@ -76,8 +76,6 @@ module.exports.moderate = async (realmData) => {
 
             const xuids = [];
 
-            console.log(`Packet was received.`);
-
             for (const player of records) {
                const {
                   xbox_user_id: xuid
@@ -166,8 +164,6 @@ module.exports.moderate = async (realmData) => {
                   console.log(`[${player.xbox_user_id}] Bad skin information [T13]`);
                   client.sendCommand(`kick "${player.xbox_user_id}" Invaild skin information sent.\nThis could be becuase\nYou are wearing a corrupt skin or invisible skin.\nTry changing skins to fix this. [T13] `, 0)
                }
-
-               console.log(player.skin_data)
             }
 
             const dbAccount = await accountsModel.findOne({
@@ -332,8 +328,6 @@ module.exports.moderate = async (realmData) => {
             });
 
             if (!dbAccount) return;
-
-            console.log(packet);
 
             if (!packet.skin.skin_id.includes(packet.skin.play_fab_id)) {
                console.log(`[${dbAccount.xuid}] Bad skin information [T1]`);
