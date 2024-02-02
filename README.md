@@ -27,6 +27,11 @@ Lapis Automod helps protect your Minecraft realm by moderating actions.
   - Verify the platform and platform chat ID for Nintendo Switch.
   - Check for unsupported or unknown device models and kick the player as necessary.
 
+### Emote Event Handler
+- The "emote" event handler processes the incoming emote data and performs the following checks:
+  - Verify the emote flags and kick the player if necessary.
+  - Validate the emote ID.
+
 ## How to Contribute
 Feel free to contribute by creating a pull request anytime.
 
