@@ -18,12 +18,7 @@ const fs = require('fs');
 const {
 	generateRandomString,
 	getDeviceId,
-	getInputMode,
-	isUUIDv3,
-	isUUIDv4,
-	isUUIDv4WithoutDashes,
-	isUUIDv5,
-	isValidPlatformChatId
+	getInputMode
 } = require("./util.js");
 
 const {
@@ -31,10 +26,24 @@ const {
 } = require("./xbox.js");
 
 const {
+	skinVaildate
+} = require("./modules/skin.js");
+
+const {
+	deviceVaildate
+} = require("./modules/device.js");
+
+const {
+	emoteVaildate
+} = require("./modules/emote.js");
+
+const {
 	handleFunctions
 } = require("./handler.js");
 
 module.exports.moderate = async (realmData) => {
+	console.log('Joining');
+
 	let options = {
 		host: realmData.ip,
 		port: realmData.port,
@@ -93,80 +102,8 @@ module.exports.moderate = async (realmData) => {
 
 			getXboxAccountDataBulk(xuids);
 
-			if (!player.skin_data.skin_id.includes(player.skin_data.play_fab_id)) {
-				console.log(`[${player.xbox_user_id}] Bad skin information [T1]`);
-				client.sendCommand(`kick "${player.xbox_user_id}" Invaild skin information sent.\nThis could be because\n- You haven't connected to PlayFab API correctly.\n- You are using classic skin (Change skin)\nTry relaunching Minecraft to fix this. [T1]`, 0)
-			}
-
-			if (player.skin_data.full_skin_id != player.skin_data.skin_id) {
-				console.log(`[${player.xbox_user_id}] Full Skin ID & Skin ID do not match. [T2]`);
-				client.sendCommand(`kick "${player.xbox_user_id}" Invaild skin information sent. [T2]`, 0)
-			}
-
-			if (player.skin_data.skin_data.width > 512 || player.skin_data.skin_data.width < 64) {
-				console.log(`[${player.xbox_user_id}] Bad skin information [T3]`);
-				client.sendCommand(`kick "${player.xbox_user_id}" Invaild skin information sent. [T3]`, 0)
-			}
-
-			if (player.skin_data.skin_data.height > 512 || player.skin_data.skin_data.height < 64) {
-				console.log(`[${player.xbox_user_id}] Bad skin information [T4]`);
-				client.sendCommand(`kick "${player.xbox_user_id}" Invaild skin information sent. [T4]`, 0)
-			}
-
-			if (!player.skin_data.skin_resource_pack.includes(player.skin_data.play_fab_id)) {
-				console.log(`[${player.xbox_user_id}] Bad skin information [T5]`);
-				client.sendCommand(`kick "${player.xbox_user_id}" Invaild skin information sent.\nThis could be because\n- You haven't connected to PlayFab API correctly.\n- You are using classic skin (Change skin)\nTry relaunching Minecraft to fix this. [T5]`, 0)
-			}
-
-			if (player.skin_data.play_fab_id > 16 || player.skin_data.play_fab_id < 16) {
-				console.log(`[${player.xbox_user_id}] Bad skin information [T6]`);
-				client.sendCommand(`kick "${player.xbox_user_id}" Invaild skin information sent. [T6]`, 0)
-			}
-
-			if (player.build_platform != 12 && player.platform_chat_id.length != 0) {
-				console.log(`[${player.xbox_user_id}] Not on NintendoSwitch & has Platform Chat ID [T7]`);
-				client.sendCommand(`kick ${player.xbox_user_id} Invaild information sent. [T7]`, 0)
-			}
-
-			if (!isValidPlatformChatId(player.platform_chat_id) && player.build_platform === 12) {
-				console.log(`[${player.xbox_user_id}] Invaild Platform Chat ID [T8]`);
-				client.sendCommand(`kick ${player.xbox_user_id} Invaild information sent. [T8]`, 0)
-			}
-
-			if (player.skin_data.premium === true && player.skin_data.skin_resource_pack.includes('"default" : "geometry.n3"\n') || player.skin_data.skin_id.includes('#')) {
-				console.log(`[${player.xbox_user_id}] Bad skin information [T9]`);
-				client.sendCommand(`kick "${player.xbox_user_id}" Invaild skin information sent.\nThis could be because you are using a custom skin.\nTry changing to steve. [T9]`, 0)
-			}
-
-			if (player.skin_data.personal_pieces.length < 4) {
-				console.log(`[${player.xbox_user_id}] Bad skin information [T10]`);
-				client.sendCommand(`kick "${player.xbox_user_id}" Invaild skin information sent.\nThis could be because\n- You haven't connected to PlayFab API correctly.\n- You are using classic skin (Change skin)\nTry relaunching Minecraft to fix this. [T10]`, 0)
-			}
-
-			if (!player.skin_data.skin_resource_pack.includes(player.skin_data.play_fab_id) ||
-				!player.skin_data.skin_id.includes(player.skin_data.play_fab_id) ||
-				!player.skin_data.full_skin_id.includes(player.skin_data.play_fab_id) ||
-				!player.skin_data.geometry_data.includes(player.skin_data.play_fab_id)) {
-				console.log(`[${player.xbox_user_id}] Bad skin information [T11]`);
-				client.sendCommand(`kick "${player.xbox_user_id}" Invaild skin information sent.\nThis could be because\n- You haven't connected to PlayFab API correctly.\n- You are using classic skin (Change skin)\nTry relaunching Minecraft to fix this. [T11]`, 0);
-			}
-
-			/* if (player.skin_data.primary_user === true) {
-			    console.log(`[${player.xbox_user_id}] Bad skin information [T12]`);
-			    client.sendCommand(`kick "${player.xbox_user_id}" Invaild skin information sent. [T12]`, 0)
-			} */ // this can actually false kick someone lol
-
-			if (player.skin_data.geometry_data_version.length < 5 || player.skin_data.geometry_data_version.length > 6) {
-				console.log(`[${player.xbox_user_id}] Bad skin information [T12]`);
-				client.sendCommand(`kick "${player.xbox_user_id}" Invaild skin information sent. [T12]`, 0)
-			}
-
-			if (player.skin_data.skin_resource_pack.includes(' "default" : "geometry.humanoid"\n')) {
-				console.log(`[${player.xbox_user_id}] Bad skin information [T13]`);
-				client.sendCommand(`kick "${player.xbox_user_id}" Invaild skin information sent.\nThis could be becuase\nYou are wearing a corrupt skin or invisible skin.\nTry changing skins to fix this. [T13] `, 0)
-			}
-
-			console.log(player.skin_data.geometry_data);
+			skinVaildate(player, null, client, "playerList");
+			deviceVaildate(player, null, client, "playerList");
 		}
 
 		const dbAccount = await accountsModel.findOne({
@@ -209,31 +146,7 @@ module.exports.moderate = async (realmData) => {
 
 		if (!dbAccount) return;
 
-		const accounts = await accountsModel.find({}).exec();
-
-		accounts.forEach(dbAccount => {
-			const linkedDeviceIds = dbAccount.deviceIds;
-			const gamertags = dbAccount.gamertags;
-			const lastGamertag = gamertags[gamertags.length - 1];
-
-			if (linkedDeviceIds && Array.isArray(linkedDeviceIds)) {
-				if (linkedDeviceIds.length > 4 && lastGamertag === packet.username) {
-					console.log(`[${xuid}] Had too many Device IDs. [T1]`);
-					client.sendCommand(`kick "${xuid}" You have been on this realm on too many device. [T1]`);
-
-					return;
-				}
-
-				linkedDeviceIds.forEach(linkedDeviceId => {
-					if (linkedDeviceId === device_id) {
-						if (lastGamertag === packet.username) return;
-
-						console.log(`[${xuid}] Had a duplicate Device ID(s). Last account was: ${lastGamertag}.`);
-						client.sendCommand(`kick "${xuid}" You had a account joined already. (Last Account: §b${lastGamertag}§r) [T2]`);
-					}
-				});
-			}
-		});
+		await deviceVaildate(packet, dbAccount, client, "playerAdd");
 
 		if (!dbAccount.deviceOs) dbAccount.deviceOs = [];
 
@@ -253,76 +166,6 @@ module.exports.moderate = async (realmData) => {
 		dbAccount.permission = permission_level;
 
 		dbAccount.save();
-
-		if (dbAccount.deviceOs.length > 4) {
-			console.log(`[${xuid}] Had too many device types in the database [T3].`);
-			client.sendCommand(`kick "${xuid}" You have been on this realm on too many devices. [T3]`);
-			return;
-		}
-
-		let lastDeviceId = dbAccount.deviceIds[dbAccount.deviceIds.length - 1];
-		let lastDeviceOs = dbAccount.deviceOs[dbAccount.deviceOs.length - 1];
-
-		switch (lastDeviceOs) {
-			case "Xbox":
-				if (!lastDeviceId.endsWith("=")) {
-					console.log(`[${xuid}] User on Xbox without the right Device ID. [T4]`);
-					client.sendCommand(`kick "${xuid}" Invalid ID. [T4]`);
-					return;
-				}
-
-				break;
-			case "Android":
-				if (!isUUIDv4WithoutDashes(lastDeviceId)) {
-					console.log(`[${xuid}] User on Android without the right Device ID. [T4]`);
-					client.sendCommand(`kick "${xuid}" Invalid ID. [T4]`);
-					return;
-				}
-
-				break;
-			case "IOS":
-				if (!isUUIDv4WithoutDashes(lastDeviceId) && /^[A-Z0-9]{32}$/.test(lastDeviceId)) {
-					console.log(`[${xuid}] User on iOS without the right Device ID. [T4]`);
-					client.sendCommand(`kick "${xuid}" Invalid ID. [T4]`);
-					return;
-				}
-
-				break;
-			case "Orbis":
-			case "Win10":
-			case "Win32":
-				if (!isUUIDv3(lastDeviceId)) {
-					console.log(`[${xuid}] User with the wrong Device ID. [T4]`);
-					client.sendCommand(`kick "${xuid}" Invalid ID. [T4]`);
-					return;
-				}
-
-				break;
-			case "NintendoSwitch":
-				if (!isUUIDv5(lastDeviceId)) {
-					console.log(`[${xuid}] User on Nintendo Switch with the wrong Device ID. [T4]`);
-					client.sendCommand(`kick "${xuid}" Invalid ID. [T4]`);
-					return;
-				}
-
-				if (!isValidPlatformChatId(packet.platform_chat_id)) {
-					console.log(`[${xuid}] No Platform Chat ID [T5]`);
-					client.sendCommand(`kick ${xuid} Invaild information sent. [T5]`, 0)
-				}
-
-				break;
-		}
-
-		if (lastDeviceOs === "Unknown" || lastDeviceOs === "Dedicated" || lastDeviceOs === "Linux") {
-			console.log(`[${xuid}] Unsupported device [T6]`);
-			client.sendCommand(`kick "${xuid}" Unsupported device model. [T6]`);
-			return;
-		}
-
-		if (packet.device_os != 'NintendoSwitch' && packet.platform_chat_id.length != 0) {
-			console.log(`[${xuid}] Not on NintendoSwitch & has Platform Chat ID [T7]`);
-			client.sendCommand(`kick ${xuid} Invaild information sent. [T7]`, 0)
-		}
 	});
 
 	client.on('player_skin', async (packet) => {
@@ -332,55 +175,7 @@ module.exports.moderate = async (realmData) => {
 
 		if (!dbAccount) return;
 
-		if (!packet.skin.skin_id.includes(packet.skin.play_fab_id)) {
-			console.log(`[${dbAccount.xuid}] Bad skin information [T1]`);
-			client.sendCommand(`kick "${dbAccount.xuid}" Invaild skin information sent.\nThis could be because\n- You are using classic skin (Change skin)\nTry relaunching Minecraft to fix this. [T1]`, 0)
-		}
-
-		if (packet.skin.full_skin_id != packet.skin.skin_id) {
-			console.log(`[${dbAccount.xuid}] Full Skin ID & Skin ID do not match. [T2]`);
-			client.sendCommand(`kick "${dbAccount.xuid}" Invaild skin information sent. [T2]`, 0)
-		}
-
-		if (packet.skin.skin_data.width > 512 || packet.skin.skin_data.width < 64) {
-			console.log(`[${dbAccount.xuid}] Bad skin information [T3]`);
-			client.sendCommand(`kick "${dbAccount.xuid}" Invaild skin information sent. [T3]`, 0)
-		}
-
-		if (packet.skin.skin_data.height > 512 || packet.skin.skin_data.height < 64) {
-			console.log(`[${dbAccount.xuid}] Bad skin information [T4]`);
-			client.sendCommand(`kick "${dbAccount.xuid}" Invaild skin information sent. [T4]`, 0)
-		}
-
-		if (!packet.skin.skin_resource_pack.includes(packet.skin.play_fab_id)) {
-			console.log(`[${dbAccount.xuid}] Bad skin information [T5]`);
-			client.sendCommand(`kick "${dbAccount.xuid}" Invaild skin information sent.\nThis could be because\n- You are using classic skin (Change skin)\nTry relaunching Minecraft to fix this. [T5]`, 0)
-		}
-
-		if (packet.skin.play_fab_id > 16 || packet.skin.play_fab_id < 16) {
-			console.log(`[${dbAccount.xuid}] Bad skin information [T6]`);
-			client.sendCommand(`kick "${dbAccount.xuid}" Invaild skin information sent.\nThis could be because you are using classic skin. (Change skin) [T6]`, 0)
-		}
-
-		if (packet.skin.premium === true && packet.skin.skin_resource_pack.includes('"default" : "geometry.n3"\n') || packet.skin.skin_id.includes('#')) {
-			console.log(`[${dbAccount.xuid}] Bad skin information [T7]`);
-			client.sendCommand(`kick "${dbAccount.xuid}" Invaild skin information sent.\nThis could be because you are using a custom skin.\nTry changing to steve. [T7]`, 0)
-		}
-
-		if (packet.skin.personal_pieces.length < 4) {
-			console.log(`[${dbAccount.xuid}] Bad skin information [T8]`);
-			client.sendCommand(`kick "${dbAccount.xuid}" Invaild skin information sent.\nThis could be because you are using classic skin. (Change skin) [T8]`, 0)
-		}
-
-		if (!packet.skin.skin_resource_pack.includes(packet.skin.play_fab_id) || !packet.skin.skin_id.includes(packet.skin.play_fab_id) || !packet.skin.full_skin_id.includes(packet.skin.play_fab_id) || !player.skin.geometry_data.includes(player.skin.play_fab_id)) {
-			console.log(`[${dbAccount.xuid}] Bad skin information [T9]`);
-			client.sendCommand(`kick "${dbAccount.xuid}" Invaild skin information sent.\nThis could be because\n- You are using classic skin (Change skin)\nTry relaunching Minecraft to fix this. [T9]`, 0);
-		}
-
-		if (packet.skin.skin_resource_pack.includes(' "default" : "geometry.humanoid"\n')) {
-			console.log(`[${dbAccount.xuid}] Bad skin information [T10]`);
-			client.sendCommand(`kick "${dbAccount.xuid}" Invaild skin information sent.\nThis could be becuase\nYou are wearing a corrupt skin or invisible skin.\nTry changing skins to fix this. [T10] `, 0)
-		}
+		vaildateSkinData(packet, dbAccount, client, "playerSkin");
 	})
 
 	client.on('emote', async (packet) => {
@@ -390,15 +185,7 @@ module.exports.moderate = async (realmData) => {
 
 		if (!dbAccount) return;
 
-		if (packet.flags === 'mute_chat') {
-			console.log(`[${dbAccount.xuid}] Bad emote information [T1]`);
-			client.sendCommand(`kick "${dbAccount.xuid}" Invaild emote information sent. [T1] `, 0)
-		}
-
-		if (!isUUIDv4(packet.emote_id)) {
-			console.log(`[${dbAccount.xuid}] Bad emote information [T2]`);
-			client.sendCommand(`kick "${dbAccount.xuid}" Invaild emote information sent. [T2] `, 0)
-		}
+		emoteVaildate(packet, dbAccount, client);
 	})
 
 	client.on('start_game', async () => {
