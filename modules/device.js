@@ -58,12 +58,9 @@ async function deviceVaildate(packet, dbAccount, client, packetType) {
 			return;
 		}
 
-		let lastDeviceId = dbAccount.deviceIds[dbAccount.deviceIds.length - 1];
-		let lastDeviceOs = dbAccount.deviceOs[dbAccount.deviceOs.length - 1];
-
 		switch (device_os) {
 			case "Xbox":
-				if (!lastDeviceId.endsWith("=")) {
+				if (!device_id.endsWith("=")) {
 					console.log(`[${dbAccount.xuid}] User on Xbox without the right Device ID. [T4]`);
 					client.sendCommand(`kick "${dbAccount.xuid}" Invalid ID. [T4]`);
 					return;
