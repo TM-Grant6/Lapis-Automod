@@ -560,7 +560,8 @@ but the work with which it is combined will remain governed by version
 
   14. No Obfuscation
 
-  You are not allowed to obfuscate the source code of this project. All users must have access to the unobfuscated source code as per the terms of the AGPL-3.0 license.
+  You are not allowed to obfuscate the source code of this project. 
+  All users must have access to the unobfuscated source code.
 
   15. Revised Versions of this License.
 
@@ -611,7 +612,7 @@ PARTIES OR A FAILURE OF THE PROGRAM TO OPERATE WITH ANY OTHER PROGRAMS),
 EVEN IF SUCH HOLDER OR OTHER PARTY HAS BEEN ADVISED OF THE POSSIBILITY OF
 SUCH DAMAGES.
 
-  18. Interpretation of Sections 15 and 16.
+  18. Interpretation of Sections 16 and 17.
 
   If the disclaimer of warranty and limitation of liability provided
 above cannot be given local legal effect according to their terms,
