@@ -22,10 +22,9 @@ async function deviceVaildate(packet, dbAccount, client, packetType) {
 		}
 	} else if (packetType === "playerAdd") {
 		const {
-			device_id
+			device_id,
+			device_os
 		} = packet;
-
-
 
 		const accounts = await accountsModel.find({}).exec();
 
@@ -62,7 +61,7 @@ async function deviceVaildate(packet, dbAccount, client, packetType) {
 		let lastDeviceId = dbAccount.deviceIds[dbAccount.deviceIds.length - 1];
 		let lastDeviceOs = dbAccount.deviceOs[dbAccount.deviceOs.length - 1];
 
-		switch (lastDeviceOs) {
+		switch (device_os) {
 			case "Xbox":
 				if (!lastDeviceId.endsWith("=")) {
 					console.log(`[${dbAccount.xuid}] User on Xbox without the right Device ID. [T4]`);
