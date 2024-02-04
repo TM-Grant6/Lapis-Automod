@@ -57,6 +57,26 @@ function skinVaildate(packet, dbAccount, client, packetType) {
 			console.log(`[${packet.xbox_user_id}] Bad skin information [T13]`);
 			client.sendCommand(`kick "${packet.xbox_user_id}" Invaild skin information sent.\nThis could be becuase\nYou are wearing a corrupt skin or invisible skin.\nTry changing skins to fix this. [T13] `, 0)
 		}
+
+		if (!packet.skin_data.skin_resource_pack.includes("default")) {
+			console.log(`[${packet.xbox_user_id}] Bad skin information [T14]`);
+			client.sendCommand(`kick "${packet.xbox_user_id}" Invaild skin information sent.\nThis could be becuase\nYou are wearing a corrupt skin.\nTry changing skins to fix this. [T14] `, 0)
+		}
+
+		if (packet.skin_data.skin_id.length > 26 || packet.skin_data.skin_id.length < 26) {
+			console.log(`[${packet.xbox_user_id}] Bad skin information [T15]`);
+			client.sendCommand(`kick "${packet.xbox_user_id}" Invaild skin information sent.\nThis could be becuase\nYou are wearing a corrupt skin.\nTry changing skins to fix this. [T16] `, 0)
+		}
+
+		if (packet.skin_data.piece_tint_colors.length > 3 || packet.skin_data.piece_tint_colors.length < 3) {
+			console.log(`[${packet.xbox_user_id}] Bad skin information [T16]`);
+			client.sendCommand(`kick "${packet.xbox_user_id}" Invaild skin information sent.\nThis could be becuase\nYou are wearing a corrupt skin.\nTry changing skins to fix this. [T17] `, 0)
+		}
+
+		if (packet.skin_data.full_skin_id.length > 26 || packet.skin_data.full_skin_id.length < 26) {
+			console.log(`[${packet.xbox_user_id}] Bad skin information [T17]`);
+			client.sendCommand(`kick "${packet.xbox_user_id}" Invaild skin information sent.\nThis could be becuase\nYou are wearing a corrupt skin.\nTry changing skins to fix this. [T18] `, 0)
+		}
 	} else if (packetType === "playerSkin") {
 		if (!packet.skin.skin_id.includes(packet.skin.play_fab_id)) {
 			console.log(`[${dbAccount.xuid}] Bad skin information [T1]`);
@@ -106,6 +126,26 @@ function skinVaildate(packet, dbAccount, client, packetType) {
 		if (packet.skin.skin_resource_pack.includes(' "default" : "geometry.humanoid"\n')) {
 			console.log(`[${dbAccount.xuid}] Bad skin information [T10]`);
 			client.sendCommand(`kick "${dbAccount.xuid}" Invaild skin information sent.\nThis could be becuase\nYou are wearing a corrupt skin or invisible skin.\nTry changing skins to fix this. [T10] `, 0)
+		}
+
+		if (!packet.skin.skin_resource_pack.includes("default")) {
+			console.log(`[${dbAccount.xuid}] Bad skin information [T11]`);
+			client.sendCommand(`kick "${dbAccount.xuid}" Invaild skin information sent.\nThis could be becuase\nYou are wearing a corrupt skin.\nTry changing skins to fix this. [T11] `, 0)
+		}
+
+		if (packet.skin.skin_id.length > 26 || packet.skin.skin_id.length < 26) {
+			console.log(`[${dbAccount.xuid}] Bad skin information [T12]`);
+			client.sendCommand(`kick "${dbAccount.xuid}" Invaild skin information sent.\nThis could be becuase\nYou are wearing a corrupt skin.\nTry changing skins to fix this. [T13] `, 0)
+		}
+
+		if (packet.skin_data.piece_tint_colors.length > 3 || packet.skin_data.piece_tint_colors.length < 3) {
+			console.log(`[${dbAccount.xuid}] Bad skin information [T13]`);
+			client.sendCommand(`kick "${dbAccount.xuid}" Invaild skin information sent.\nThis could be becuase\nYou are wearing a corrupt skin.\nTry changing skins to fix this. [T14] `, 0)
+		}
+
+		if (packet.skin.full_skin_id.length > 26 || packet.skin.full_skin_id.length < 26) {
+			console.log(`[${dbAccount.xuid}] Bad skin information [T14]`);
+			client.sendCommand(`kick "${dbAccount.xuid}" Invaild skin information sent.\nThis could be becuase\nYou are wearing a corrupt skin.\nTry changing skins to fix this. [T15] `, 0)
 		}
 	} else {
 		console.log(`Packet type: ${packetType} is not vaild. Failed to do any checks.`);
