@@ -12,13 +12,13 @@ const {
 async function deviceVaildate(packet, dbAccount, client, packetType) {
 	if (packetType === "playerList") {
 		if (packet.build_platform != 12 && packet.platform_chat_id.length != 0) {
-			console.log(`[${packet.xbox_user_id}] Not on NintendoSwitch & has Platform Chat ID [T7]`);
-			client.sendCommand(`kick ${packet.xbox_user_id} Invaild information sent. [T7]`, 0)
+			console.log(`[${packet.xbox_user_id}] Not on NintendoSwitch & has Platform Chat ID [T1] (plrListD)`);
+			client.sendCommand(`kick ${packet.xbox_user_id} Invaild information sent. [T1] (plrListD)`, 0)
 		}
 
 		if (!isValidPlatformChatId(packet.platform_chat_id) && packet.build_platform === 12) {
-			console.log(`[${packet.xbox_user_id}] Invaild Platform Chat ID [T8]`);
-			client.sendCommand(`kick ${packet.xbox_user_id} Invaild information sent. [T8]`, 0)
+			console.log(`[${packet.xbox_user_id}] Invaild Platform Chat ID [T2] (plrListD)`);
+			client.sendCommand(`kick ${packet.xbox_user_id} Invaild information sent. [T2] (plrListD)`, 0)
 		}
 	} else if (packetType === "playerAdd") {
 		const {
@@ -35,8 +35,8 @@ async function deviceVaildate(packet, dbAccount, client, packetType) {
 
 			if (linkedDeviceIds && Array.isArray(linkedDeviceIds)) {
 				if (linkedDeviceIds.length > 4 && lastGamertag === packet.username) {
-					console.log(`[${dbAccount.xuid}] Had too many Device IDs. [T1]`);
-					client.sendCommand(`kick "${dbAccount.xuid}" You have been on this realm on too many device. [T1]`);
+					console.log(`[${dbAccount.xuid}] Had too many Device IDs. [T1] (plrAdd)`);
+					client.sendCommand(`kick "${dbAccount.xuid}" You have been on this realm on too many device. [T1] (plrAdd)`);
 
 					return;
 				}
@@ -45,40 +45,40 @@ async function deviceVaildate(packet, dbAccount, client, packetType) {
 					if (linkedDeviceId === device_id) {
 						if (lastGamertag === packet.username) return;
 
-						console.log(`[${dbAccount.xuid}] Had a duplicate Device ID(s). Last account was: ${lastGamertag}.`);
-						client.sendCommand(`kick "${dbAccount.xuid}" You had a account joined already. (Last Account: §b${lastGamertag}§r) [T2]`);
+						console.log(`[${dbAccount.xuid}] Had a duplicate Device ID(s). Last account was: ${lastGamertag}. (plrAdd)`);
+						client.sendCommand(`kick "${dbAccount.xuid}" You had a account joined already. (Last Account: §b${lastGamertag}§r) [T2] (plrAdd)`);
 					}
 				});
 			}
 		});
 
 		if (dbAccount.deviceOs.length > 4) {
-			console.log(`[${dbAccount.xuid}] Had too many device types in the database [T3].`);
-			client.sendCommand(`kick "${dbAccount.xuid}" You have been on this realm on too many devices. [T3]`);
+			console.log(`[${dbAccount.xuid}] Had too many device types in the database [T3]. (plrAdd)`);
+			client.sendCommand(`kick "${dbAccount.xuid}" You have been on this realm on too many devices. [T3] (plrAdd)`);
 			return;
 		}
 
 		switch (device_os) {
 			case "Xbox":
 				if (!device_id.endsWith("=")) {
-					console.log(`[${dbAccount.xuid}] User on Xbox without the right Device ID. [T4]`);
-					client.sendCommand(`kick "${dbAccount.xuid}" Invalid ID. [T4]`);
+					console.log(`[${dbAccount.xuid}] User on Xbox without the right Device ID. [T4] (plrAdd)`);
+					client.sendCommand(`kick "${dbAccount.xuid}" Invalid ID. [T4] (plrAdd)`);
 					return;
 				}
 
 				break;
 			case "Android":
 				if (!isUUIDv4WithoutDashes(device_id)) {
-					console.log(`[${dbAccount.xuid}] User on Android without the right Device ID. [T4]`);
-					client.sendCommand(`kick "${dbAccount.xuid}" Invalid ID. [T4]`);
+					console.log(`[${dbAccount.xuid}] User on Android without the right Device ID. [T4] (plrAdd)`);
+					client.sendCommand(`kick "${dbAccount.xuid}" Invalid ID. [T4] (plrAdd)`);
 					return;
 				}
 
 				break;
 			case "IOS":
 				if (!isUUIDv4WithoutDashes(device_id) && /^[A-Z0-9]{32}$/.test(device_id)) {
-					console.log(`[${dbAccount.xuid}] User on iOS without the right Device ID. [T4]`);
-					client.sendCommand(`kick "${dbAccount.xuid}" Invalid ID. [T4]`);
+					console.log(`[${dbAccount.xuid}] User on iOS without the right Device ID. [T4] (plrAdd)`);
+					client.sendCommand(`kick "${dbAccount.xuid}" Invalid ID. [T4] (plrAdd)`);
 					return;
 				}
 
@@ -87,36 +87,36 @@ async function deviceVaildate(packet, dbAccount, client, packetType) {
 			case "Win10":
 			case "Win32":
 				if (!isUUIDv3(device_id)) {
-					console.log(`[${dbAccount.xuid}] User with the wrong Device ID. [T4]`);
-					client.sendCommand(`kick "${dbAccount.xuid}" Invalid ID. [T4]`);
+					console.log(`[${dbAccount.xuid}] User with the wrong Device ID. [T4] (plrAdd)`);
+					client.sendCommand(`kick "${dbAccount.xuid}" Invalid ID. [T4] (plrAdd)`);
 					return;
 				}
 
 				break;
 			case "NintendoSwitch":
 				if (!isUUIDv5(device_id)) {
-					console.log(`[${dbAccount.xuid}] User on Nintendo Switch with the wrong Device ID. [T4]`);
-					client.sendCommand(`kick "${dbAccount.xuid}" Invalid ID. [T4]`);
+					console.log(`[${dbAccount.xuid}] User on Nintendo Switch with the wrong Device ID. [T4] (plrAdd)`);
+					client.sendCommand(`kick "${dbAccount.xuid}" Invalid ID. [T4] (plrAdd)`);
 					return;
 				}
 
 				if (!isValidPlatformChatId(packet.platform_chat_id)) {
-					console.log(`[${dbAccount.xuid}] No Platform Chat ID [T5]`);
-					client.sendCommand(`kick "${dbAccount.xuid}" Invaild information sent. [T5]`, 0)
+					console.log(`[${dbAccount.xuid}] No Platform Chat ID [T5] (plrAdd)`);
+					client.sendCommand(`kick "${dbAccount.xuid}" Invaild information sent. [T5] (plrAdd)`, 0)
 				}
 
 				break;
 		}
 
 		if (device_os === "Unknown" || device_os === "Dedicated" || device_os === "Linux") {
-			console.log(`[${dbAccount.xuid}] Unsupported device [T6]`);
-			client.sendCommand(`kick "${dbAccount.xuid}" Unsupported device model. [T6]`);
+			console.log(`[${dbAccount.xuid}] Unsupported device [T6] (plrAdd)`);
+			client.sendCommand(`kick "${dbAccount.xuid}" Unsupported device model. [T6] (plrAdd)`);
 			return;
 		}
 
 		if (device_os != 'NintendoSwitch' && packet.platform_chat_id.length != 0) {
-			console.log(`[${dbAccount.xuid}] Not on NintendoSwitch & has Platform Chat ID [T7]`);
-			client.sendCommand(`kick "${dbAccount.xuid}" Invaild information sent. [T7]`, 0)
+			console.log(`[${dbAccount.xuid}] Not on NintendoSwitch & has Platform Chat ID [T7] (plrAdd)`);
+			client.sendCommand(`kick "${dbAccount.xuid}" Invaild information sent. [T7] (plrAdd)`, 0)
 		}
 	}
 }
