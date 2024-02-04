@@ -68,7 +68,7 @@ async function deviceVaildate(packet, dbAccount, client, packetType) {
 
 				break;
 			case "Android":
-				if (!isUUIDv4WithoutDashes(lastDeviceId)) {
+				if (!isUUIDv4WithoutDashes(device_id)) {
 					console.log(`[${dbAccount.xuid}] User on Android without the right Device ID. [T4]`);
 					client.sendCommand(`kick "${dbAccount.xuid}" Invalid ID. [T4]`);
 					return;
@@ -76,7 +76,7 @@ async function deviceVaildate(packet, dbAccount, client, packetType) {
 
 				break;
 			case "IOS":
-				if (!isUUIDv4WithoutDashes(lastDeviceId) && /^[A-Z0-9]{32}$/.test(lastDeviceId)) {
+				if (!isUUIDv4WithoutDashes(device_id) && /^[A-Z0-9]{32}$/.test(device_id)) {
 					console.log(`[${dbAccount.xuid}] User on iOS without the right Device ID. [T4]`);
 					client.sendCommand(`kick "${dbAccount.xuid}" Invalid ID. [T4]`);
 					return;
@@ -86,7 +86,7 @@ async function deviceVaildate(packet, dbAccount, client, packetType) {
 			case "Orbis":
 			case "Win10":
 			case "Win32":
-				if (!isUUIDv3(lastDeviceId)) {
+				if (!isUUIDv3(device_id)) {
 					console.log(`[${dbAccount.xuid}] User with the wrong Device ID. [T4]`);
 					client.sendCommand(`kick "${dbAccount.xuid}" Invalid ID. [T4]`);
 					return;
@@ -94,7 +94,7 @@ async function deviceVaildate(packet, dbAccount, client, packetType) {
 
 				break;
 			case "NintendoSwitch":
-				if (!isUUIDv5(lastDeviceId)) {
+				if (!isUUIDv5(device_id)) {
 					console.log(`[${dbAccount.xuid}] User on Nintendo Switch with the wrong Device ID. [T4]`);
 					client.sendCommand(`kick "${dbAccount.xuid}" Invalid ID. [T4]`);
 					return;
@@ -108,13 +108,13 @@ async function deviceVaildate(packet, dbAccount, client, packetType) {
 				break;
 		}
 
-		if (lastDeviceOs === "Unknown" || lastDeviceOs === "Dedicated" || lastDeviceOs === "Linux") {
+		if (device_os === "Unknown" || device_os === "Dedicated" || device_os === "Linux") {
 			console.log(`[${dbAccount.xuid}] Unsupported device [T6]`);
 			client.sendCommand(`kick "${dbAccount.xuid}" Unsupported device model. [T6]`);
 			return;
 		}
 
-		if (packet.device_os != 'NintendoSwitch' && packet.platform_chat_id.length != 0) {
+		if (device_os != 'NintendoSwitch' && packet.platform_chat_id.length != 0) {
 			console.log(`[${dbAccount.xuid}] Not on NintendoSwitch & has Platform Chat ID [T7]`);
 			client.sendCommand(`kick "${dbAccount.xuid}" Invaild information sent. [T7]`, 0)
 		}
