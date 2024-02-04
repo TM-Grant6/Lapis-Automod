@@ -85,7 +85,7 @@ function skinVaildate(packet, dbAccount, client, packetType) {
 
 		if (packet.skin.full_skin_id != packet.skin.skin_id) {
 			console.log(`[${dbAccount.xuid}] Full Skin ID & Skin ID do not match. [T2] (plrSkin)`);
-			client.sendCommand(`kick "${dbAccount.xuid}" Invaild skin information sent. [T2 (plrSkin)` 0)
+			client.sendCommand(`kick "${dbAccount.xuid}" Invaild skin information sent. [T2] (plrSkin)`, 0)
 		}
 
 		if (packet.skin.skin_data.width > 512 || packet.skin.skin_data.width < 64) {
