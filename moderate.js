@@ -1,5 +1,6 @@
 const {
-	Client
+	Client,
+	createClient
 } = require("bedrock-protocol");
 
 const {
@@ -53,7 +54,7 @@ module.exports.moderate = async (realmData) => {
 			CurrentInputMode: getInputMode(config.deviceOS),
 			DefaultInputMode: getInputMode(config.deviceOS),
 			DeviceId: getDeviceId(config.deviceOS),
-			DeviceModel: 'Lapis',
+			DeviceModel: 'xbox_series_x',
 			DeviceOS: config.deviceOS,
 			PlatformOnlineId: (config.deviceOS === 12) ? generateRandomString(19, "1234567890") : "",
 			PlatformUserId: (config.deviceOS === 12) ? uuidv4() : "",
@@ -61,20 +62,51 @@ module.exports.moderate = async (realmData) => {
 		}
 	}
 
-	const client = new Client({
-		...options
-	});
+	const client = createClient(options);
 
 	handleFunctions(client);
 
-	client.connect();
+	let wasKicked;
 
-	client.once('resource_packs_info', async () => {
-		client.write('resource_pack_client_response', {
-			response_status: 'completed',
-			resourcepackids: []
-		})
-	})
+	client.on("kick", (data) => {
+		wasKicked = true;
+
+		console.log(`Triggered! ${JSON.stringify(data)}`);
+
+		process.exit(1);
+	});
+
+	client.on("error", (error) => {
+		if (wasKicked) return;
+
+		client.emit("kick", {
+			message: String(error)
+		});
+
+		process.exit(1);
+	});
+
+	client.on("close", () => {
+		if (wasKicked) return;
+
+		client.emit("kick", {
+			message: "Lost connection to server"
+		});
+			
+		process.exit(1);
+	});
+
+	process.on("warning", (warning) => {
+		console.warn(warning);
+	});
+
+	process.on("unhandledRejection", (error) => {
+		console.error(error);
+	});
+
+	process.on("uncaughtException", (error, origin) => {
+		console.error(error);
+	});
 
 	const userMap = {};
 
@@ -130,7 +162,7 @@ module.exports.moderate = async (realmData) => {
 		    return value;
 		})) */
 
-		console.log(`[${packet.username}] Joined on ${packet.device_os} (${packet.device_id})`)
+		console.log(`[${username}] Joined on ${device_os} (${device_id})`)
 
 		const xuid = userMap[username];
 
@@ -160,10 +192,14 @@ module.exports.moderate = async (realmData) => {
 
 		if (!dbAccount.permission) dbAccount.permission = 'member';
 
+		if (!dbAccount.currentGamertag) dbAccount.currentGamertag = username;
+
 		// These will need automatic updating...
 		dbAccount.runtimeID = runtime_id;
 
 		dbAccount.permission = permission_level;
+
+		dbAccount.currentGamertag = username;
 
 		dbAccount.save();
 	});
@@ -190,47 +226,5 @@ module.exports.moderate = async (realmData) => {
 
 	client.on('start_game', async () => {
 		console.log(`Joined`);
-
-		let wasKicked;
-
-		client.on("kick", (data) => {
-			wasKicked = true;
-
-			console.log(`Triggered! ${JSON.stringify(data)}`);
-
-			process.exit(1);
-		});
-
-		client.on("error", (error) => {
-			if (wasKicked) return;
-
-			client.emit("kick", {
-				message: String(error)
-			});
-
-			process.exit(1);
-		});
-
-		client.on("close", () => {
-			if (wasKicked) return;
-
-			client.emit("kick", {
-				message: "Lost connection to server"
-			});
-
-			process.exit(1);
-		});
-
-		process.on("warning", (warning) => {
-			console.warn(warning);
-		});
-
-		process.on("unhandledRejection", (error) => {
-			console.error(error);
-		});
-
-		process.on("uncaughtException", (error, origin) => {
-			console.error(error);
-		});
 	})
 }
