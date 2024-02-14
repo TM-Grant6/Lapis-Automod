@@ -32,6 +32,16 @@ Lapis Automod helps protect your Minecraft realm by moderating actions.
   - Verify the emote flags and kick the player if necessary.
   - Validate the emote ID.
 
+### Animate Event Handler
+- The "animate" event handler processes the incoming animation data and performs the following checks:
+  - Check if a user has the "boat_rowing_time" when it is not the row_left or row_right.
+  - Check for unknown or none animations.
+
+### Move Event Handler
+- The "move" event handler processes the incoming move data and performs the following checks:
+  - Checks if the player is above 323 in the y-axis.
+  - Checks if the player is more than 5,000,000 on x-axis or z-axis.
+
 ## How to Contribute
 Feel free to contribute by creating a pull request anytime.
 

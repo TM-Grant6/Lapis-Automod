@@ -12,12 +12,16 @@ const accountSchema = new mongoose.Schema({
 	deviceIds: Array,
 	// known user device OSes
 	deviceOs: Array,
-    	// Xbox UUID (Invis Skin & Invaild Skin)
-    	xboxUUID: String,
-   	// Current Runtime ID
-   	runtimeID: BigInt,
-    	// Current User Permission
-    	permission: String
+	// Xbox UUID (Invis Skin & Invaild Skin)
+	xboxUUID: String,
+	// Current Runtime ID
+	runtimeID: BigInt,
+	// Current User Permission
+	permission: String,
+	// Current Gamertag
+	currentGamertag: String,
+	// Current Gamemode
+	currentGamemode: String
 });
 
 const account = mongoose.model("Account", accountSchema);
@@ -33,17 +37,17 @@ mongoose.connect(process.env.MONGO_URL)
 function createAccountDefaults(data) {
 	if (!data.xuid) return TypeError("Missing XUID");
 
-    console.log(`User didn't exist, Created new defaults.`)
-
 	return new account({
 		_id: data._id,
 		xuid: data.xuid,
 		gamertags: data.gamertags ?? [],
 		deviceIds: data.deviceIds ?? [],
 		deviceOs: data.deviceOs ?? [],
-        	xboxUUID: data.xboxUUID ?? "N/A",
-        	runtimeID: data.runtimeID ?? 0n,
-        	permission: data.permission ?? "N/A"
+		xboxUUID: data.xboxUUID ?? "N/A",
+		runtimeID: data.runtimeID ?? 0n,
+		permission: data.permission ?? "N/A",
+		currentGamertag: data.currentGamertag ?? "N/A",
+		currentGamemode: data.currentGamemode ?? "N/A"
 	});
 }
 

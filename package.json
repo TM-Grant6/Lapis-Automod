@@ -1,4 +1,8 @@
 {
+  "name": "lapis-automod",
+  "description": "Lapis Automod helps protect your Minecraft realm by moderating actions.",
+  "version": "0.4.0",
+  "main": "index.js",
   "dependencies": {
     "bedrock-protocol": "^3.34.0",
     "dotenv": "^16.3.1",
@@ -7,5 +11,12 @@
     "prismarine-auth": "^2.3.0",
     "prompt-sync": "^4.2.0",
     "uuid": "^9.0.1"
-  }
+  },
+  "devDependencies": {},
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "w0ahL",
+  "license": "AGPL-3.0"
 }

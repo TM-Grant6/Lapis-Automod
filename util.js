@@ -2,26 +2,26 @@ const { NIL, v3: uuidv3, v4: uuidv4, v5: uuidv5 } = require("uuid");
 
 // Check for UUID version 3
 function isUUIDv3(uuid) {
-    return /^[0-9a-f]{8}-[0-9a-f]{4}-3[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(uuid);
+	return /^[0-9a-f]{8}-[0-9a-f]{4}-3[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(uuid);
 }
 
 // Check for UUID version 4
 function isUUIDv4(uuid) {
-    return /^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(uuid);
+	return /^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(uuid);
 }
 
 // Check for UUID version 4 without dashes
 function isUUIDv4WithoutDashes(uuid) {
-    return /^[0-9a-fA-F]{8}[0-9a-fA-F]{4}4[0-9a-fA-F]{3}[89abAB][0-9a-fA-F]{3}[0-9a-fA-F]{12}$/.test(uuid);
+	return /^[0-9a-fA-F]{8}[0-9a-fA-F]{4}4[0-9a-fA-F]{3}[89abAB][0-9a-fA-F]{3}[0-9a-fA-F]{12}$/.test(uuid);
 }
 
 // Check for UUID version 5
 function isUUIDv5(uuid) {
-    return /^[0-9a-f]{8}-[0-9a-f]{4}-5[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(uuid);
+	return /^[0-9a-f]{8}-[0-9a-f]{4}-5[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(uuid);
 }
 
 function isValidPlatformChatId(platformChatId) {
-  return typeof platformChatId === 'string' && /^\d{19}$/.test(platformChatId);
+	return typeof platformChatId === 'string' && /^\d{19}$/.test(platformChatId);
 }
 
 function generateRandomString(length, characters = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz1234567890_-") {
@@ -65,12 +65,12 @@ async function getInputMode(deviceOS) {
 }
 
 module.exports = {
-    	generateRandomString,
-    	getDeviceId,
-    	getInputMode,
+	generateRandomString,
+	getDeviceId,
+	getInputMode,
 	isUUIDv3,
 	isUUIDv4,
 	isUUIDv4WithoutDashes,
 	isUUIDv5,
-    	isValidPlatformChatId
+	isValidPlatformChatId
 };

@@ -1,4 +1,4 @@
-const {	accountsModel, createAccountDefaults } = require("./database.js");
+const { accountsModel, createAccountDefaults } = require("./database.js");
 const { Authflow, Titles } = require("prismarine-auth");
 const { v4: uuidv4 } = require("uuid");
 
@@ -39,7 +39,7 @@ async function getXboxLiveComToken() {
 async function getXboxUserData(xuid) {
 	const authToken = await getXboxLiveToken();
 
-	if(authToken.errorMsg) return authToken;
+	if (authToken.errorMsg) return authToken;
 
 	const response = await fetch(`https://peoplehub.xboxlive.com/users/me/people/xuids(${xuid})/decoration/detail,preferredColor,presenceDetail`, {
 		method: "GET",
@@ -57,8 +57,8 @@ async function getXboxUserData(xuid) {
 		}
 	});
 
-	if(response.status === 400) return null;
-	if(response.status !== 200) console.log({errorMsg:`${response.status} ${response.statusText} ${await response.text()}`});
+	if (response.status === 400) return null;
+	if (response.status !== 200) console.log({ errorMsg: `${response.status} ${response.statusText} ${await response.text()}` });
 
 	const user = (await response.json()).people[0];
 
@@ -70,7 +70,7 @@ async function getXboxUserData(xuid) {
 }
 
 async function getXboxAccountDataBulk(xuids = []) {
-	if(xuids.length === 0) return [];
+	if (xuids.length === 0) return [];
 
 	const authToken = await getXboxLiveToken();
 
@@ -93,12 +93,12 @@ async function getXboxAccountDataBulk(xuids = []) {
 		body: body
 	});
 
-	if(response.status !== 200) console.log({errorMsg:`${response.status} ${response.statusText} ${await response.text()}`});
+	if (response.status !== 200) console.log({ errorMsg: `${response.status} ${response.statusText} ${await response.text()}` });
 
 	const users = (await response.json()).people;
 
 	// collect all sorts of user data
-	for(const user of users) {
+	for (const user of users) {
 		logXboxUserData(user, "get bulk xbox data");
 	}
 
@@ -106,31 +106,31 @@ async function getXboxAccountDataBulk(xuids = []) {
 }
 
 async function logXboxUserData(user, source) {
-  if (!user || user.errorMsg) return;
+	if (!user || user.errorMsg) return;
 
-  const { xuid, gamertag } = user;
+	const { xuid, gamertag } = user;
 
-  if (source.includes("Retry")) {
-    await logXboxUserData(await getXboxUserData(undefined, xuid), `${source}Retry`);
-    return;
-  }
+	if (source.includes("Retry")) {
+		await logXboxUserData(await getXboxUserData(undefined, xuid), `${source}Retry`);
+		return;
+	}
 
-  let dbAccount = await accountsModel.findOne({ xuid });
+	let dbAccount = await accountsModel.findOne({ xuid });
 
-  if (!dbAccount) {
-    dbAccount = createAccountDefaults({
-      xuid,
-      gamertags: [gamertag],
-      didLink: false,
-      linkData: {},
-    });
-  } else if (!dbAccount.gamertags.includes(gamertag)) {
-    dbAccount.gamertags.push(gamertag);
-  }
+	if (!dbAccount) {
+		dbAccount = createAccountDefaults({
+			xuid,
+			gamertags: [gamertag],
+			didLink: false,
+			linkData: {},
+		});
+	} else if (!dbAccount.gamertags.includes(gamertag)) {
+		dbAccount.gamertags.push(gamertag);
+	}
 
-  await dbAccount.save();
+	await dbAccount.save();
 }
 
 module.exports = {
-    getXboxAccountDataBulk
+	getXboxAccountDataBulk
 }

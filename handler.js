@@ -1,6 +1,6 @@
 async function handleFunctions(client) {
 	client.sendCommand = (command, source = 0) => {
-		client.write("command_request", {
+		client.queue("command_request", {
 			command: command.substring(0, 512),
 			origin: {
 				type: source,
@@ -8,7 +8,7 @@ async function handleFunctions(client) {
 				request_id: ""
 			},
 			internal: false,
-			version: 68
+			version: 72
 		});
 	};
 }

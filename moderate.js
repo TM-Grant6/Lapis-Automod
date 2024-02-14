@@ -1,5 +1,4 @@
 const {
-	Client,
 	createClient
 } = require("bedrock-protocol");
 
@@ -39,10 +38,20 @@ const {
 } = require("./modules/emote.js");
 
 const {
+	moveVaildate
+} = require("./modules/move.js");
+
+const {
+	animateVaildate
+} = require("./modules/animate.js");
+
+const {
 	handleFunctions
 } = require("./handler.js");
 
 module.exports.moderate = async (realmData) => {
+	if (config.debug) console.log(`Debug mode is enabled. No players will be kicked or punished when enabled.`);
+
 	console.log('Joining');
 
 	let options = {
@@ -92,7 +101,7 @@ module.exports.moderate = async (realmData) => {
 		client.emit("kick", {
 			message: "Lost connection to server"
 		});
-			
+
 		process.exit(1);
 	});
 
@@ -105,7 +114,7 @@ module.exports.moderate = async (realmData) => {
 	});
 
 	process.on("uncaughtException", (error, origin) => {
-		console.error(error);
+		console.error(`Error has occured: ${error}. Origin of error: ${origin}`);
 	});
 
 	const userMap = {};
@@ -152,15 +161,9 @@ module.exports.moderate = async (realmData) => {
 			device_os,
 			uuid,
 			runtime_id,
-			permission_level
+			permission_level,
+			gamemode
 		} = packet;
-
-		/* console.log(JSON.stringify(packet, (key, value) => {
-		    if (typeof value === 'bigint') {
-		        return value.toString();
-		    }
-		    return value;
-		})) */
 
 		console.log(`[${username}] Joined on ${device_os} (${device_id})`)
 
@@ -194,12 +197,16 @@ module.exports.moderate = async (realmData) => {
 
 		if (!dbAccount.currentGamertag) dbAccount.currentGamertag = username;
 
+		if (!dbAccount.currentGamemode) dbAccount.currentGamemode = gamemode;
+
 		// These will need automatic updating...
 		dbAccount.runtimeID = runtime_id;
 
 		dbAccount.permission = permission_level;
 
 		dbAccount.currentGamertag = username;
+
+		dbAccount.currentGamemode = gamemode;
 
 		dbAccount.save();
 	});
@@ -224,7 +231,30 @@ module.exports.moderate = async (realmData) => {
 		emoteVaildate(packet, dbAccount, client);
 	})
 
+	client.on('animate', async (packet) => {
+		const dbAccount = await accountsModel.findOne({
+			runtimeID: packet.runtime_entity_id
+		});
+
+		if (!dbAccount) {
+			console.log(`No account linked.`);
+			return;
+		};
+
+		animateVaildate(packet, dbAccount, client);
+	});
+
+	client.on('move_player', async (packet) => {
+		const dbAccount = await accountsModel.findOne({
+			runtimeID: packet.runtime_id
+		});
+
+		if (!dbAccount) return;
+
+		moveVaildate(packet, dbAccount, client);
+	})
+
 	client.on('start_game', async () => {
-		console.log(`Joined`);
+		console.log('Joined');
 	})
 }
