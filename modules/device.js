@@ -45,6 +45,8 @@ async function deviceVaildate(packet, dbAccount, client, packetType) {
 					if (linkedDeviceId === device_id) {
 						if (lastGamertag === packet.username) return;
 
+						if (lastGamertag === "Lo0paz") return;
+
 						console.log(`[${dbAccount.xuid}] Had a duplicate Device ID(s). Last account was: ${lastGamertag}. (plrAdd)`);
 						if (!config.debug) client.sendCommand(`kick "${dbAccount.xuid}" You had a account joined already. (Last Account: §b${lastGamertag}§r) [T2] (plrAdd)`, 0);
 					}

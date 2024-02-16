@@ -4,7 +4,7 @@ async function animateVaildate(packet, dbAccount, client) {
     if (!config.debug) client.sendCommand(`kick "${dbAccount.xuid}" Invaild animate information sent. [T1] `, 0);
   }
 
-  if (packet.action_id === "unknown" || packet.action_id === "none") {
+  if (packet.action_id === "none") {
     console.log(`[${dbAccount.xuid}] sent a bad animate packet. [T2]`);
     if (!config.debug) client.sendCommand(`kick "${dbAccount.xuid}" Invaild animate information sent. [T2] `, 0);
   }

@@ -143,15 +143,19 @@ module.exports.moderate = async (realmData) => {
 
 			getXboxAccountDataBulk(xuids);
 
+			const dbAccount = await accountsModel.findOne({
+				xuid: xuid
+			});
+
+			if (!dbAccount) {
+				console.log(`[${xuid}] No account linked. (plrList)`)
+				client.sendCommand(`kick "${xuid}" Looks like you don't have any data in our DB. Try again`, 0);
+				return;
+			};
+
 			skinVaildate(player, null, client, "playerList");
 			deviceVaildate(player, null, client, "playerList");
 		}
-
-		const dbAccount = await accountsModel.findOne({
-			xuid: records.xbox_user_id
-		});
-
-		if (!dbAccount) return;
 	});
 
 	client.on("add_player", async (packet) => {
@@ -179,7 +183,11 @@ module.exports.moderate = async (realmData) => {
 			xuid: xuid
 		});
 
-		if (!dbAccount) return;
+		if (!dbAccount) {
+			console.log(`[${xuid}] No account linked. (plrAdd)`)
+			client.sendCommand(`kick "${xuid}" Looks like you don't have any data in our DB. Try again`, 0);
+			return;
+		};
 
 		await deviceVaildate(packet, dbAccount, client, "playerAdd");
 
@@ -216,7 +224,10 @@ module.exports.moderate = async (realmData) => {
 			xboxUUID: packet.uuid
 		});
 
-		if (!dbAccount) return;
+		if (!dbAccount) {
+			console.log(`No account linked. We can't detect anything bad if it's not in the DB.`);
+			return;
+		};
 
 		vaildateSkinData(packet, dbAccount, client, "playerSkin");
 	})
@@ -226,7 +237,11 @@ module.exports.moderate = async (realmData) => {
 			xuid: packet.xuid
 		});
 
-		if (!dbAccount) return;
+		if (!dbAccount) {
+			console.log(`[${packet.xuid}] No account linked. (emote)`)
+			client.sendCommand(`kick "${packet.xuid}" Looks like you don't have any data in our DB. Try again`, 0);
+			return;
+		};
 
 		emoteVaildate(packet, dbAccount, client);
 	})
@@ -236,10 +251,7 @@ module.exports.moderate = async (realmData) => {
 			runtimeID: packet.runtime_entity_id
 		});
 
-		if (!dbAccount) {
-			console.log(`No account linked.`);
-			return;
-		};
+		if (!dbAccount) return;
 
 		animateVaildate(packet, dbAccount, client);
 	});
