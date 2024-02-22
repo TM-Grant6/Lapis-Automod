@@ -148,7 +148,7 @@ module.exports.moderate = async (realmData) => {
 			});
 
 			if (!dbAccount) {
-				console.log(`[${xuid}] No account linked. (plrList)`)
+				console.log(`[${xuid}] No account linked. ()`)
 				client.sendCommand(`kick "${xuid}" Looks like you don't have any data in our DB. Try again`, 0);
 				return;
 			};
@@ -229,7 +229,7 @@ module.exports.moderate = async (realmData) => {
 			return;
 		};
 
-		vaildateSkinData(packet, dbAccount, client, "playerSkin");
+		skinVaildate(packet, dbAccount, client, "playerSkin");
 	})
 
 	client.on('emote', async (packet) => {
