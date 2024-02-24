@@ -1,4 +1,86 @@
 {
     "debug": false,
-    "deviceOS": 13
+    "deviceOS": 13,
+    "skinChecks": {
+        "skinCheck1": {
+            "enabled": true
+        },
+        "skinCheck2": {
+            "enabled": true
+        },
+        "skinCheck3": {
+            "enabled": true
+        },
+        "skinCheck4": {
+            "enabled": true
+        },
+        "skinCheck5": {
+            "enabled": true
+        },
+        "skinCheck6": {
+            "enabled": true
+        },
+        "skinCheck7": {
+            "enabled": true
+        },
+        "skinCheck8": {
+            "enabled": true
+        },
+        "skinCheck9": {
+            "enabled": true
+        },
+        "skinCheck10": {
+            "enabled": true
+        },
+        "skinCheck11": {
+            "enabled": true
+        }
+    },
+    "deviceChecks": {
+        "deviceCheck1": {
+            "enabled": true
+        },
+        "deviceCheck2": {
+            "enabled": true
+        },
+        "deviceCheck3": {
+            "enabled": true
+        },
+        "deviceCheck4": {
+            "enabled": true
+        },
+        "deviceCheck5": {
+            "enabled": true
+        },
+        "deviceCheck6": {
+            "enabled": true
+        },
+        "deviceCheck7": {
+            "enabled": true
+        }
+    },
+    "emoteChecks": {
+        "emoteCheck1": {
+            "enabled": true
+        },
+        "emoteCheck2": {
+            "enabled": true
+        }
+    },
+    "moveChecks": {
+        "moveCheck1": {
+            "enabled": true
+        },
+        "moveCheck2": {
+            "enabled": true
+        }
+    },
+    "animateChecks": {
+        "animateCheck1": {
+            "enabled": true
+        },
+        "animateCheck2": {
+            "enabled": true
+        }
+    }
 }

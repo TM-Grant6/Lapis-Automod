@@ -118,6 +118,7 @@ module.exports.moderate = async (realmData) => {
 	});
 
 	const userMap = {};
+	let runtimeIds = [];
 
 	client.on("player_list", async (packet) => {
 		if (packet.records.type === "remove") return;
@@ -217,6 +218,24 @@ module.exports.moderate = async (realmData) => {
 		dbAccount.currentGamemode = gamemode;
 
 		dbAccount.save();
+
+		if (runtimeIds.find(item => item.runtime_id === runtime_id)) return;
+
+		runtimeIds.push({
+			type: "player",
+			runtime_id: runtime_id
+		});
+	});
+
+	client.on("add_entity", (packet) => {
+		const { runtime_id } = packet;
+
+		if (runtimeIds.find(item => item.runtime_id === runtime_id)) return;
+
+		runtimeIds.push({
+			type: "entity",
+			runtime_id: runtime_id
+		});
 	});
 
 	client.on('player_skin', async (packet) => {
@@ -247,23 +266,31 @@ module.exports.moderate = async (realmData) => {
 	})
 
 	client.on('animate', async (packet) => {
-		const dbAccount = await accountsModel.findOne({
-			runtimeID: packet.runtime_entity_id
-		});
-
-		if (!dbAccount) return;
-
-		animateVaildate(packet, dbAccount, client);
+		for (let id of runtimeIds) {
+			if (id.runtime_id === packet.runtime_entity_id) {
+				const dbAccount = await accountsModel.findOne({
+					runtimeID: packet.runtime_entity_id
+				});
+		
+				if (!dbAccount) return;
+		
+				animateVaildate(packet, dbAccount, client);
+			}
+		}
 	});
 
 	client.on('move_player', async (packet) => {
-		const dbAccount = await accountsModel.findOne({
-			runtimeID: packet.runtime_id
-		});
-
-		if (!dbAccount) return;
-
-		moveVaildate(packet, dbAccount, client);
+		for (let id of runtimeIds) {
+			if (id.runtime_id === packet.runtime_id) {
+				const dbAccount = await accountsModel.findOne({
+					runtimeID: packet.runtime_id
+				});
+		
+				if (!dbAccount) return;
+		
+				moveVaildate(packet, dbAccount, client);
+			}
+		}
 	})
 
 	client.on('start_game', async () => {
