@@ -1,4 +1,5 @@
 const fetch = require("node-fetch");
+const chalk = require("chalk");
 const prompt = require("prompt-sync")();
 const { Authflow, Titles } = require("prismarine-auth");
 
@@ -16,7 +17,8 @@ const realm_api_headers = {
 	"authorization": "",
 	"charset": "utf-8",
 	"client-ref": "08bdb049f310d03aeabda3748f857640eb62a733",
-	"client-version": "1.20.51",
+	"client-version": "1.20.71",
+	"x-clientplatform": "Windows",
 	"content-type": "application/json",
 	"user-agent": "MCPE/UWP",
 	"Accept-Language": "en-CA",
@@ -40,19 +42,14 @@ const realm_api_headers = {
 			headers: realm_api_headers
 		});
 
-		const allRealms = (await worlds.json()).servers;
+		const allRealms = (await worlds.json()).servers
+			.filter(realm => !realm.expired && realm.state !== "CLOSED")
+			.sort((a, b) => a.id - b.id);
 
-		allRealms.sort((a, b) => a.id - b.id);
+		console.log(chalk.blue(`${"-".repeat(35)}`));
+		console.log(allRealms.map((realm, i) => `-> ${i + 1}. ${realm.name}`).join("\n"), "\n", chalk.blue("-".repeat(35))); 
 
-		for (const i in allRealms) {
-			const realm = allRealms[i];
-
-			if (realm.state === "CLOSED" || realm.expired) continue;
-
-			console.log(`${Number(i) + 1}. ${realm.name}`);
-		}
-
-		const selection = Number(prompt("Please type in the number for the realm, or the realm ID: "));
+		const selection = Number(prompt(chalk.blue("--> Select a number: ")));
 
 		let realm = {};
 
@@ -63,7 +60,7 @@ const realm_api_headers = {
 		}
 
 		if (!realm) {
-			console.log("Invalid choice.");
+			console.log(chalk.red(`---> Invalid number choice`));
 			process.exit(0);
 		}
 
@@ -72,13 +69,27 @@ const realm_api_headers = {
 			headers: realm_api_headers
 		}).catch(() => { });
 
-		if (!response || (response.status !== 200 && response.status !== 403)) {
+		if (!response || (response.status !== 200 && response.status !== 403 && response.status !== 503)) {
 			console.log(response?.status);
 			console.log(await response?.text());
 			process.exit(0);
 		}
 
-		const realmIP = await response.json();
+		// NOTE TO W0AHL
+		// MAKE THIS LOOP UNTIL SUCCESS
+		// WILL FORGET STILL
+		let realmIP;
+
+		try {
+			realmIP = await response.json();
+		} catch (err) {
+			if (response.status === 503) {
+				console.log(chalk.red("---> Retry again later"));
+				process.exit(1);
+			}
+
+			throw err;
+		}
 
 		if (realmIP.errorMsg) {
 			console.log(realmIP.errorMsg);
@@ -90,7 +101,9 @@ const realm_api_headers = {
 
 		moderate(realm);
 	} catch (err) {
-		console.log(err);
-		process.exit(0);
+		if (!err.type === 'invalid-json') {
+			console.log(err);
+			process.exit(0);
+		}
 	}
 })();

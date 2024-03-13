@@ -1,5 +1,5 @@
 {
-    "debug": false,
+    "debug": true,
     "deviceOS": 13,
     "skinChecks": {
         "skinCheck1": {
@@ -80,6 +80,11 @@
             "enabled": true
         },
         "animateCheck2": {
+            "enabled": true
+        }
+    },
+    "equipmentChecks": {
+        "equipmentCheck1": {
             "enabled": true
         }
     }

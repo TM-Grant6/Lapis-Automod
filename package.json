@@ -5,6 +5,7 @@
   "main": "index.js",
   "dependencies": {
     "bedrock-protocol": "^3.34.0",
+    "chalk": "^4.1.2",
     "dotenv": "^16.3.1",
     "mongoose": "^8.0.4",
     "node-fetch": "^2.6.11",

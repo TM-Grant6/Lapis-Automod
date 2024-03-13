@@ -2,4 +2,3 @@ node_modules
 authCache
 *.env
 package-lock.json
-.env

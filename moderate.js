@@ -14,6 +14,7 @@ const {
 const config = require("./config.json");
 
 const fs = require('fs');
+const chalk = require("chalk");
 
 const {
 	generateRandomString,
@@ -46,13 +47,21 @@ const {
 } = require("./modules/animate.js");
 
 const {
+	equipmentVaildate
+} = require("./modules/equipment.js");
+
+const {
 	handleFunctions
 } = require("./handler.js");
 
 module.exports.moderate = async (realmData) => {
-	if (config.debug) console.log(`Debug mode is enabled. No players will be kicked or punished when enabled.`);
+	if (config.debug) console.log(chalk.yellow(`---> Debug mode is enabled. No players will be kicked or punished when enabled.`));
 
-	console.log('Joining');
+	if (config.debug === false) {
+		 console.log(chalk.green('---> Joining the realm'));
+	} else {
+		console.log(chalk.green('----> Joining the realm'));
+	}
 
 	let options = {
 		host: realmData.ip,
@@ -73,6 +82,8 @@ module.exports.moderate = async (realmData) => {
 
 	const client = createClient(options);
 
+	client.options.protocolVersion = 662;
+
 	handleFunctions(client);
 
 	let wasKicked;
@@ -80,7 +91,7 @@ module.exports.moderate = async (realmData) => {
 	client.on("kick", (data) => {
 		wasKicked = true;
 
-		console.log(`Triggered! ${JSON.stringify(data)}`);
+		console.log(chalk.red(`+--> Triggered! ${JSON.stringify(data)}`));
 
 		process.exit(1);
 	});
@@ -88,33 +99,35 @@ module.exports.moderate = async (realmData) => {
 	client.on("error", (error) => {
 		if (wasKicked) return;
 
+		console.error(chalk.red(error))
+
 		client.emit("kick", {
 			message: String(error)
 		});
 
-		process.exit(1);
+		// process.exit(1);
 	});
 
 	client.on("close", () => {
 		if (wasKicked) return;
 
 		client.emit("kick", {
-			message: "Lost connection to server"
+			message: "+--> Lost connection to server"
 		});
 
 		process.exit(1);
 	});
 
 	process.on("warning", (warning) => {
-		console.warn(warning);
+		console.warn(chalk.red(warning));
 	});
 
 	process.on("unhandledRejection", (error) => {
-		console.error(error);
+		console.error(chalk.red(error));
 	});
 
 	process.on("uncaughtException", (error, origin) => {
-		console.error(`Error has occured: ${error}. Origin of error: ${origin}`);
+		console.error(chalk.red(`+--> Error has occured: ${error}. Origin of error: ${origin}`));
 	});
 
 	const userMap = {};
@@ -149,7 +162,7 @@ module.exports.moderate = async (realmData) => {
 			});
 
 			if (!dbAccount) {
-				console.log(`[${xuid}] No account linked. ()`)
+				console.log(`[${xuid}] No account linked. (plrList)`)
 				client.sendCommand(`kick "${xuid}" Looks like you don't have any data in our DB. Try again`, 0);
 				return;
 			};
@@ -271,9 +284,9 @@ module.exports.moderate = async (realmData) => {
 				const dbAccount = await accountsModel.findOne({
 					runtimeID: packet.runtime_entity_id
 				});
-		
+
 				if (!dbAccount) return;
-		
+
 				animateVaildate(packet, dbAccount, client);
 			}
 		}
@@ -285,15 +298,33 @@ module.exports.moderate = async (realmData) => {
 				const dbAccount = await accountsModel.findOne({
 					runtimeID: packet.runtime_id
 				});
-		
+
 				if (!dbAccount) return;
-		
+
 				moveVaildate(packet, dbAccount, client);
 			}
 		}
 	})
 
+	client.on('mob_equipment', async (packet) => {
+		for (let id of runtimeIds) {
+			if (id.runtime_id === packet.runtime_entity_id) {
+				const dbAccount = await accountsModel.findOne({
+					runtimeID: packet.runtime_entity_id
+				});
+
+				if (!dbAccount) return;
+
+				equipmentVaildate(packet, dbAccount, client);
+			}
+		}
+	})
+
 	client.on('start_game', async () => {
-		console.log('Joined');
+		if (config.debug === false) {
+			console.log(chalk.greenBright('----> Joined the realm'));
+	   } else {
+		   console.log(chalk.greenBright('-----> Joined the realm'));
+	   }
 	})
 }
