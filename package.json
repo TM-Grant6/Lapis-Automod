@@ -4,12 +4,12 @@
   "version": "0.4.0",
   "main": "index.js",
   "dependencies": {
-    "bedrock-protocol": "^3.34.0",
+    "bedrock-protocol": "^3.35.0",
     "chalk": "^4.1.2",
     "dotenv": "^16.3.1",
     "mongoose": "^8.0.4",
     "node-fetch": "^2.6.11",
-    "prismarine-auth": "^2.3.0",
+    "prismarine-auth": "^2.4.1",
     "prompt-sync": "^4.2.0",
     "uuid": "^9.0.1"
   },
