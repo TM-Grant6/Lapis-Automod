@@ -1,4 +1,6 @@
 const { NIL, v3: uuidv3, v4: uuidv4, v5: uuidv5 } = require("uuid");
+const axios = require('axios');
+const cheerio = require('cheerio');
 
 // Check for UUID version 3
 function isUUIDv3(uuid) {
@@ -64,10 +66,29 @@ async function getInputMode(deviceOS) {
 	}
 }
 
+async function getProtocolVersion() {
+	const latestVersionEndpoint = 'https://itunes.apple.com/lookup?bundleId=com.mojang.minecraftpe&time=' + Date.now();
+
+	const response = await axios.get(latestVersionEndpoint);
+	const versionData = response.data;
+
+	const result = versionData.results[0];
+	const version = result.version;
+
+	const websiteUrl = `https://minecraft.wiki/w/Bedrock_Edition_${version}`;
+	const response2 = await axios.get(websiteUrl);
+	const $ = cheerio.load(response2.data);
+	const text = $('p').text();
+	const protocolVersion = text.match(/\b\d{3}\b/g);
+
+	return protocolVersion[0];
+}
+
 module.exports = {
 	generateRandomString,
 	getDeviceId,
 	getInputMode,
+	getProtocolVersion,
 	isUUIDv3,
 	isUUIDv4,
 	isUUIDv4WithoutDashes,

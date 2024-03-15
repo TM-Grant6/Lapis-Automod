@@ -2,6 +2,8 @@ const { accountsModel, createAccountDefaults } = require("./database.js");
 const { Authflow, Titles } = require("prismarine-auth");
 const { v4: uuidv4 } = require("uuid");
 
+const content_restrictions = "eyJ2ZXJzaW9uIjoyLCJkYXRhIjp7Imdlb2dyYXBoaWNSZWdpb24iOiJVUyIsIm1heEFnZVJhdGluZyI6MjU1LCJwcmVmZXJyZWRBZ2VSYXRpbmciOjI1NSwicmVzdHJpY3RQcm9tb3Rpb25hbENvbnRlbnQiOmZhbHNlfX0";
+
 async function getXboxLiveToken() {
 	const flow = new Authflow(undefined, "./authCache", {
 		flow: "live",
@@ -28,6 +30,23 @@ async function getXboxLiveComToken() {
 	});
 
 	const authToken = await flow.getXboxToken(`http://xboxlive.com`)
+		.catch((err) => {
+			console.log(err);
+			process.exit(0);
+		});
+
+	return authToken;
+}
+
+async function getRealmToken() {
+	const flow = new Authflow(undefined, "./authCache", {
+		flow: "live",
+		authTitle: Titles.MinecraftNintendoSwitch,
+		deviceType: "Nintendo",
+		doSisuAuth: true
+	});
+
+	const authToken = await flow.getXboxToken(`https://pocket.realms.minecraft.net/`)
 		.catch((err) => {
 			console.log(err);
 			process.exit(0);
@@ -67,6 +86,34 @@ async function getXboxUserData(xuid) {
 	await logXboxUserData(user, "getXboxUserData");
 
 	return user;
+}
+
+async function getTitleHistory(xuid) {
+	const authToken = await getXboxLiveToken();
+
+	if (authToken.errorMsg) return authToken;
+
+	const response = await fetch(`https://titlehub.xboxlive.com/users/xuid(${xuid})/titles/titleHistory/decoration/GamePass,TitleHistory,Achievement,Stats`, {
+		method: "GET",
+		headers: {
+			"x-xbl-contract-version": 2,
+			"Accept-Encoding": "gzip, deflate",
+			"Accept": "application/json",
+			"MS-CV": "unkV+2EFWDGAoQN9",
+			"User-Agent": "WindowsGameBar/5.823.1271.0",
+			"Accept-Language": "en-US",
+			"Authorization": `XBL3.0 x=${authToken.userHash};${authToken.XSTSToken}`,
+			"Host": "titlehub.xboxlive.com",
+			"Connection": "Keep-Alive"
+		}
+	});
+
+	if (response.status === 400) return null;
+	if (response.status !== 200) console.log({ errorMsg: `${response.status} ${response.statusText} ${await response.text()}` });
+
+	const titles = (await response.json()).titles;
+
+	return titles;
 }
 
 async function getXboxAccountDataBulk(xuids = []) {
@@ -131,6 +178,45 @@ async function logXboxUserData(user, source) {
 	await dbAccount.save();
 }
 
+async function getClubData(clubID) {
+	const authToken = await getXboxLiveToken();
+
+	const response = await fetch(`https://clubhub.xboxlive.com/clubs/Ids(${clubID})/decoration/clubPresence`, {
+		method: "GET",
+		headers: {
+			"x-xbl-contract-version": 4,
+			"Accept-Encoding": "gzip; q=1.0, deflate; q=0.5, identity; q=0.1",
+			"x-xbl-contentrestrictions": content_restrictions,
+			"Signature": "",
+			"Cache-Control": "no-store, must-revalidate, no-cache",
+			"Accept": "application/json",
+			"X-XblCorrelationId": uuidv4(),
+			"PRAGMA": "no-cache",
+			"Accept-Language": "en-US, en",
+			"Authorization": `XBL3.0 x=${authToken.userHash};${authToken.XSTSToken}`,
+			"Host": "clubhub.xboxlive.com",
+			"Connection": "Keep-Alive"
+		}
+	});
+
+	if(response.status !== 200 && response.status !== 403) {
+		return {
+			code: `Unable to get club data.\nError: ${response.status} ${response.statusText}`,
+			description: ""
+		};
+	}
+
+	const clubData = await response.json();
+
+	if(clubData.code) return clubData;
+
+	return clubData.clubs[0];
+}
+
 module.exports = {
-	getXboxAccountDataBulk
+	getXboxUserData,
+	getTitleHistory,
+	getXboxAccountDataBulk,
+	getClubData,
+	getRealmToken
 }

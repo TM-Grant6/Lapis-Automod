@@ -1,6 +1,8 @@
 const config = require("../config.json");
 
 function skinVaildate(packet, dbAccount, client, packetType) {
+	if (config.debug === true) console.log(`Skin Vaildate`);
+
 	if (packetType === "playerList") {
 		if (config.skinChecks.skinCheck1 === true && !packet.skin_data.skin_id.includes(packet.skin_data.play_fab_id)) {
 			console.log(`[${packet.xbox_user_id}] Bad skin information [T1]`);

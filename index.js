@@ -4,6 +4,7 @@ const prompt = require("prompt-sync")();
 const { Authflow, Titles } = require("prismarine-auth");
 
 const { moderate } = require("./moderate.js");
+const config = require("./config.json");
 
 const flow = new Authflow(undefined, "./authCache", {
 	flow: "live",
@@ -46,17 +47,23 @@ const realm_api_headers = {
 			.filter(realm => !realm.expired && realm.state !== "CLOSED")
 			.sort((a, b) => a.id - b.id);
 
-		console.log(chalk.blue(`${"-".repeat(35)}`));
-		console.log(allRealms.map((realm, i) => `-> ${i + 1}. ${realm.name}`).join("\n"), "\n", chalk.blue("-".repeat(35))); 
-
-		const selection = Number(prompt(chalk.blue("--> Select a number: ")));
-
 		let realm = {};
 
-		if (selection < 10000) {
-			realm = allRealms[selection - 1];
+		if (config.clientOptions.realmOptions.realmId < 100000 && config.clientOptions.skipRealmPicking != true) {
+			console.log(chalk.blue(`${"-".repeat(35)}`));
+			console.log(allRealms.map((realm, i) => `-> ${i + 1}. ${realm.name}`).join("\n"), "\n", chalk.blue("-".repeat(35))); 
+
+			const selection = Number(prompt(chalk.blue("--> Select a number: ")));
+
+			if (selection < 10000) {
+				realm = allRealms[selection - 1];
+			} else {
+				realm = allRealms.find(realmData => realmData.id === selection);
+			}
 		} else {
-			realm = allRealms.find(realmData => realmData.id === selection);
+			if (config.clientOptions.skipRealmPicking === true && typeof config.clientOptions.realmOptions.realmId === 'number') {
+				realm = allRealms.find(realmData => realmData.id === config.clientOptions.realmOptions.realmId);
+			}
 		}
 
 		if (!realm) {

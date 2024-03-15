@@ -9,6 +9,7 @@ Lapis Automod helps protect your Minecraft realm by moderating actions.
 
 ## Setup
 - You need to set up a MongoDB database and put the database URL in the .env file.
+- You can also modify the [config](./config.json) to your liking.
 
 ## Detections in the Code
 - The code contains various detections related to player actions, such as checking for valid skin information, device IDs, platform chat IDs, and more.
@@ -41,6 +42,15 @@ Lapis Automod helps protect your Minecraft realm by moderating actions.
 - The "move" event handler processes the incoming move data and performs the following checks:
   - Checks if the player is above 323 in the y-axis.
   - Checks if the player is more than 5,000,000 on x-axis or z-axis.
+
+### Equipment Handler
+- The "mob_equipment" event handler processes the incoming data and performs the following checks:
+  - Checks for invaild slots above 8.
+
+### API Handler
+- The API Handler processes the incoming API data from Xbox and or other links to perform the following checks:
+  - Checks if it is a alt, it determines if it is or not, this is up to **YOUR** config. It's not a great idea to have follower/following checks, but the option is there and 0 by default.
+  - Checks if they are presence "inGame" or not. This can false detect if a user's internet is slow and or device. You can modify the cooldown to be faster but not recommended due to false flags. The cooldown is in seconds.
 
 ## How to Contribute
 Feel free to contribute by creating a pull request anytime.

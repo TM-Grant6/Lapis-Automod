@@ -1,6 +1,24 @@
 {
-    "debug": true,
-    "deviceOS": 13,
+    "debug": false,
+    "clientOptions": {
+        "deviceOS": 13,
+        "protocolVersion": 662,
+        "getLatestProtocolVersion": false,
+        "automaticRealmRejoining": true,
+        "skipRealmPicking": false,
+        "realmOptions": {
+            "realmId": 0
+        },
+        "lapisOptions": {
+            "enableMovementHandler": true,
+            "enableAnimateHandler": true,
+            "enableEquipmentHandler": true,
+            "enableSkinHandler": true,
+            "enableAPIHandler": true,
+            "enableDeviceHandler": true,
+            "enableEmoteHandler": true
+        }
+    },
     "skinChecks": {
         "skinCheck1": {
             "enabled": true
@@ -86,6 +104,19 @@
     "equipmentChecks": {
         "equipmentCheck1": {
             "enabled": true
+        }
+    },
+    "apiChecks": {
+        "apiCheck1": {
+            "enabled": true,
+            "overallValue": 50,
+            "followerValue": 0,
+            "followingValue": 0,
+            "gamerScoreValue": 100
+        },
+        "apiCheck2": {
+            "enabled": true,
+            "cooldown": 5
         }
     }
 }

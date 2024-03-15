@@ -19,7 +19,8 @@ const chalk = require("chalk");
 const {
 	generateRandomString,
 	getDeviceId,
-	getInputMode
+	getInputMode,
+	getProtocolVersion
 } = require("./util.js");
 
 const {
@@ -51,14 +52,19 @@ const {
 } = require("./modules/equipment.js");
 
 const {
-	handleFunctions
+	apiVaildate
+} = require("./modules/api.js");
+
+const {
+	handleFunctions,
+	handleRejoin
 } = require("./handler.js");
 
 module.exports.moderate = async (realmData) => {
-	if (config.debug) console.log(chalk.yellow(`---> Debug mode is enabled. No players will be kicked or punished when enabled.`));
+	if (config.debug) console.log(chalk.yellow(`---> Debug mode is enabled. \n+--> No players will be kicked or punished.\n+--> Debugging logs are enabled`));
 
 	if (config.debug === false) {
-		 console.log(chalk.green('---> Joining the realm'));
+		console.log(chalk.green('---> Joining the realm'));
 	} else {
 		console.log(chalk.green('----> Joining the realm'));
 	}
@@ -69,34 +75,40 @@ module.exports.moderate = async (realmData) => {
 		profilesFolder: "./authCache",
 		skipPing: true,
 		skinData: {
-			CurrentInputMode: getInputMode(config.deviceOS),
-			DefaultInputMode: getInputMode(config.deviceOS),
-			DeviceId: getDeviceId(config.deviceOS),
+			CurrentInputMode: getInputMode(config.clientOptions.deviceOS),
+			DefaultInputMode: getInputMode(config.clientOptions.deviceOS),
+			DeviceId: getDeviceId(config.clientOptions.deviceOS),
 			DeviceModel: 'xbox_series_x',
-			DeviceOS: config.deviceOS,
-			PlatformOnlineId: (config.deviceOS === 12) ? generateRandomString(19, "1234567890") : "",
-			PlatformUserId: (config.deviceOS === 12) ? uuidv4() : "",
+			DeviceOS: config.clientOptions.deviceOS,
+			PlatformOnlineId: (config.clientOptions.deviceOS === 12) ? generateRandomString(19, "1234567890") : "",
+			PlatformUserId: (config.clientOptions.deviceOS === 12) ? uuidv4() : "",
 			PlayFabId: generateRandomString(16, "qwertyuiopasdfghjklzxcvbnm12345678901")
 		}
 	}
 
 	const client = createClient(options);
 
-	client.options.protocolVersion = 662;
+	if (config.clientOptions.getLatestProtocolVersion === true) {
+		client.options.protocolVersion = await getProtocolVersion();
+	} else if (config.clientOptions.protocolVersion.length >= 3) {
+		client.options.protocolVersion = config.clientOptions.protocolVersion;
+	} else {
+		return;
+	}
 
 	handleFunctions(client);
 
 	let wasKicked;
 
-	client.on("kick", (data) => {
+	client.on("kick", async (data) => {
 		wasKicked = true;
 
 		console.log(chalk.red(`+--> Triggered! ${JSON.stringify(data)}`));
 
-		process.exit(1);
+		if (config.clientOptions.automaticRealmRejoining === true) await handleRejoin(realmData)
 	});
 
-	client.on("error", (error) => {
+	client.on("error", async (error) => {
 		if (wasKicked) return;
 
 		console.error(chalk.red(error))
@@ -105,17 +117,17 @@ module.exports.moderate = async (realmData) => {
 			message: String(error)
 		});
 
-		// process.exit(1);
+		if (config.clientOptions.automaticRealmRejoining === true) await handleRejoin(realmData)
 	});
 
-	client.on("close", () => {
+	client.on("close", async () => {
 		if (wasKicked) return;
 
 		client.emit("kick", {
 			message: "+--> Lost connection to server"
 		});
 
-		process.exit(1);
+		if (config.clientOptions.automaticRealmRejoining === true) await handleRejoin(realmData)
 	});
 
 	process.on("warning", (warning) => {
@@ -163,12 +175,21 @@ module.exports.moderate = async (realmData) => {
 
 			if (!dbAccount) {
 				console.log(`[${xuid}] No account linked. (plrList)`)
-				client.sendCommand(`kick "${xuid}" Looks like you don't have any data in our DB. Try again`, 0);
+				getXboxAccountDataBulk(xuid);
+
+				if (config.clientOptions.lapisOptions.enableSkinHandler === true) skinVaildate(player, null, client, "playerList");
+				if (config.clientOptions.lapisOptions.enableDeviceHandler === true) deviceVaildate(player, null, client, "playerList");
+				if (config.clientOptions.lapisOptions.enableAPIHandler === true) apiVaildate(player, null, client, realmData);
 				return;
 			};
 
-			skinVaildate(player, null, client, "playerList");
-			deviceVaildate(player, null, client, "playerList");
+			if (dbAccount) {
+				if (config.clientOptions.lapisOptions.enableSkinHandler === true) skinVaildate(player, dbAccount, client, "playerList");
+				if (config.clientOptions.lapisOptions.enableDeviceHandler === true) deviceVaildate(player, dbAccount, client, "playerList");
+				if (config.clientOptions.lapisOptions.enableAPIHandler === true) apiVaildate(player, dbAccount, client, realmData);
+				console.log(`Had DB History`);
+				return;
+			}
 		}
 	});
 
@@ -198,12 +219,11 @@ module.exports.moderate = async (realmData) => {
 		});
 
 		if (!dbAccount) {
-			console.log(`[${xuid}] No account linked. (plrAdd)`)
-			client.sendCommand(`kick "${xuid}" Looks like you don't have any data in our DB. Try again`, 0);
+			getXboxAccountDataBulk(xuid);
 			return;
 		};
 
-		await deviceVaildate(packet, dbAccount, client, "playerAdd");
+		if (config.clientOptions.lapisOptions.enableDeviceHandler === true) await deviceVaildate(packet, dbAccount, client, "playerAdd");
 
 		if (!dbAccount.deviceOs) dbAccount.deviceOs = [];
 
@@ -251,80 +271,99 @@ module.exports.moderate = async (realmData) => {
 		});
 	});
 
-	client.on('player_skin', async (packet) => {
-		const dbAccount = await accountsModel.findOne({
-			xboxUUID: packet.uuid
+	if (config.clientOptions.lapisOptions.enableSkinHandler === true) {
+		client.on('player_skin', async (packet) => {
+			const dbAccount = await accountsModel.findOne({
+				xboxUUID: packet.uuid
+			});
+
+			if (!dbAccount) {
+				console.log(`No account linked. We can't detect anything bad if it's not in the DB.`);
+				return;
+			};
+
+			if (dbAccount) skinVaildate(packet, dbAccount, client, "playerSkin");
+		})
+	} else {
+		return;
+	}
+
+	if (config.clientOptions.lapisOptions.enableEmoteHandler === true) {
+		client.on('emote', async (packet) => {
+			const dbAccount = await accountsModel.findOne({
+				xuid: packet.xuid
+			});
+
+			if (!dbAccount) {
+				getXboxAccountDataBulk(packet.xuid);
+				return;
+			};
+
+			if (dbAccount) emoteVaildate(packet, dbAccount, client);
+		})
+	} else {
+		return;
+	}
+
+	if (config.clientOptions.lapisOptions.enableAnimateHandler === true) {
+		client.on('animate', async (packet) => {
+			for (let id of runtimeIds) {
+				if (id.runtime_id === packet.runtime_entity_id) {
+					const dbAccount = await accountsModel.findOne({
+						runtimeID: packet.runtime_entity_id
+					});
+
+					if (!dbAccount) return;
+
+					animateVaildate(packet, dbAccount, client);
+				}
+			}
 		});
+	} else {
+		return;
+	}
 
-		if (!dbAccount) {
-			console.log(`No account linked. We can't detect anything bad if it's not in the DB.`);
-			return;
-		};
+	if (config.clientOptions.lapisOptions.enableMovementHandler === true) {
+		client.on('move_player', async (packet) => {
+			for (let id of runtimeIds) {
+				if (id.runtime_id === packet.runtime_id) {
+					const dbAccount = await accountsModel.findOne({
+						runtimeID: packet.runtime_id
+					});
 
-		skinVaildate(packet, dbAccount, client, "playerSkin");
-	})
+					if (!dbAccount) return;
 
-	client.on('emote', async (packet) => {
-		const dbAccount = await accountsModel.findOne({
-			xuid: packet.xuid
-		});
-
-		if (!dbAccount) {
-			console.log(`[${packet.xuid}] No account linked. (emote)`)
-			client.sendCommand(`kick "${packet.xuid}" Looks like you don't have any data in our DB. Try again`, 0);
-			return;
-		};
-
-		emoteVaildate(packet, dbAccount, client);
-	})
-
-	client.on('animate', async (packet) => {
-		for (let id of runtimeIds) {
-			if (id.runtime_id === packet.runtime_entity_id) {
-				const dbAccount = await accountsModel.findOne({
-					runtimeID: packet.runtime_entity_id
-				});
-
-				if (!dbAccount) return;
-
-				animateVaildate(packet, dbAccount, client);
+					moveVaildate(packet, dbAccount, client);
+				}
 			}
-		}
-	});
+		})
+	} else {
+		return;
+	}
 
-	client.on('move_player', async (packet) => {
-		for (let id of runtimeIds) {
-			if (id.runtime_id === packet.runtime_id) {
-				const dbAccount = await accountsModel.findOne({
-					runtimeID: packet.runtime_id
-				});
+	if (config.clientOptions.lapisOptions.enableEquipmentHandler === true) {
+		client.on('mob_equipment', async (packet) => {
+			for (let id of runtimeIds) {
+				if (id.runtime_id === packet.runtime_entity_id) {
+					const dbAccount = await accountsModel.findOne({
+						runtimeID: packet.runtime_entity_id
+					});
 
-				if (!dbAccount) return;
+					if (!dbAccount) return;
 
-				moveVaildate(packet, dbAccount, client);
+					equipmentVaildate(packet, dbAccount, client);
+				}
 			}
-		}
-	})
-
-	client.on('mob_equipment', async (packet) => {
-		for (let id of runtimeIds) {
-			if (id.runtime_id === packet.runtime_entity_id) {
-				const dbAccount = await accountsModel.findOne({
-					runtimeID: packet.runtime_entity_id
-				});
-
-				if (!dbAccount) return;
-
-				equipmentVaildate(packet, dbAccount, client);
-			}
-		}
-	})
+		})
+	} else {
+		return;
+	}
 
 	client.on('start_game', async () => {
 		if (config.debug === false) {
 			console.log(chalk.greenBright('----> Joined the realm'));
-	   } else {
-		   console.log(chalk.greenBright('-----> Joined the realm'));
-	   }
+		} else {
+			console.log(chalk.greenBright('-----> Joined the realm'));
+		}
 	})
 }
