@@ -56,6 +56,10 @@ const {
 } = require("./modules/api.js");
 
 const {
+	textVaildate
+} = require("./modules/text.js");
+
+const {
 	handleFunctions,
 	handleRejoin
 } = require("./handler.js");
@@ -174,7 +178,7 @@ module.exports.moderate = async (realmData) => {
 			});
 
 			if (!dbAccount) {
-				console.log(`[${xuid}] No account linked. (plrList)`)
+				if (config.debug === true) console.log(`[${xuid}] No account linked. (plrList)`)
 				getXboxAccountDataBulk(xuid);
 
 				if (config.clientOptions.lapisOptions.enableSkinHandler === true) skinVaildate(player, null, client, "playerList");
@@ -187,7 +191,7 @@ module.exports.moderate = async (realmData) => {
 				if (config.clientOptions.lapisOptions.enableSkinHandler === true) skinVaildate(player, dbAccount, client, "playerList");
 				if (config.clientOptions.lapisOptions.enableDeviceHandler === true) deviceVaildate(player, dbAccount, client, "playerList");
 				if (config.clientOptions.lapisOptions.enableAPIHandler === true) apiVaildate(player, dbAccount, client, realmData);
-				console.log(`Had DB History`);
+				if (config.debug === true) console.log(`Had DB History`);
 				return;
 			}
 		}
@@ -241,6 +245,8 @@ module.exports.moderate = async (realmData) => {
 
 		if (!dbAccount.currentGamemode) dbAccount.currentGamemode = gamemode;
 
+		if (!dbAccount.currentDevice) dbAccount.currentDevice = device_os;
+
 		// These will need automatic updating...
 		dbAccount.runtimeID = runtime_id;
 
@@ -249,6 +255,8 @@ module.exports.moderate = async (realmData) => {
 		dbAccount.currentGamertag = username;
 
 		dbAccount.currentGamemode = gamemode;
+
+		dbAccount.currentDevice = device_os;
 
 		dbAccount.save();
 
@@ -300,6 +308,23 @@ module.exports.moderate = async (realmData) => {
 			};
 
 			if (dbAccount) emoteVaildate(packet, dbAccount, client);
+		})
+	} else {
+		return;
+	}
+
+	if (config.clientOptions.lapisOptions.enableTextHandler === true) {
+		client.on('text', async (packet) => {
+			const dbAccount = await accountsModel.findOne({
+				xuid: packet.xuid
+			});
+
+			if (!dbAccount) {
+				getXboxAccountDataBulk(packet.xuid);
+				return;
+			};
+
+			if (dbAccount) textVaildate(packet, dbAccount, client);
 		})
 	} else {
 		return;
@@ -359,11 +384,17 @@ module.exports.moderate = async (realmData) => {
 		return;
 	}
 
-	client.on('start_game', async () => {
+	client.on('start_game', async (packet) => {
 		if (config.debug === false) {
 			console.log(chalk.greenBright('----> Joined the realm'));
 		} else {
 			console.log(chalk.greenBright('-----> Joined the realm'));
 		}
+
+		// Make the bot have god mode if anyone tries hitting it
+		setInterval(() => {
+			client.sendCommand(`effect @s health_boost 30 255 true`, 0);
+			client.sendCommand(`effect @s instant_health 30 255 true`, 0)
+		}, 5000)
 	})
 }

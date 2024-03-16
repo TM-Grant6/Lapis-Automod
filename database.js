@@ -21,7 +21,9 @@ const accountSchema = new mongoose.Schema({
 	// Current Gamertag
 	currentGamertag: String,
 	// Current Gamemode
-	currentGamemode: String
+	currentGamemode: String,
+	// Current Device
+	currentDevice: String
 });
 
 const account = mongoose.model("Account", accountSchema);
@@ -47,7 +49,8 @@ function createAccountDefaults(data) {
 		runtimeID: data.runtimeID ?? 0n,
 		permission: data.permission ?? "N/A",
 		currentGamertag: data.currentGamertag ?? "N/A",
-		currentGamemode: data.currentGamemode ?? "N/A"
+		currentGamemode: data.currentGamemode ?? "N/A",
+		currentDevice: data.currentDevice ?? "N/A"
 	});
 }
 

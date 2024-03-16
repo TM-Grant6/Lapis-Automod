@@ -3,7 +3,7 @@
     "clientOptions": {
         "deviceOS": 13,
         "protocolVersion": 662,
-        "getLatestProtocolVersion": false,
+        "getLatestProtocolVersion": true,
         "automaticRealmRejoining": true,
         "skipRealmPicking": false,
         "realmOptions": {
@@ -16,7 +16,8 @@
             "enableSkinHandler": true,
             "enableAPIHandler": true,
             "enableDeviceHandler": true,
-            "enableEmoteHandler": true
+            "enableEmoteHandler": true,
+            "enableTextHandler": true
         }
     },
     "skinChecks": {
@@ -117,6 +118,26 @@
         "apiCheck2": {
             "enabled": true,
             "cooldown": 5
+        }
+    },
+    "textChecks": {
+        "textCheck1": {
+            "enabled": true
+        },
+        "textCheck2": {
+            "enabled": true
+        },
+        "textCheck3": {
+            "enabled": true
+        },
+        "textCheck4": {
+            "enabled": true
+        },
+        "textCheck5": {
+            "enabled": true
+        },
+        "textCheck6": {
+            "enabled": true
         }
     }
 }
