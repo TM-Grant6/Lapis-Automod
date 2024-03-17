@@ -208,7 +208,7 @@ module.exports.moderate = async (realmData) => {
 			gamemode
 		} = packet;
 
-		console.log(`[${username}] Joined on ${device_os} (${device_id})`)
+		console.log(`[${username}] Joined on ${device_os} (${device_id}) Runtime ID: ${runtime_id}`)
 
 		const xuid = userMap[username];
 

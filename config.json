@@ -113,11 +113,18 @@
             "overallValue": 50,
             "followerValue": 0,
             "followingValue": 0,
-            "gamerScoreValue": 100
+            "gamerScoreValue": 100,
+            "createdValue": 7
         },
         "apiCheck2": {
             "enabled": true,
             "cooldown": 5
+        },
+        "apiCheck3": {
+            "enabled": true
+        },
+        "apiCheck4": {
+            "enabled": true
         }
     },
     "textChecks": {

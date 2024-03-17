@@ -55,6 +55,23 @@ async function getRealmToken() {
 	return authToken;
 }
 
+async function getPlayFabToken() {
+	const flow = new Authflow(undefined, "./authCache", {
+		flow: "live",
+		authTitle: Titles.MinecraftNintendoSwitch,
+		deviceType: "Nintendo",
+		doSisuAuth: true
+	});
+
+	const authToken = await flow.getXboxToken(`rp://playfabapi.com/`)
+		.catch((err) => {
+			console.log(err);
+			process.exit(0);
+		});
+
+	return authToken;
+}
+
 async function getXboxUserData(xuid) {
 	const authToken = await getXboxLiveToken();
 
@@ -218,5 +235,6 @@ module.exports = {
 	getTitleHistory,
 	getXboxAccountDataBulk,
 	getClubData,
-	getRealmToken
+	getRealmToken,
+	getPlayFabToken
 }
