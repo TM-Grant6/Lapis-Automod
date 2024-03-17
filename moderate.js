@@ -348,23 +348,9 @@ module.exports.moderate = async (realmData) => {
 		return;
 	}
 
-	if (config.clientOptions.lapisOptions.enableMovementHandler === true) {
-		client.on('move_player', async (packet) => {
-			for (let id of runtimeIds) {
-				if (id.runtime_id === packet.runtime_id) {
-					const dbAccount = await accountsModel.findOne({
-						runtimeID: packet.runtime_id
-					});
-
-					if (!dbAccount) return;
-
-					moveVaildate(packet, dbAccount, client);
-				}
-			}
-		})
-	} else {
-		return;
-	}
+	const moveDbAccount = await accountsModel.findOne({
+		runtimeID: packet.runtime_entity_id
+	});
 
 	if (config.clientOptions.lapisOptions.enableEquipmentHandler === true) {
 		client.on('mob_equipment', async (packet) => {

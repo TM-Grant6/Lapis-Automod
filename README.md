@@ -38,11 +38,6 @@ Lapis Automod helps protect your Minecraft realm by moderating actions.
   - Check if a user has the "boat_rowing_time" when it is not the row_left or row_right.
   - Check for unknown or none animations.
 
-### Move Event Handler
-- The "move" event handler processes the incoming move data and performs the following checks:
-  - Checks if the player is above 323 in the y-axis.
-  - Checks if the player is more than 5,000,000 on x-axis or z-axis.
-
 ### Equipment Handler
 - The "mob_equipment" event handler processes the incoming data and performs the following checks:
   - Checks for invaild slots above 8.

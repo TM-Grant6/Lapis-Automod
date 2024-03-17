@@ -10,7 +10,6 @@
             "realmId": 0
         },
         "lapisOptions": {
-            "enableMovementHandler": true,
             "enableAnimateHandler": true,
             "enableEquipmentHandler": true,
             "enableSkinHandler": true,
@@ -86,14 +85,6 @@
             "enabled": true
         }
     },
-    "moveChecks": {
-        "moveCheck1": {
-            "enabled": true
-        },
-        "moveCheck2": {
-            "enabled": true
-        }
-    },
     "animateChecks": {
         "animateCheck1": {
             "enabled": true
@@ -138,12 +129,6 @@
             "enabled": true
         },
         "textCheck4": {
-            "enabled": true
-        },
-        "textCheck5": {
-            "enabled": true
-        },
-        "textCheck6": {
             "enabled": true
         }
     }
