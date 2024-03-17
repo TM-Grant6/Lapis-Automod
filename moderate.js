@@ -40,10 +40,6 @@ const {
 } = require("./modules/emote.js");
 
 const {
-	moveVaildate
-} = require("./modules/move.js");
-
-const {
 	animateVaildate
 } = require("./modules/animate.js");
 
