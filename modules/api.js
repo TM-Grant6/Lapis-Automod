@@ -40,6 +40,8 @@ async function apiVaildate(packet, dbAccount, client, realm) {
             (diffDays < config.apiChecks.apiCheck1.createdValue ? 20 : 0)
         );
 
+        console.log(`Did you know, ${packet.username} has a ${totalPercent}% chance of being a alt?`);
+
         // totalPercent max is 95, but if its over 100 anyways, do just 100 alone
         // and if I add more later anyways it'll be useful either way.
         if (totalPercent > 100) totalPercent = 100;
