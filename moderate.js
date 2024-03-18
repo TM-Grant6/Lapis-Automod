@@ -90,7 +90,7 @@ module.exports.moderate = async (realmData) => {
 
 	if (config.clientOptions.getLatestProtocolVersion === true) {
 		client.options.protocolVersion = await getProtocolVersion();
-	} else if (config.clientOptions.protocolVersion.length >= 3) {
+	} else if (typeof config.clientOptions.protocolVersion === "number") {
 		client.options.protocolVersion = config.clientOptions.protocolVersion;
 	} else {
 		return;
@@ -135,7 +135,7 @@ module.exports.moderate = async (realmData) => {
 	});
 
 	process.on("unhandledRejection", (error) => {
-		console.error(chalk.red(error));
+		new Error(chalk.red(error));
 	});
 
 	process.on("uncaughtException", (error, origin) => {
@@ -343,10 +343,6 @@ module.exports.moderate = async (realmData) => {
 	} else {
 		return;
 	}
-
-	const moveDbAccount = await accountsModel.findOne({
-		runtimeID: packet.runtime_entity_id
-	});
 
 	if (config.clientOptions.lapisOptions.enableEquipmentHandler === true) {
 		client.on('mob_equipment', async (packet) => {

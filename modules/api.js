@@ -30,7 +30,7 @@ async function apiVaildate(packet, dbAccount, client, realm) {
             (profile.detail.followingCount < config.apiChecks.apiCheck1.followingValue ? 10 : 0) +
             (profile.detail.bio.length === 0 ? 10 : 0) +
             (profile.detail.accountTier === 'Silver' ? 10 : 0) +
-            (profile.presenceText.includes('Minecraft') ? 10 : 0) +
+            (profile.presenceText.includes('Minecraft') ? 0 : 10) +
             (profile.presenceState === 'Online' ? 0 : 10) +
             ((profile.gamerScore < config.apiChecks.apiCheck1.gamerScoreValue) ? 10 : 0) +
             (profile.preferredColor.primaryColor === '107c10' && profile.preferredColor.secondaryColor === '102b14' && profile.preferredColor.tertiaryColor === '155715' && profile.colorTheme === 'gamerpicblur' ? 5 : 0) +
