@@ -21,10 +21,10 @@
     },
     "skinChecks": {
         "skinCheck1": {
-            "enabled": true
+            "enabled": false
         },
         "skinCheck2": {
-            "enabled": true
+            "enabled": false
         },
         "skinCheck3": {
             "enabled": true
@@ -33,7 +33,7 @@
             "enabled": true
         },
         "skinCheck5": {
-            "enabled": true
+            "enabled": false
         },
         "skinCheck6": {
             "enabled": true
@@ -42,7 +42,7 @@
             "enabled": true
         },
         "skinCheck8": {
-            "enabled": true
+            "enabled": false
         },
         "skinCheck9": {
             "enabled": true
