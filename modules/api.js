@@ -65,7 +65,7 @@ async function apiVaildate(packet, dbAccount, client, realm) {
 
             if (Array.isArray(presence.clubPresence)) {
                 for (const plr of presence.clubPresence) {
-                    if (packet.xbox_user_id.includes(plr.xuid) && plr.lastSeenState !== "InGame") {
+                    if (packet.xbox_user_id.includes(plr.xuid) && plr.lastSeenState != "InGame") {
                         console.log(`[${packet.xbox_user_id}] API detection [T2]`);
                         if (!config.debug) client.sendCommand(`kick "${packet.xbox_user_id}" Not presence in the realm. (0xFFF2)`);
                         return;
