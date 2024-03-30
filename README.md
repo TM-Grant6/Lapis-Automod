@@ -5,6 +5,7 @@ Lapis Automod helps protect your Minecraft realm by moderating actions.
     <img src="https://img.shields.io/github/issues/Lapis-Utilities/Lapis-Automod?label=ISSUES%20OPEN&style=for-the-badge" alt="Issues Open">  
     <img src="https://img.shields.io/github/commit-activity/m/Lapis-Utilities/Lapis-Automod?style=for-the-badge" alt="Commits Per Week"> 
     <img src="https://img.shields.io/github/last-commit/Lapis-Utilities/Lapis-Automod?style=for-the-badge" alt="Last Commit">
+    <img src="https://img.shields.io/discord/1118869295770914949?style=for-the-badge&logo=discord&label=discord&color=5865F2">
 </p>
 
 ## Setup
