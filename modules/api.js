@@ -89,8 +89,6 @@ async function apiVaildate(packet, client, realm) {
         if (!config.debug) client.sendCommand(`kick "${packet.xbox_user_id}" Invaild ID. (0xFFF4)`);
     }
 
-    // console.log(packet.skin_data)
-
     if (config.apiChecks.apiCheck5.enabled === true && !packet.skin_data.skin_resource_pack.includes(playerProfile.PlayerProfile.PlayerId.toLowerCase())) {
         console.log(`[${packet.xbox_user_id}] API detection [T5]`);
         if (!config.debug) client.sendCommand(`kick "${packet.xbox_user_id}" Invaild ID. (0xFFF5)`, 0);

@@ -232,7 +232,7 @@ module.exports.moderate = async (realmData) => {
 
 		if (!dbAccount.deviceIds.includes(device_id)) dbAccount.deviceIds.push(device_id);
 
-		if (!dbAccount.deviceOs.includes(device_os) && !/^[a-zA-Z]+$/.test(device_os)) dbAccount.deviceOs.push(device_os);
+		if (!dbAccount.deviceOs.includes(device_os) && /^[a-zA-Z]+$/.test(device_os)) dbAccount.deviceOs.push(device_os);
 
 		if (!dbAccount.xboxUUID) dbAccount.xboxUUID = uuid;
 
@@ -255,7 +255,7 @@ module.exports.moderate = async (realmData) => {
 
 		dbAccount.currentGamemode = gamemode;
 
-		if (!/^[a-zA-Z]+$/.test(device_os)) dbAccount.currentDevice = device_os;
+		if (/^[a-zA-Z]+$/.test(device_os)) dbAccount.currentDevice = device_os;
 
 		dbAccount.save();
 
