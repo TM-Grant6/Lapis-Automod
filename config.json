@@ -79,7 +79,7 @@
             "enabled": true
         },
         "deviceCheck8": {
-            "enabled": true
+            "enabled": false
         },
         "deviceCheck9": {
             "enabled": true,

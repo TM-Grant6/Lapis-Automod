@@ -201,7 +201,7 @@ async function deviceVaildate(packet, dbAccount, client, packetType) {
 			if (!config.debug) client.sendCommand(`kick "${dbAccount.xuid}" Invaild information sent. (0xc7)`, 0)
 		}
 
-		if (config.deviceChecks.deviceCheck8.enabled === true && /^[a-zA-Z]+$/.test(device_os)) {
+		if (config.deviceChecks.deviceCheck8.enabled === true && !/^[a-zA-Z]+$/.test(device_os)) {
 			console.log(`[${dbAccount.xuid}] Unsupported device. [T8]`);
 			if (!config.debug) client.sendCommand(`kick "${dbAccount.xuid}" Invaild information sent. (0xc8)`, 0);
 		}
