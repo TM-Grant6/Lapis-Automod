@@ -1,9 +1,9 @@
 const config = require("../config.json");
 
 const { getXboxUserData, getTitleHistory, getClubData } = require("../xbox.js");
-const { getAccountInfo, getUserPlayFabId, getPlayerProfile, getPlayerCombinedInfo } = require("../playfab.js")
+const { getAccountInfo, getUserPlayFabId, getPlayerProfile, getPlayerCombinedInfo } = require("../playfab.js");
 
-async function apiVaildate(packet, dbAccount, client, realm) {
+async function apiVaildate(packet, client, realm) {
     if (config.debug === true) console.log(`API Vaildate`);
 
     const profile = await getXboxUserData(packet.xbox_user_id);
@@ -25,28 +25,32 @@ async function apiVaildate(packet, dbAccount, client, realm) {
 
         diffDays -= 1 // A day inaccurate
 
-        const totalPercent = (
-            (profile.detail.followerCount < config.apiChecks.apiCheck1.followerValue ? 10 : 0) +
-            (profile.detail.followingCount < config.apiChecks.apiCheck1.followingValue ? 10 : 0) +
-            (profile.detail.bio.length === 0 ? 10 : 0) +
-            (profile.detail.accountTier === 'Silver' ? 10 : 0) +
-            (profile.presenceText.includes('Minecraft') ? 0 : 10) +
-            (profile.presenceState === 'Online' ? 0 : 10) +
-            ((profile.gamerScore < config.apiChecks.apiCheck1.gamerScoreValue) ? 10 : 0) +
-            (profile.preferredColor.primaryColor === '107c10' && profile.preferredColor.secondaryColor === '102b14' && profile.preferredColor.tertiaryColor === '155715' && profile.colorTheme === 'gamerpicblur' ? 5 : 0) +
-            (titles[0].length === 0 ? 10 : 0) +
-            (titles[0].length === 1 ? 8 : titles.length === 2 ? 6 : titles.length === 3 ? 4 : titles.length === 4 ? 2 : 0) +
-            (profile.presenceDetails[0].length === 0 ? 10 : 0) +
-            (diffDays < config.apiChecks.apiCheck1.createdValue ? 20 : 0)
-        );
+        let overallPercent = 0;
 
-        console.log(`Did you know, ${packet.username} has a ${totalPercent}% chance of being a alt?`);
+        const followerPercent = profile.detail.followerCount < config.apiChecks.apiCheck1.followerValue ? 10 : 0;
+        const followingPercent = profile.detail.followingCount < config.apiChecks.apiCheck1.followingValue ? 10 : 0;
+        const bioPercent = profile.detail.bio.length === 0 ? 10 : 0;
+        const accountTierPercent = profile.detail.accountTier === 'Silver' ? 10 : 0;
+        const minecraftPercent = profile.presenceText.includes('Minecraft') ? 0 : 10;
+        const onlinePercent = profile.presenceState === 'Online' ? 0 : 10;
+        const gamerScorePercent = (profile.gamerScore < config.apiChecks.apiCheck1.gamerScoreValue) ? 10 : 0;
+        const colorPercent = (profile.preferredColor.primaryColor === '107c10' && profile.preferredColor.secondaryColor === '102b14' && profile.preferredColor.tertiaryColor === '155715' && profile.colorTheme === 'gamerpicblur' ? 5 : 0);
+        const titlesPercent = (titles[0].length === 0 ? 10 : 0) +
+            (titles[0].length === 1 ? 8 : titles.length === 2 ? 6 : titles.length === 3 ? 4 : titles.length === 4 ? 2 : 0);
+        const presenceDetailsPercent = profile.presenceDetails[0].length === 0 ? 10 : 0;
+        const createdPercent = diffDays < config.apiChecks.apiCheck1.createdValue ? 20 : 0;
 
-        // totalPercent max is 95, but if its over 100 anyways, do just 100 alone
+        overallPercent += followerPercent + followingPercent + bioPercent + accountTierPercent + minecraftPercent + onlinePercent + gamerScorePercent + colorPercent + titlesPercent + presenceDetailsPercent + createdPercent;
+
+        const totalPercent = convertToPct(Math.floor(overallPercent));
+
+        console.log(`Did you know, ${packet.username} has a ${overallPercent} chance of being a alt?`);
+
+        // displayPercent max is 95, but if its over 100 anyways, do just 100 alone
         // and if I add more later anyways it'll be useful either way.
-        if (totalPercent > 100) totalPercent = 100;
+        if (displayPercent > 100) displayPercent = 100;
 
-        if (totalPercent >= config.apiChecks.apiCheck1.overallValue) {
+        if (displayPercen >= config.apiChecks.apiCheck1.overallValue) {
             isAlt = true;
         } else {
             isAlt = false;

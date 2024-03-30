@@ -19,6 +19,8 @@ Lapis Automod helps protect your Minecraft realm by moderating actions.
   - Check for valid Xbox user ID and store it in a user map.
   - Validate skin information by checking skin IDs, dimensions, and such.
   - Verify the platform and platform chat ID for Nintendo Switch.
+  - Device OS checks to confirm a vaild Device OS.
+  - Ban devices the user configures.
 
 ### Add Player Event Handler
 - The "add_player" event handler processes the incoming player data and performs the following checks:
@@ -27,6 +29,8 @@ Lapis Automod helps protect your Minecraft realm by moderating actions.
   - Validate the device OS specific device IDs based on the platform.
   - Verify the platform and platform chat ID for Nintendo Switch.
   - Check for unsupported or unknown device models and kick the player as necessary.
+  - Device OS checks to confirm a vaild Device OS.
+  - Ban devices the user configures.
 
 ### Emote Event Handler
 - The "emote" event handler processes the incoming emote data and performs the following checks:

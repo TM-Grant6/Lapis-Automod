@@ -5,9 +5,11 @@
         "protocolVersion": 662,
         "getLatestProtocolVersion": true,
         "automaticRealmRejoining": true,
+        "rejoinTimeout": 6000,
         "skipRealmPicking": false,
         "realmOptions": {
-            "realmId": 0
+            "realmId": 0,
+            "realmCode": ""
         },
         "lapisOptions": {
             "enableAnimateHandler": true,
@@ -75,6 +77,17 @@
         },
         "deviceCheck7": {
             "enabled": true
+        },
+        "deviceCheck8": {
+            "enabled": true
+        },
+        "deviceCheck9": {
+            "enabled": true,
+            "bannedDevices": [
+                "Win10",
+                "Android",
+                "FireOS"
+            ]
         }
     },
     "emoteChecks": {
@@ -108,8 +121,8 @@
             "createdValue": 7
         },
         "apiCheck2": {
-            "enabled": true,
-            "cooldown": 5
+            "enabled": false,
+            "cooldown": 6
         },
         "apiCheck3": {
             "enabled": true

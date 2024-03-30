@@ -17,7 +17,7 @@ const realm_api_headers = {
 	"Accept": "*/*",
 	"authorization": "",
 	"charset": "utf-8",
-	"client-ref": "08bdb049f310d03aeabda3748f857640eb62a733",
+	"client-ref": "42039c71c23561e02d99b28a8bfb34091a61cadf",
 	"client-version": "1.20.71",
 	"x-clientplatform": "Windows",
 	"content-type": "application/json",
@@ -38,6 +38,20 @@ const realm_api_headers = {
 
 		realm_api_headers.authorization = `XBL3.0 x=${xboxToken.userHash};${xboxToken.XSTSToken}`;
 
+		if (typeof config.clientOptions.realmOptions.realmCode === "string" && config.clientOptions.realmOptions.realmCode.length === 11) {
+			const getRealm = await fetch(`https://pocket.realms.minecraft.net/worlds/v1/link/${config.clientOptions.realmOptions.realmCode}`, {
+				method: "GET",
+				headers: realm_api_headers
+			});
+
+			if (getRealm.status === 200) {
+				const joinRealm = await fetch(`https://pocket.realms.minecraft.net/invites/v1/link/accept/${config.clientOptions.realmOptions.realmCode}`, {
+					method: "POST",
+					headers: realm_api_headers
+				});
+			}
+		}
+
 		const worlds = await fetch("https://pocket.realms.minecraft.net/worlds", {
 			method: "GET",
 			headers: realm_api_headers
@@ -51,7 +65,7 @@ const realm_api_headers = {
 
 		if (config.clientOptions.realmOptions.realmId < 100000 && config.clientOptions.skipRealmPicking != true) {
 			console.log(chalk.blue(`${"-".repeat(35)}`));
-			console.log(allRealms.map((realm, i) => `-> ${i + 1}. ${realm.name}`).join("\n"), "\n", chalk.blue("-".repeat(35))); 
+			console.log(allRealms.map((realm, i) => `-> ${i + 1}. ${realm.name}`).join("\n"), "\n", chalk.blue("-".repeat(35)));
 
 			const selection = Number(prompt(chalk.blue("--> Select a number: ")));
 
@@ -71,40 +85,38 @@ const realm_api_headers = {
 			process.exit(0);
 		}
 
-		const response = await fetch(`https://pocket.realms.minecraft.net/worlds/${realm.id}/join`, {
-			method: "GET",
-			headers: realm_api_headers
-		}).catch(() => { });
-
-		if (!response || (response.status !== 200 && response.status !== 403 && response.status !== 503)) {
-			console.log(response?.status);
-			console.log(await response?.text());
-			process.exit(0);
-		}
-
-		// NOTE TO W0AHL
-		// MAKE THIS LOOP UNTIL SUCCESS
-		// WILL FORGET STILL
 		let realmIP;
+		
+		while (!realmIP || !realmIP?.address) {
+			const response = await fetch(`https://pocket.realms.minecraft.net/worlds/${realm.id}/join`, {
+				method: "GET",
+				headers: realm_api_headers
+			}).catch(() => { });
 
-		try {
-			realmIP = await response.json();
-		} catch (err) {
-			if (response.status === 503) {
-				console.log(chalk.red("---> Retry again later"));
-				process.exit(1);
+			if (!response || (response.status !== 200 && response.status !== 403 && response.status !== 503)) {
+				console.log(response?.status);
+				console.log(await response?.text());
+				process.exit(0);
 			}
 
-			throw err;
-		}
+			try {
+				realmIP = await response.json();
+			} catch (err) {
+				if (response.status === 503) {
+					console.log(chalk.red("---> Retry again later"));
+					if (!config.debug) process.exit(1);
+				}
 
-		if (realmIP.errorMsg) {
-			console.log(realmIP.errorMsg);
-			process.exit(0);
-		}
+				throw err;
+			}
 
-		realm.ip = realmIP.address.substring(0, realmIP.address.indexOf(':'));
-		realm.port = Number(realmIP.address.substring(realmIP.address.indexOf(':') + 1));
+			if (!realmIP.address) {
+				continue;
+			}
+
+			realm.ip = realmIP.address.substring(0, realmIP.address.indexOf(':'));
+			realm.port = Number(realmIP.address.substring(realmIP.address.indexOf(':') + 1));
+		}
 
 		moderate(realm);
 	} catch (err) {

@@ -105,7 +105,9 @@ module.exports.moderate = async (realmData) => {
 
 		console.log(chalk.red(`+--> Triggered! ${JSON.stringify(data)}`));
 
-		if (config.clientOptions.automaticRealmRejoining === true) await handleRejoin(realmData)
+		if (config.clientOptions.automaticRealmRejoining === true) setTimeout(async () => {
+			await handleRejoin(realmData);
+		}, config.clientOptions.rejoinTimeout);
 	});
 
 	client.on("error", async (error) => {
@@ -117,7 +119,9 @@ module.exports.moderate = async (realmData) => {
 			message: String(error)
 		});
 
-		if (config.clientOptions.automaticRealmRejoining === true) await handleRejoin(realmData)
+		if (config.clientOptions.automaticRealmRejoining === true) setTimeout(async () => {
+			await handleRejoin(realmData);
+		}, config.clientOptions.rejoinTimeout);
 	});
 
 	client.on("close", async () => {
@@ -127,7 +131,9 @@ module.exports.moderate = async (realmData) => {
 			message: "+--> Lost connection to server"
 		});
 
-		if (config.clientOptions.automaticRealmRejoining === true) await handleRejoin(realmData)
+		if (config.clientOptions.automaticRealmRejoining === true) setTimeout(async () => {
+			await handleRejoin(realmData);
+		}, config.clientOptions.rejoinTimeout);
 	});
 
 	process.on("warning", (warning) => {
@@ -179,16 +185,14 @@ module.exports.moderate = async (realmData) => {
 
 				if (config.clientOptions.lapisOptions.enableSkinHandler === true) skinVaildate(player, null, client, "playerList");
 				if (config.clientOptions.lapisOptions.enableDeviceHandler === true) deviceVaildate(player, null, client, "playerList");
-				if (config.clientOptions.lapisOptions.enableAPIHandler === true) apiVaildate(player, null, client, realmData);
-				return;
+				if (config.clientOptions.lapisOptions.enableAPIHandler === true) apiVaildate(player, client, realmData);
 			};
 
 			if (dbAccount) {
 				if (config.clientOptions.lapisOptions.enableSkinHandler === true) skinVaildate(player, dbAccount, client, "playerList");
 				if (config.clientOptions.lapisOptions.enableDeviceHandler === true) deviceVaildate(player, dbAccount, client, "playerList");
-				if (config.clientOptions.lapisOptions.enableAPIHandler === true) apiVaildate(player, dbAccount, client, realmData);
+				if (config.clientOptions.lapisOptions.enableAPIHandler === true) apiVaildate(player, client, realmData);
 				if (config.debug === true) console.log(`Had DB History`);
-				return;
 			}
 		}
 	});
