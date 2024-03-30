@@ -129,6 +129,12 @@
         },
         "apiCheck4": {
             "enabled": true
+        },
+        "apiCheck5": {
+            "enabled": true
+        },
+        "apiCheck6": {
+            "enabled": true
         }
     },
     "textChecks": {

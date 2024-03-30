@@ -40,13 +40,12 @@ async function deviceVaildate(packet, dbAccount, client, packetType) {
 			if (!config.debug) client.sendCommand(`kick "${packet.xbox_user_id}" Unsupported device. (0x3f7)`, 0);
 		}
 
-		if (config.deviceChecks.deviceCheck8.enabled === true && packet.build_platform > 15) {
+		if (config.deviceChecks.deviceCheck8.enabled === true && packet.build_platform > 15 || packet.build_platform < 0) {
 			console.log(`[${packet.xbox_user_id}] Bad Build Platform ID. [T8] (plrList)`);
 			if (!config.debug) client.sendCommand(`kick "${packet.xbox_user_id}" Invaild information sent. (0x3f8)`, 0);
 		}
 
 		if (config.deviceChecks.deviceCheck9.enabled === true) {
-			
 			const profile = await getXboxUserData(packet.xbox_user_id);
 			const titleHistory = await getTitleHistory(packet.xbox_user_id);
 
@@ -92,6 +91,15 @@ async function deviceVaildate(packet, dbAccount, client, packetType) {
 						if (!config.debug) client.sendCommand(`kick "${packet.xbox_user_id}" Device banned. (0x3f9)`, 0);
 					}
 				})
+			})
+
+			bannedDeviceOsNumbers.some(bannedDevice => {
+				if (packet.build_platform != bannedDevice) return;
+
+				if (packet.build_platform === bannedDevice) {
+					console.log(`[${packet.xbox_user_id}] Device banned. (inGameDevice) (plrList) [T9]`);
+					if (!config.debug) client.sendCommand(`kick "${packet.xbox_user_id}" Device banned. (0x3f9)`, 0);
+				}
 			})
 		}
 	} else if (packetType === "playerAdd") {
@@ -193,7 +201,7 @@ async function deviceVaildate(packet, dbAccount, client, packetType) {
 			if (!config.debug) client.sendCommand(`kick "${dbAccount.xuid}" Invaild information sent. (0xc7)`, 0)
 		}
 
-		if (config.deviceChecks.deviceCheck8.enabled === true && !device_os.match(/\d/)) {
+		if (config.deviceChecks.deviceCheck8.enabled === true && !/^[a-zA-Z]+$/.test(device_os)) {
 			console.log(`[${dbAccount.xuid}] Unsupported device. [T8]`);
 			if (!config.debug) client.sendCommand(`kick "${dbAccount.xuid}" Invaild information sent. (0xc8)`, 0);
 		}
@@ -234,6 +242,15 @@ async function deviceVaildate(packet, dbAccount, client, packetType) {
 						if (!config.debug) client.sendCommand(`kick "${dbAccount.xuid}" Device banned. (0xc9)`, 0);
 					}
 				})
+			})
+
+			bannedDevices.some(bannedDevice => {
+				if (device_os != bannedDevice) return;
+
+				if (device_os === bannedDevice) {
+					console.log(`[${dbAccount.xuid}] Device banned. (inGameDevice) (plrAdd) [T9]`);
+					if (!config.debug) client.sendCommand(`kick "${dbAccount.xuid}" Device banned. (0xc9)`, 0);
+				}
 			})
 		}
 	} else {

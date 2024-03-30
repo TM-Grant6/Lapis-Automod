@@ -87,7 +87,8 @@ const realm_api_headers = {
 
 		let realmIP;
 		
-		while (!realmIP || !realmIP?.address) {
+		// Loop still in development
+		while (!realmIP?.address) {
 			const response = await fetch(`https://pocket.realms.minecraft.net/worlds/${realm.id}/join`, {
 				method: "GET",
 				headers: realm_api_headers
@@ -110,7 +111,7 @@ const realm_api_headers = {
 				throw err;
 			}
 
-			if (!realmIP.address) {
+			if (!realmIP?.address) {
 				continue;
 			}
 
