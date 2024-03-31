@@ -9,7 +9,7 @@ const {
 	isValidPlatformChatId
 } = require("../src/util.js");
 
-const { getTitleHistory, getXboxUserData, getClubData } = require("../src/xbox.js");
+const { getTitleHistory, getXboxUserData } = require("../src/xbox.js");
 
 const config = require("../config.json");
 
