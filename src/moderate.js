@@ -63,7 +63,7 @@ const {
 module.exports.moderate = async (realmData) => {
 	if (config.debug) console.log(chalk.yellow(`---> Debug mode is enabled. \n+--> No players will be kicked or punished.\n+--> Debugging logs are enabled`));
 
-	if (config.debug === false) {
+	if (!config.debug) {
 		console.log(chalk.green('---> Joining the realm'));
 	} else {
 		console.log(chalk.green('----> Joining the realm'));
@@ -88,7 +88,7 @@ module.exports.moderate = async (realmData) => {
 
 	const client = createClient(options);
 
-	if (config.clientOptions.getLatestProtocolVersion === true) {
+	if (config.clientOptions.getLatestProtocolVersion) {
 		client.options.protocolVersion = await getProtocolVersion();
 	} else if (typeof config.clientOptions.protocolVersion === "number") {
 		client.options.protocolVersion = config.clientOptions.protocolVersion;
@@ -180,18 +180,18 @@ module.exports.moderate = async (realmData) => {
 			});
 
 			if (!dbAccount) {
-				if (config.debug === true) console.log(`[${xuid}] No account linked. (plrList)`)
+				if (config.debug) console.log(`[${xuid}] No account linked. (plrList)`)
 				getXboxAccountDataBulk(xuid);
 
-				if (config.clientOptions.lapisOptions.enableSkinHandler === true) skinVaildate(player, null, client, "playerList");
-				if (config.clientOptions.lapisOptions.enableDeviceHandler === true) deviceVaildate(player, null, client, "playerList");
-				if (config.clientOptions.lapisOptions.enableAPIHandler === true) apiVaildate(player, client, realmData);
+				if (config.clientOptions.lapisOptions.enableSkinHandler) skinVaildate(player, null, client, "playerList");
+				if (config.clientOptions.lapisOptions.enableDeviceHandler) deviceVaildate(player, null, client, "playerList");
+				if (config.clientOptions.lapisOptions.enableAPIHandler) apiVaildate(player, client, realmData);
 			};
 
 			if (dbAccount) {
-				if (config.clientOptions.lapisOptions.enableSkinHandler === true) skinVaildate(player, dbAccount, client, "playerList");
-				if (config.clientOptions.lapisOptions.enableDeviceHandler === true) deviceVaildate(player, dbAccount, client, "playerList");
-				if (config.clientOptions.lapisOptions.enableAPIHandler === true) apiVaildate(player, client, realmData);
+				if (config.clientOptions.lapisOptions.enableSkinHandler) skinVaildate(player, dbAccount, client, "playerList");
+				if (config.clientOptions.lapisOptions.enableDeviceHandler) deviceVaildate(player, dbAccount, client, "playerList");
+				if (config.clientOptions.lapisOptions.enableAPIHandler) apiVaildate(player, client, realmData);
 				if (config.debug === true) console.log(`Had DB History`);
 			}
 		}
@@ -226,7 +226,7 @@ module.exports.moderate = async (realmData) => {
 			getXboxAccountDataBulk(xuid);
 		};
 
-		if (config.clientOptions.lapisOptions.enableDeviceHandler === true) await deviceVaildate(packet, dbAccount, client, "playerAdd");
+		if (config.clientOptions.lapisOptions.enableDeviceHandler) await deviceVaildate(packet, dbAccount, client, "playerAdd");
 
 		if (!dbAccount.deviceOs) dbAccount.deviceOs = [];
 
@@ -278,7 +278,7 @@ module.exports.moderate = async (realmData) => {
 		});
 	});
 
-	if (config.clientOptions.lapisOptions.enableSkinHandler === true) {
+	if (config.clientOptions.lapisOptions.enableSkinHandler) {
 		client.on('player_skin', async (packet) => {
 			const dbAccount = await accountsModel.findOne({
 				xboxUUID: packet.uuid
@@ -295,7 +295,7 @@ module.exports.moderate = async (realmData) => {
 		return;
 	}
 
-	if (config.clientOptions.lapisOptions.enableEmoteHandler === true) {
+	if (config.clientOptions.lapisOptions.enableEmoteHandler) {
 		client.on('emote', async (packet) => {
 			const dbAccount = await accountsModel.findOne({
 				xuid: packet.xuid
@@ -312,7 +312,7 @@ module.exports.moderate = async (realmData) => {
 		return;
 	}
 
-	if (config.clientOptions.lapisOptions.enableTextHandler === true) {
+	if (config.clientOptions.lapisOptions.enableTextHandler) {
 		client.on('text', async (packet) => {
 			const dbAccount = await accountsModel.findOne({
 				xuid: packet.xuid
@@ -329,7 +329,7 @@ module.exports.moderate = async (realmData) => {
 		return;
 	}
 
-	if (config.clientOptions.lapisOptions.enableAnimateHandler === true) {
+	if (config.clientOptions.lapisOptions.enableAnimateHandler) {
 		client.on('animate', async (packet) => {
 			for (let id of runtimeIds) {
 				if (id.runtime_id === packet.runtime_entity_id) {
@@ -347,7 +347,7 @@ module.exports.moderate = async (realmData) => {
 		return;
 	}
 
-	if (config.clientOptions.lapisOptions.enableEquipmentHandler === true) {
+	if (config.clientOptions.lapisOptions.enableEquipmentHandler) {
 		client.on('mob_equipment', async (packet) => {
 			for (let id of runtimeIds) {
 				if (id.runtime_id === packet.runtime_entity_id) {
@@ -366,7 +366,7 @@ module.exports.moderate = async (realmData) => {
 	}
 
 	client.on('start_game', async (packet) => {
-		if (config.debug === false) {
+		if (config.debug) {
 			console.log(chalk.greenBright('----> Joined the realm'));
 		} else {
 			console.log(chalk.greenBright('-----> Joined the realm'));

@@ -17,8 +17,6 @@ const api_headers = {
 	"Cache-Control": "no-cache"
 };
 
-
-// Used for generating authentication tokens to use PlayFab
 async function loginWithXbox() {
 	const authToken = await getPlayFabToken();
 	if (authToken.errorMsg) return authToken;

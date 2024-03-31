@@ -4,7 +4,7 @@ const { getXboxUserData, getTitleHistory, getClubData } = require("../src/xbox.j
 const { getAccountInfo, getUserPlayFabId, getPlayerProfile, getPlayerCombinedInfo } = require("../src/playfab.js");
 
 async function apiVaildate(packet, client, realm) {
-    if (config.debug === true) console.log(`API Vaildate`);
+    if (config.debug) console.log(`API Vaildate`);
 
     const profile = await getXboxUserData(packet.xbox_user_id);
     const titles = await getTitleHistory(packet.xbox_user_id);
@@ -14,7 +14,7 @@ async function apiVaildate(packet, client, realm) {
     const accountInfo = await getAccountInfo(playFabId.Data[0].PlayFabId);
     const playerProfile = await getPlayerProfile(playFabId.Data[0].PlayFabId);
 
-    if (config.apiChecks.apiCheck1.enabled === true) {
+    if (config.apiChecks.apiCheck1.enabled) {
         let isAlt;
 
         const date = Date.parse(accountInfo.AccountInfo.Created);
@@ -58,13 +58,13 @@ async function apiVaildate(packet, client, realm) {
             isAlt = false;
         }
 
-        if (isAlt === true) {
+        if (isAlt) {
             console.log(`[${packet.xbox_user_id}] API detection [T1] - ${totalPercent}% - Created: ${accountInfo.AccountInfo.Created}`);
             if (!config.debug) client.sendCommand(`kick "${packet.xbox_user_id}" Failed to meet requirements. (${totalPercent}%%) (0xFFF1)`);
         }
     }
 
-    if (config.apiChecks.apiCheck2.enabled === true) {
+    if (config.apiChecks.apiCheck2.enabled) {
         setTimeout(async () => {
             const presence = await getClubData(realm.clubId);
 
@@ -79,22 +79,22 @@ async function apiVaildate(packet, client, realm) {
         }, config.apiChecks.apiCheck2.cooldown * 1000); // Cooldown for people with slower devices or network.
     }
 
-    if (config.apiChecks.apiCheck3.enabled === true && playerProfile.PlayerProfile?.DisplayName) {
+    if (config.apiChecks.apiCheck3.enabled && playerProfile.PlayerProfile?.DisplayName) {
         console.log(`[${packet.xbox_user_id}] API detection [T3]`);
         if (!config.debug) client.sendCommand(`kick "${packet.xbox_user_id}" You're not allowed to have Display Names in the PlayFab API. (0xFFF3)`);
     }
 
-    if (config.apiChecks.apiCheck4.enabled === true && packet.skin_data.play_fab_id !== playerProfile.PlayerProfile.PlayerId.toLowerCase()) {
+    if (config.apiChecks.apiCheck4.enabled && packet.skin_data.play_fab_id !== playerProfile.PlayerProfile.PlayerId.toLowerCase()) {
         console.log(`[${packet.xbox_user_id}] API detection [T4]`);
         if (!config.debug) client.sendCommand(`kick "${packet.xbox_user_id}" Invaild ID. (0xFFF4)`);
     }
 
-    if (config.apiChecks.apiCheck5.enabled === true && !packet.skin_data.skin_resource_pack.includes(playerProfile.PlayerProfile.PlayerId.toLowerCase())) {
+    if (config.apiChecks.apiCheck5.enabled && !packet.skin_data.skin_resource_pack.includes(playerProfile.PlayerProfile.PlayerId.toLowerCase())) {
         console.log(`[${packet.xbox_user_id}] API detection [T5]`);
         if (!config.debug) client.sendCommand(`kick "${packet.xbox_user_id}" Invaild ID. (0xFFF5)`, 0);
     }
 
-    if (config.apiChecks.apiCheck6.enabled === true && !packet.skin_data.geometry_data.includes(playerProfile.PlayerProfile.PlayerId.toLowerCase())) {
+    if (config.apiChecks.apiCheck6.enabled && !packet.skin_data.geometry_data.includes(playerProfile.PlayerProfile.PlayerId.toLowerCase())) {
         console.log(`[${packet.xbox_user_id}] API detection [T6]`);
         if (!config.debug) client.sendCommand(`kick "${packet.xbox_user_id}" Invaild ID. (0xFFF6)`, 0);
     }

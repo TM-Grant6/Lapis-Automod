@@ -9,25 +9,25 @@ const {
 	isValidPlatformChatId
 } = require("../src/util.js");
 
-const { getTitleHistory, getXboxUserData } = require("../src/xbox.js");
+const { getTitleHistory, getXboxUserData, getClubData } = require("../src/xbox.js");
 
 const config = require("../config.json");
 
 async function deviceVaildate(packet, dbAccount, client, packetType) {
-	if (config.debug === true) console.log(`Device Vaildate | Packet Type: ${packetType}`);
+	if (config.debug) console.log(`Device Vaildate | Packet Type: ${packetType}`);
 
 	if (packetType === "playerList") {
-		if (config.deviceChecks.deviceCheck1.enabled === true && packet.build_platform != 12 && packet.platform_chat_id.length != 0) {
+		if (config.deviceChecks.deviceCheck1.enabled && packet.build_platform != 12 && packet.platform_chat_id.length != 0) {
 			console.log(`[${packet.xbox_user_id}] Not on NintendoSwitch & has Platform Chat ID. [T1]`);
 			if (!config.debug) client.sendCommand(`kick "${packet.xbox_user_id}" Invaild information sent. (0x3f1)`, 0)
 		}
 
-		if (config.deviceChecks.deviceCheck2.enabled === true && !isValidPlatformChatId(packet.platform_chat_id) && packet.build_platform === 12) {
+		if (config.deviceChecks.deviceCheck2.enabled && !isValidPlatformChatId(packet.platform_chat_id) && packet.build_platform === 12) {
 			console.log(`[${packet.xbox_user_id}] Invaild Platform Chat ID. [T2]`);
 			if (!config.debug) client.sendCommand(`kick "${packet.xbox_user_id}" Invaild information sent. (0x3f2)`, 0)
 		}
 
-		if (config.deviceChecks.deviceCheck7.enabled === true 
+		if (config.deviceChecks.deviceCheck7.enabled 
 			&& packet.build_platform === 0 
 			|| packet.build_platform === 4 
 			|| packet.build_platform === 5 
@@ -40,12 +40,12 @@ async function deviceVaildate(packet, dbAccount, client, packetType) {
 			if (!config.debug) client.sendCommand(`kick "${packet.xbox_user_id}" Unsupported device. (0x3f7)`, 0);
 		}
 
-		if (config.deviceChecks.deviceCheck8.enabled === true && packet.build_platform > 15 || packet.build_platform < 0) {
+		if (config.deviceChecks.deviceCheck8.enabled && packet.build_platform > 15 || packet.build_platform < 0) {
 			console.log(`[${packet.xbox_user_id}] Bad Build Platform ID. [T8] (plrList)`);
 			if (!config.debug) client.sendCommand(`kick "${packet.xbox_user_id}" Invaild information sent. (0x3f8)`, 0);
 		}
 
-		if (config.deviceChecks.deviceCheck9.enabled === true) {
+		if (config.deviceChecks.deviceCheck9.enabled) {
 			const profile = await getXboxUserData(packet.xbox_user_id);
 			const titleHistory = await getTitleHistory(packet.xbox_user_id);
 
@@ -131,13 +131,13 @@ async function deviceVaildate(packet, dbAccount, client, packetType) {
 			const lastGamertag = gamertags[gamertags.length - 1];
 
 			if (linkedDeviceIds && Array.isArray(linkedDeviceIds)) {
-				if (config.deviceChecks.deviceCheck3.enabled === true && linkedDeviceIds.length > 4 && lastGamertag === packet.username) {
+				if (config.deviceChecks.deviceCheck3.enabled && linkedDeviceIds.length > 4 && lastGamertag === packet.username) {
 					console.log(`[${dbAccount.xuid}] Had too many Device IDs. [T3]`);
 					if (!config.debug) client.sendCommand(`kick "${dbAccount.xuid}" You have been on this realm on too many device. (0xc1)`, 0);
 				}
 
 				linkedDeviceIds.forEach(linkedDeviceId => {
-					if (config.deviceChecks.deviceCheck4.enabled === true && linkedDeviceId === device_id) {
+					if (config.deviceChecks.deviceCheck4.enabled && linkedDeviceId === device_id) {
 						if (lastGamertag === packet.username) return;
 
 						console.log(`[${dbAccount.xuid}] Had a duplicate Device ID(s). Last account was: ${lastGamertag}. [T4]`);
@@ -147,14 +147,14 @@ async function deviceVaildate(packet, dbAccount, client, packetType) {
 			}
 		});
 
-		if (config.deviceChecks.deviceCheck5.enabled === true && dbAccount.deviceOs.length > 4) {
+		if (config.deviceChecks.deviceCheck5.enabled && dbAccount.deviceOs.length > 4) {
 			console.log(`[${dbAccount.xuid}] Had too many device types in the database. [T5]`);
 			if (!config.debug) client.sendCommand(`kick "${dbAccount.xuid}" You have been on this realm on too many devices. (0xc3)`, 0);
 		}
 
 		switch (device_os) {
 			case "Xbox":
-				if (config.deviceChecks.deviceCheck6.enabled === true && !device_id.endsWith("=")) {
+				if (config.deviceChecks.deviceCheck6.enabled && !device_id.endsWith("=")) {
 					console.log(`[${dbAccount.xuid}] User on Xbox without the right Device ID. [T6]`);
 					if (!config.debug) client.sendCommand(`kick "${dbAccount.xuid}" Invalid ID. (0xc4)`, 0);
 				}
@@ -162,14 +162,14 @@ async function deviceVaildate(packet, dbAccount, client, packetType) {
 				break;
 			case "FireOS":
 			case "Android":
-				if (config.deviceChecks.deviceCheck6.enabled === true && !isUUIDv4WithoutDashes(device_id)) {
+				if (config.deviceChecks.deviceCheck6.enabled && !isUUIDv4WithoutDashes(device_id)) {
 					console.log(`[${dbAccount.xuid}] User on ${device_os} without the right Device ID. [T6]`);
 					if (!config.debug) client.sendCommand(`kick "${dbAccount.xuid}" Invalid ID. (0xc4)`, 0);
 				}
 
 				break;
 			case "IOS":
-				if (config.deviceChecks.deviceCheck6.enabled === true && !isUUIDv4WithoutDashes(device_id) && /^[A-Z0-9]{32}$/.test(device_id)) {
+				if (config.deviceChecks.deviceCheck6.enabled && !isUUIDv4WithoutDashes(device_id) && /^[A-Z0-9]{32}$/.test(device_id)) {
 					console.log(`[${dbAccount.xuid}] User on iOS without the right Device ID. [T6]`);
 					if (!config.debug) client.sendCommand(`kick "${dbAccount.xuid}" Invalid ID. (0xc4)`, 0);
 				}
@@ -178,19 +178,19 @@ async function deviceVaildate(packet, dbAccount, client, packetType) {
 			case "Orbis":
 			case "Win10":
 			case "Win32":
-				if (config.deviceChecks.deviceCheck6.enabled === true && !isUUIDv3(device_id)) {
+				if (config.deviceChecks.deviceCheck6.enabled && !isUUIDv3(device_id)) {
 					console.log(`[${dbAccount.xuid}] User on ${device_os} with the wrong Device ID. [T6]`);
 					if (!config.debug) client.sendCommand(`kick "${dbAccount.xuid}" Invalid ID. (0xc4)`, 0);
 				}
 
 				break;
 			case "NintendoSwitch":
-				if (config.deviceChecks.deviceCheck6.enabled === true && !isUUIDv5(device_id)) {
+				if (config.deviceChecks.deviceCheck6.enabled && !isUUIDv5(device_id)) {
 					console.log(`[${dbAccount.xuid}] User on Nintendo Switch with the wrong Device ID. [T6]`);
 					if (!config.debug) client.sendCommand(`kick "${dbAccount.xuid}" Invalid ID. (0xc4)`, 0);
 				}
 
-				if (config.deviceChecks.deviceCheck2.enabled === true && !isValidPlatformChatId(packet.platform_chat_id)) {
+				if (config.deviceChecks.deviceCheck2.enabled && !isValidPlatformChatId(packet.platform_chat_id)) {
 					console.log(`[${dbAccount.xuid}] Invaild Platform Chat ID. [T2]`);
 					if (!config.debug) client.sendCommand(`kick "${dbAccount.xuid}" Invaild information sent. (0xc5)`, 0)
 				}
@@ -198,7 +198,7 @@ async function deviceVaildate(packet, dbAccount, client, packetType) {
 				break;
 		}
 
-		if (config.deviceChecks.deviceCheck7.enabled === true 
+		if (config.deviceChecks.deviceCheck7.enabled 
 			&& device_os === "Linux" 
 			|| device_os === "WindowsPhone" 
 			|| device_os === "TVOS" 
@@ -212,17 +212,17 @@ async function deviceVaildate(packet, dbAccount, client, packetType) {
 			if (!config.debug) client.sendCommand(`kick "${dbAccount.xuid}" Unsupported device. (0xc6)`, 0);
 		}
 
-		if (config.deviceChecks.deviceCheck1.enabled === true && device_os != 'NintendoSwitch' && packet.platform_chat_id.length != 0) {
+		if (config.deviceChecks.deviceCheck1.enabled && device_os != 'NintendoSwitch' && packet.platform_chat_id.length != 0) {
 			console.log(`[${dbAccount.xuid}] Not on NintendoSwitch & has Platform Chat ID. [T1]`);
 			if (!config.debug) client.sendCommand(`kick "${dbAccount.xuid}" Invaild information sent. (0xc7)`, 0)
 		}
 
-		if (config.deviceChecks.deviceCheck8.enabled === true && /^\d+$/.test(device_os)) {
+		if (config.deviceChecks.deviceCheck8.enabled && /^\d+$/.test(device_os)) {
 			console.log(`[${dbAccount.xuid}] Unsupported device. [T8]`);
 			if (!config.debug) client.sendCommand(`kick "${dbAccount.xuid}" Invaild information sent. (0xc8)`, 0);
 		}
 
-		if (config.deviceChecks.deviceCheck9.enabled === true) {
+		if (config.deviceChecks.deviceCheck9.enabled) {
 			const profile = await getXboxUserData(dbAccount.xuid);
 			const titleHistory = await getTitleHistory(dbAccount.xuid);
 

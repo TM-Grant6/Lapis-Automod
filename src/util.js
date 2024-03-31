@@ -53,17 +53,32 @@ function getDeviceId(deviceOS) {
 }
 
 async function getInputMode(deviceOS) {
-	if (deviceOS === 10 || deviceOS === 11 || deviceOS === 12 || deviceOS === 13) {
-		return 3;
-	} else if (deviceOS === 1 || deviceOS === 2 || deviceOS === 4 || deviceOS === 14) {
-		return 2;
-	} else if (deviceOS === 3 || deviceOS === 7 || deviceOS === 8 || deviceOS === 15) {
-		return 1;
-	} else if (deviceOS === 5 || deviceOS === 6) {
-		return 4;
-	} else if (deviceOS === 9 || deviceOS === 0) {
-		return 0;
+	switch (deviceOS) {
+		case 10:
+		case 11:
+		case 12:
+		case 13:
+			return 3;
+		case 1:
+		case 2:
+		case 4:
+		case 14:
+			return 2;
+		case 3:
+		case 7:
+		case 8:
+		case 15:
+			return 1;
+		case 5:
+		case 6:
+			return 4;
+		case 9:
+		case 0:
+			return 0;
+		default:
+			return null;
 	}
+
 }
 
 async function getProtocolVersion() {

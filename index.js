@@ -63,7 +63,7 @@ const realm_api_headers = {
 
 		let realm = {};
 
-		if (config.clientOptions.realmOptions.realmId < 100000 && config.clientOptions.skipRealmPicking != true) {
+		if (config.clientOptions.realmOptions.realmId < 100000 && !config.clientOptions.skipRealmPicking) {
 			console.log(chalk.blue(`${"-".repeat(35)}`));
 			console.log(allRealms.map((realm, i) => `-> ${i + 1}. ${realm.name}`).join("\n"), "\n", chalk.blue("-".repeat(35)));
 
@@ -75,7 +75,7 @@ const realm_api_headers = {
 				realm = allRealms.find(realmData => realmData.id === selection);
 			}
 		} else {
-			if (config.clientOptions.skipRealmPicking === true && typeof config.clientOptions.realmOptions.realmId === 'number') {
+			if (config.clientOptions.skipRealmPicking && typeof config.clientOptions.realmOptions.realmId === 'number') {
 				realm = allRealms.find(realmData => realmData.id === config.clientOptions.realmOptions.realmId);
 			}
 		}
