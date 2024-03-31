@@ -1,5 +1,5 @@
 {
-    "debug": false,
+    "debug": true,
     "clientOptions": {
         "deviceOS": 13,
         "protocolVersion": 662,

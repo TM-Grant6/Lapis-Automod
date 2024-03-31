@@ -71,6 +71,16 @@ async function deviceVaildate(packet, dbAccount, client, packetType) {
 				4: "1944307183"
 			};
 
+			const titleIdToBannedDeviceMap = {
+				"2047319603": 12,
+				"2044456598": 11,
+				"1810924247": 2,
+				"1739947436": 1,
+				"1828326430": 13,
+				"896928775": 7,
+				"1944307183": 4
+			};
+
 			titleHistory.forEach(title => {
 				bannedDeviceOsNumbers.some(bannedDevice => {
 					if (title.titleId != bannedTitleIds[packet.build_platform]) return;
@@ -83,9 +93,14 @@ async function deviceVaildate(packet, dbAccount, client, packetType) {
 			});
 
 			profile.presenceDetails.forEach(detail => {
-				bannedDeviceOsNumbers.some(bannedDevice => {
-					if (detail.TitleId != bannedTitleIds[packet.build_platform]) return;
+				if (!detail.PresenceText.includes('Minecraft')) return;
 
+				if (titleIdToBannedDeviceMap[detail.TitleId] != packet.build_platform) {
+					console.log(`[${packet.xbox_user_id}] Device banned. (spoofing) (presenceDetails) (plrList) [T9]`);
+					if (!config.debug) client.sendCommand(`kick "${packet.xbox_user_id}" Device banned. (0x3f9)`, 0);
+				}
+
+				bannedDeviceOsNumbers.some(bannedDevice => {
 					if (detail.TitleId === bannedTitleIds[packet.build_platform] && bannedDevice === packet.build_platform) {
 						console.log(`[${packet.xbox_user_id}] Device banned. (presenceDetails) (plrList) [T9]`);
 						if (!config.debug) client.sendCommand(`kick "${packet.xbox_user_id}" Device banned. (0x3f9)`, 0);
@@ -222,6 +237,16 @@ async function deviceVaildate(packet, dbAccount, client, packetType) {
 				"FireOS": "1944307183"
 			};
 
+			const titleIdToBannedDeviceMap = {
+				"2047319603": "NintendoSwitch",
+				"2044456598": "Orbis",
+				"1810924247": "IOS",
+				"1739947436": "Android",
+				"1828326430": "Xbox",
+				"896928775": "Win10",
+				"1944307183": "FireOS"
+			}
+
 			titleHistory.forEach(title => {
 				bannedDevices.some(bannedDevice => {
 					if (title.titleId != bannedTitleIds[device_os]) return;
@@ -234,9 +259,14 @@ async function deviceVaildate(packet, dbAccount, client, packetType) {
 			});
 
 			profile.presenceDetails.forEach(detail => {
-				bannedDevices.some(bannedDevice => {
-					if (detail.TitleId != bannedTitleIds[device_os]) return;
+				if (!detail.PresenceText.includes('Minecraft')) return;
 
+				if (titleIdToBannedDeviceMap[detail.TitleId] != device_os) {
+					console.log(`[${dbAccount.xuid}] Device banned. (spoofing) (presenceDetails) (plrAdd) [T9]`);
+					if (!config.debug) client.sendCommand(`kick "${dbAccount.xuid}" Device banned. (0xc9)`, 0);
+				}
+
+				bannedDevices.some(bannedDevice => {
 					if (detail.TitleId === bannedTitleIds[device_os] && bannedDevice === device_os) {
 						console.log(`[${dbAccount.xuid}] Device banned. (presenceDetails) (plrAdd) [T9]`);
 						if (!config.debug) client.sendCommand(`kick "${dbAccount.xuid}" Device banned. (0xc9)`, 0);
