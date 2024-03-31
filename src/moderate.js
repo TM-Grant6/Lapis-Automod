@@ -11,7 +11,7 @@ const {
 } = require("uuid");
 
 // File Imports
-const config = require("./config.json");
+const config = require("../config.json");
 
 const fs = require('fs');
 const chalk = require("chalk");
@@ -29,31 +29,31 @@ const {
 
 const {
 	skinVaildate
-} = require("./modules/skin.js");
+} = require("../modules/skin.js");
 
 const {
 	deviceVaildate
-} = require("./modules/device.js");
+} = require("../modules/device.js");
 
 const {
 	emoteVaildate
-} = require("./modules/emote.js");
+} = require("../modules/emote.js");
 
 const {
 	animateVaildate
-} = require("./modules/animate.js");
+} = require("../modules/animate.js");
 
 const {
 	equipmentVaildate
-} = require("./modules/equipment.js");
+} = require("../modules/equipment.js");
 
 const {
 	apiVaildate
-} = require("./modules/api.js");
+} = require("../modules/api.js");
 
 const {
 	textVaildate
-} = require("./modules/text.js");
+} = require("../modules/text.js");
 
 const {
 	handleFunctions,
@@ -232,7 +232,7 @@ module.exports.moderate = async (realmData) => {
 
 		if (!dbAccount.deviceIds.includes(device_id)) dbAccount.deviceIds.push(device_id);
 
-		if (!dbAccount.deviceOs.includes(device_os) /* && /^[a-zA-Z]+$/.test(device_os) */) dbAccount.deviceOs.push(device_os);
+		if (!dbAccount.deviceOs.includes(device_os) && /^[a-zA-Z]+$/.test(device_os)) dbAccount.deviceOs.push(device_os);
 
 		if (!dbAccount.xboxUUID) dbAccount.xboxUUID = uuid;
 
@@ -255,7 +255,7 @@ module.exports.moderate = async (realmData) => {
 
 		dbAccount.currentGamemode = gamemode;
 
-		/* if (/^[a-zA-Z]+$/.test(device_os)) */ dbAccount.currentDevice = device_os;
+		if (/^[a-zA-Z]+$/.test(device_os)) dbAccount.currentDevice = device_os;
 
 		dbAccount.save();
 

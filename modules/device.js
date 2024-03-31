@@ -1,15 +1,15 @@
 const {
 	accountsModel
-} = require("../database.js");
+} = require("../src/database.js");
 
 const {
 	isUUIDv3,
 	isUUIDv4WithoutDashes,
 	isUUIDv5,
 	isValidPlatformChatId
-} = require("../util.js");
+} = require("../src/util.js");
 
-const { getTitleHistory, getXboxUserData } = require("../xbox.js");
+const { getTitleHistory, getXboxUserData } = require("../src/xbox.js");
 
 const config = require("../config.json");
 
@@ -160,9 +160,10 @@ async function deviceVaildate(packet, dbAccount, client, packetType) {
 				}
 
 				break;
+			case "FireOS":
 			case "Android":
 				if (config.deviceChecks.deviceCheck6.enabled === true && !isUUIDv4WithoutDashes(device_id)) {
-					console.log(`[${dbAccount.xuid}] User on Android without the right Device ID. [T6]`);
+					console.log(`[${dbAccount.xuid}] User on ${device_os} without the right Device ID. [T6]`);
 					if (!config.debug) client.sendCommand(`kick "${dbAccount.xuid}" Invalid ID. (0xc4)`, 0);
 				}
 
@@ -178,7 +179,7 @@ async function deviceVaildate(packet, dbAccount, client, packetType) {
 			case "Win10":
 			case "Win32":
 				if (config.deviceChecks.deviceCheck6.enabled === true && !isUUIDv3(device_id)) {
-					console.log(`[${dbAccount.xuid}] User with the wrong Device ID. [T6]`);
+					console.log(`[${dbAccount.xuid}] User on ${device_os} with the wrong Device ID. [T6]`);
 					if (!config.debug) client.sendCommand(`kick "${dbAccount.xuid}" Invalid ID. (0xc4)`, 0);
 				}
 
@@ -216,7 +217,7 @@ async function deviceVaildate(packet, dbAccount, client, packetType) {
 			if (!config.debug) client.sendCommand(`kick "${dbAccount.xuid}" Invaild information sent. (0xc7)`, 0)
 		}
 
-		if (config.deviceChecks.deviceCheck8.enabled === true && !/^[a-zA-Z]+$/.test(device_os)) {
+		if (config.deviceChecks.deviceCheck8.enabled === true && /^\d+$/.test(device_os)) {
 			console.log(`[${dbAccount.xuid}] Unsupported device. [T8]`);
 			if (!config.debug) client.sendCommand(`kick "${dbAccount.xuid}" Invaild information sent. (0xc8)`, 0);
 		}

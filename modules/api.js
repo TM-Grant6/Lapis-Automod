@@ -1,7 +1,7 @@
 const config = require("../config.json");
 
-const { getXboxUserData, getTitleHistory, getClubData } = require("../xbox.js");
-const { getAccountInfo, getUserPlayFabId, getPlayerProfile, getPlayerCombinedInfo } = require("../playfab.js");
+const { getXboxUserData, getTitleHistory, getClubData } = require("../src/xbox.js");
+const { getAccountInfo, getUserPlayFabId, getPlayerProfile, getPlayerCombinedInfo } = require("../src/playfab.js");
 
 async function apiVaildate(packet, client, realm) {
     if (config.debug === true) console.log(`API Vaildate`);

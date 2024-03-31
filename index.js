@@ -3,7 +3,7 @@ const chalk = require("chalk");
 const prompt = require("prompt-sync")();
 const { Authflow, Titles } = require("prismarine-auth");
 
-const { moderate } = require("./moderate.js");
+const { moderate } = require("./src/moderate.js");
 const config = require("./config.json");
 
 const flow = new Authflow(undefined, "./authCache", {
@@ -97,7 +97,7 @@ const realm_api_headers = {
 			if (!response || (response.status !== 200 && response.status !== 403 && response.status !== 503)) {
 				console.log(response?.status);
 				console.log(await response?.text());
-				process.exit(0);
+				process.exit(1);
 			}
 
 			try {
@@ -105,7 +105,7 @@ const realm_api_headers = {
 			} catch (err) {
 				if (response.status === 503) {
 					console.log(chalk.red("---> Retry again later"));
-					if (!config.debug) process.exit(1);
+					process.exit(1);
 				}
 
 				throw err;

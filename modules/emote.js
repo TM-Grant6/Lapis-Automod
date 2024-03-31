@@ -1,6 +1,6 @@
 const {
 	isUUIDv4
-} = require("../util.js");
+} = require("../src/util.js");
 
 const config = require("../config.json");
 

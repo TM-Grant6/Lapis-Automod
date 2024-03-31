@@ -1,6 +1,6 @@
 const config = require("../config.json");
 
-const { isValidPlatformChatId } = require("../util.js");
+const { isValidPlatformChatId } = require("../src/util.js");
 
 async function textVaildate(packet, dbAccount, client) {
     if (packet.type === 'translation') return;
