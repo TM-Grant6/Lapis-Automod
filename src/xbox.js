@@ -21,23 +21,6 @@ async function getXboxLiveToken() {
 	return authToken;
 }
 
-async function getXboxLiveComToken() {
-	const flow = new Authflow(undefined, "./authCache", {
-		flow: "live",
-		authTitle: Titles.MinecraftNintendoSwitch,
-		deviceType: "Nintendo",
-		doSisuAuth: true
-	});
-
-	const authToken = await flow.getXboxToken(`http://xboxlive.com`)
-		.catch((err) => {
-			console.log(err);
-			process.exit(0);
-		});
-
-	return authToken;
-}
-
 async function getRealmToken() {
 	const flow = new Authflow(undefined, "./authCache", {
 		flow: "live",
