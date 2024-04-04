@@ -13,38 +13,130 @@ const { getTitleHistory, getXboxUserData } = require("../src/xbox.js");
 
 const config = require("../config.json");
 
-async function deviceVaildate(packet, dbAccount, client, packetType) {
+async function deviceVaildate(packet, dbAccount, client, realm, packetType) {
 	if (config.debug) console.log(`Device Vaildate | Packet Type: ${packetType}`);
 
-	if (!packet || !client) return;
+	if (!packet || !client || !realm) return;
 
 	if (packetType === "playerList") {
 		if (config.deviceChecks.deviceCheck1.enabled && packet.build_platform != 12 && packet.platform_chat_id.length != 0) {
 			console.log(`[${packet.xbox_user_id}] Not on NintendoSwitch & has Platform Chat ID. [T1]`);
-			if (!config.debug) client.sendCommand(`kick "${packet.xbox_user_id}" Invaild information sent. (0x3f1)`, 0)
+			if (!config.debug) {
+				if (config.deviceChecks.deviceCheck1.punishment === "kick") {
+					client.sendCommand(`kick "${packet.xbox_user_id}" Invaild information sent. (0x3f1)`, 0);
+					dbAccount.kickCount++
+					dbAccount.save()
+				} else if (config.deviceChecks.deviceCheck1.punishment === "ban") {
+					client.sendCommand(`kick "${packet.xbox_user_id}" Invaild information sent. (0x3f1)`, 0);
+					dbAccount.banCount++
+					dbAccount.isBanned = true
+					dbAccount.save()
+				} else if (config.deviceChecks.deviceCheck1.punishment === "clubKick" && realm.isOwner) {
+					realm.kick(packet.xbox_user_id);
+					dbAccount.clubKickCount++
+					dbAccount.save()
+				} else if (config.deviceChecks.deviceCheck1.punishment === "clubBan" && realm.isOwner) {
+					realm.ban(packet.xbox_user_id);
+					dbAccount.clubBanCount++
+					dbAccount.save()
+				} else if (config.deviceChecks.deviceCheck1.punishment === "warning") {
+					client.sendCommand(`say "${packet.xbox_user_id}" You sent invaild information. (0x3f1)`, 0);
+					dbAccount.warningCount++
+					dbAccount.save()
+				}
+			}
 		}
 
 		if (config.deviceChecks.deviceCheck2.enabled && !isValidPlatformChatId(packet.platform_chat_id) && packet.build_platform === 12) {
 			console.log(`[${packet.xbox_user_id}] Invaild Platform Chat ID. [T2]`);
-			if (!config.debug) client.sendCommand(`kick "${packet.xbox_user_id}" Invaild information sent. (0x3f2)`, 0)
+			if (!config.debug) {
+				if (config.deviceChecks.deviceCheck2.punishment === "kick") {
+					client.sendCommand(`kick "${packet.xbox_user_id}" Invaild information sent. (0x3f2)`, 0);
+					dbAccount.kickCount++
+					dbAccount.save()
+				} else if (config.deviceChecks.deviceCheck2.punishment === "ban") {
+					client.sendCommand(`kick "${packet.xbox_user_id}" Invaild information sent. (0x3f2)`, 0);
+					dbAccount.banCount++
+					dbAccount.isBanned = true
+					dbAccount.save()
+				} else if (config.deviceChecks.deviceCheck2.punishment === "clubKick" && realm.isOwner) {
+					realm.kick(packet.xbox_user_id);
+					dbAccount.clubKickCount++
+					dbAccount.save()
+				} else if (config.deviceChecks.deviceCheck2.punishment === "clubBan" && realm.isOwner) {
+					realm.ban(packet.xbox_user_id);
+					dbAccount.clubBanCount++
+					dbAccount.save()
+				} else if (config.deviceChecks.deviceCheck2.punishment === "warning") {
+					client.sendCommand(`say "${packet.xbox_user_id}" You sent invaild information. (0x3f2)`, 0);
+					dbAccount.warningCount++
+					dbAccount.save()
+				}
+			}
 		}
 
-		if (config.deviceChecks.deviceCheck7.enabled 
-			&& packet.build_platform === 0 
-			|| packet.build_platform === 4 
-			|| packet.build_platform === 5 
-			|| packet.build_platform === 6 
-			|| packet.build_platform === 9 
-			|| packet.build_platform === 10 
-			|| packet.build_platform === 15 
+		if (config.deviceChecks.deviceCheck7.enabled
+			&& packet.build_platform === 0
+			|| packet.build_platform === 4
+			|| packet.build_platform === 5
+			|| packet.build_platform === 6
+			|| packet.build_platform === 9
+			|| packet.build_platform === 10
+			|| packet.build_platform === 15
 			|| packet.build_platform === 8) {
 			console.log(`[${packet.xbox_user_id}] Unsupported device. [T7] (plrList)`);
-			if (!config.debug) client.sendCommand(`kick "${packet.xbox_user_id}" Unsupported device. (0x3f7)`, 0);
+			if (!config.debug) {
+				if (config.deviceChecks.deviceCheck7.punishment === "kick") {
+					client.sendCommand(`kick "${packet.xbox_user_id}" Invaild information sent. (0x3f7)`, 0);
+					dbAccount.kickCount++
+					dbAccount.save()
+				} else if (config.deviceChecks.deviceCheck7.punishment === "ban") {
+					client.sendCommand(`kick "${packet.xbox_user_id}" Invaild information sent. (0x3f7)`, 0);
+					dbAccount.banCount++
+					dbAccount.isBanned = true
+					dbAccount.save()
+				} else if (config.deviceChecks.deviceCheck7.punishment === "clubKick" && realm.isOwner) {
+					realm.kick(packet.xbox_user_id);
+					dbAccount.clubKickCount++
+					dbAccount.save()
+				} else if (config.deviceChecks.deviceCheck7.punishment === "clubBan" && realm.isOwner) {
+					realm.ban(packet.xbox_user_id);
+					dbAccount.clubBanCount++
+					dbAccount.save()
+				} else if (config.deviceChecks.deviceCheck7.punishment === "warning") {
+					client.sendCommand(`say "${packet.xbox_user_id}" You sent invaild information. (0x3f7)`, 0);
+					dbAccount.warningCount++
+					dbAccount.save()
+				}
+			}
 		}
 
 		if (config.deviceChecks.deviceCheck8.enabled && packet.build_platform > 15 || packet.build_platform < 0) {
 			console.log(`[${packet.xbox_user_id}] Bad Build Platform ID. [T8] (plrList)`);
-			if (!config.debug) client.sendCommand(`kick "${packet.xbox_user_id}" Invaild information sent. (0x3f8)`, 0);
+			if (!config.debug) {
+				if (config.deviceChecks.deviceCheck8.punishment === "kick") {
+					client.sendCommand(`kick "${packet.xbox_user_id}" Invaild information sent. (0x3f8)`, 0);
+					dbAccount.kickCount++
+					dbAccount.save()
+				} else if (config.deviceChecks.deviceCheck8.punishment === "ban") {
+					client.sendCommand(`kick "${packet.xbox_user_id}" Invaild information sent. (0x3f8)`, 0);
+					dbAccount.banCount++
+					dbAccount.isBanned = true
+					dbAccount.save()
+				} else if (config.deviceChecks.deviceCheck8.punishment === "clubKick" && realm.isOwner) {
+					realm.kick(packet.xbox_user_id);
+					dbAccount.clubKickCount++
+					dbAccount.save()
+				} else if (config.deviceChecks.deviceCheck8.punishment === "clubBan" && realm.isOwner) {
+					realm.ban(packet.xbox_user_id);
+					dbAccount.clubBanCount++
+					dbAccount.save()
+				} else if (config.deviceChecks.deviceCheck8.punishment === "warning") {
+					client.sendCommand(`say "${packet.xbox_user_id}" You sent invaild information. (0x3f8)`, 0);
+					dbAccount.warningCount++
+					dbAccount.save()
+				}
+			}
 		}
 
 		if (config.deviceChecks.deviceCheck9.enabled) {
@@ -60,9 +152,9 @@ async function deviceVaildate(packet, dbAccount, client, packetType) {
 				"NintendoSwitch": 12,
 				"Xbox": 13
 			};
-			
+
 			const bannedDeviceOsNumbers = config.deviceChecks.deviceCheck9.bannedDevices.map(deviceName => deviceNameToOsMap[deviceName]);
-			
+
 			const bannedTitleIds = {
 				12: "2047319603",
 				11: "2044456598",
@@ -89,7 +181,30 @@ async function deviceVaildate(packet, dbAccount, client, packetType) {
 
 					if (title.titleId === bannedTitleIds[packet.build_platform] && bannedDevice === packet.build_platform) {
 						console.log(`[${packet.xbox_user_id}] Device banned. (titleHistory) (plrList) [T9]`);
-						if (!config.debug) client.sendCommand(`kick "${packet.xbox_user_id}" Device banned. (0x3f9)`, 0);
+						if (!config.debug) {
+							if (config.deviceChecks.deviceCheck9.punishment === "kick") {
+								client.sendCommand(`kick "${packet.xbox_user_id}" Device banned. (0x3f9)`, 0);
+								dbAccount.kickCount++
+								dbAccount.save()
+							} else if (config.deviceChecks.deviceCheck9.punishment === "ban") {
+								client.sendCommand(`kick "${packet.xbox_user_id}" Device banned. (0x3f9)`, 0);
+								dbAccount.banCount++
+								dbAccount.isBanned = true
+								dbAccount.save()
+							} else if (config.deviceChecks.deviceCheck9.punishment === "clubKick" && realm.isOwner) {
+								realm.kick(packet.xbox_user_id);
+								dbAccount.clubKickCount++
+								dbAccount.save()
+							} else if (config.deviceChecks.deviceCheck9.punishment === "clubBan" && realm.isOwner) {
+								realm.ban(packet.xbox_user_id);
+								dbAccount.clubBanCount++
+								dbAccount.save()
+							} else if (config.deviceChecks.deviceCheck9.punishment === "warning") {
+								client.sendCommand(`say "${packet.xbox_user_id}" Device banned. (0x3f9)`, 0);
+								dbAccount.warningCount++
+								dbAccount.save()
+							}
+						}
 					}
 				});
 			});
@@ -99,15 +214,61 @@ async function deviceVaildate(packet, dbAccount, client, packetType) {
 
 				if (titleIdToBannedDeviceMap[detail.TitleId] != packet.build_platform) {
 					console.log(`[${packet.xbox_user_id}] Device banned. (spoofing) (presenceDetails) (plrList) [T9]`);
-					if (!config.debug) client.sendCommand(`kick "${packet.xbox_user_id}" Device banned. (0x3f9)`, 0);
+					if (!config.debug) {
+						if (config.deviceChecks.deviceCheck9.punishment === "kick") {
+							client.sendCommand(`kick "${packet.xbox_user_id}" Device banned. (0x3f9)`, 0);
+							dbAccount.kickCount++
+							dbAccount.save()
+						} else if (config.deviceChecks.deviceCheck9.punishment === "ban") {
+							client.sendCommand(`kick "${packet.xbox_user_id}" Device banned. (0x3f9)`, 0);
+							dbAccount.banCount++
+							dbAccount.isBanned = true
+							dbAccount.save()
+						} else if (config.deviceChecks.deviceCheck9.punishment === "clubKick" && realm.isOwner) {
+							realm.kick(packet.xbox_user_id);
+							dbAccount.clubKickCount++
+							dbAccount.save()
+						} else if (config.deviceChecks.deviceCheck9.punishment === "clubBan" && realm.isOwner) {
+							realm.ban(packet.xbox_user_id);
+							dbAccount.clubBanCount++
+							dbAccount.save()
+						} else if (config.deviceChecks.deviceCheck9.punishment === "warning") {
+							client.sendCommand(`say "${packet.xbox_user_id}" Device banned. (0x3f9)`, 0);
+							dbAccount.warningCount++
+							dbAccount.save()
+						}
+					}
 				}
 
 				bannedDeviceOsNumbers.some(bannedDevice => {
 					if (detail.TitleId === bannedTitleIds[packet.build_platform] && bannedDevice === packet.build_platform) {
 						console.log(`[${packet.xbox_user_id}] Device banned. (presenceDetails) (plrList) [T9]`);
-						if (!config.debug) client.sendCommand(`kick "${packet.xbox_user_id}" Device banned. (0x3f9)`, 0);
+						if (!config.debug) {
+							if (config.deviceChecks.deviceCheck9.punishment === "kick") {
+								client.sendCommand(`kick "${packet.xbox_user_id}" Device banned. (0x3f9)`, 0);
+								dbAccount.kickCount++
+								dbAccount.save()
+							} else if (config.deviceChecks.deviceCheck9.punishment === "ban") {
+								client.sendCommand(`kick "${packet.xbox_user_id}" Device banned. (0x3f9)`, 0);
+								dbAccount.banCount++
+								dbAccount.isBanned = true
+								dbAccount.save()
+							} else if (config.deviceChecks.deviceCheck9.punishment === "clubKick" && realm.isOwner) {
+								realm.kick(packet.xbox_user_id);
+								dbAccount.clubKickCount++
+								dbAccount.save()
+							} else if (config.deviceChecks.deviceCheck9.punishment === "clubBan" && realm.isOwner) {
+								realm.ban(packet.xbox_user_id);
+								dbAccount.clubBanCount++
+								dbAccount.save()
+							} else if (config.deviceChecks.deviceCheck9.punishment === "warning") {
+								client.sendCommand(`say "${packet.xbox_user_id}" Device banned. (0x3f9)`, 0);
+								dbAccount.warningCount++
+								dbAccount.save()
+							}
+						}
 					}
-				})
+				});
 			})
 
 			bannedDeviceOsNumbers.some(bannedDevice => {
@@ -115,7 +276,30 @@ async function deviceVaildate(packet, dbAccount, client, packetType) {
 
 				if (packet.build_platform === bannedDevice) {
 					console.log(`[${packet.xbox_user_id}] Device banned. (inGameDevice) (plrList) [T9]`);
-					if (!config.debug) client.sendCommand(`kick "${packet.xbox_user_id}" Device banned. (0x3f9)`, 0);
+					if (!config.debug) {
+						if (config.deviceChecks.deviceCheck9.punishment === "kick") {
+							client.sendCommand(`kick "${packet.xbox_user_id}" Device banned. (0x3f9)`, 0);
+							dbAccount.kickCount++
+							dbAccount.save()
+						} else if (config.deviceChecks.deviceCheck9.punishment === "ban") {
+							client.sendCommand(`kick "${packet.xbox_user_id}" Device banned. (0x3f9)`, 0);
+							dbAccount.banCount++
+							dbAccount.isBanned = true
+							dbAccount.save()
+						} else if (config.deviceChecks.deviceCheck9.punishment === "clubKick" && realm.isOwner) {
+							realm.kick(packet.xbox_user_id);
+							dbAccount.clubKickCount++
+							dbAccount.save()
+						} else if (config.deviceChecks.deviceCheck9.punishment === "clubBan" && realm.isOwner) {
+							realm.ban(packet.xbox_user_id);
+							dbAccount.clubBanCount++
+							dbAccount.save()
+						} else if (config.deviceChecks.deviceCheck9.punishment === "warning") {
+							client.sendCommand(`say "${packet.xbox_user_id}" Device banned. (0x3f9)`, 0);
+							dbAccount.warningCount++
+							dbAccount.save()
+						}
+					}
 				}
 			})
 		}
@@ -133,9 +317,32 @@ async function deviceVaildate(packet, dbAccount, client, packetType) {
 			const lastGamertag = gamertags[gamertags.length - 1];
 
 			if (linkedDeviceIds && Array.isArray(linkedDeviceIds)) {
-				if (config.deviceChecks.deviceCheck3.enabled && linkedDeviceIds.length > 4 && lastGamertag === packet.username) {
+				if (config.deviceChecks.deviceCheck3.enabled && linkedDeviceIds.length > config.deviceChecks.deviceCheck3.count && lastGamertag === packet.username) {
 					console.log(`[${dbAccount.xuid}] Had too many Device IDs. [T3]`);
-					if (!config.debug) client.sendCommand(`kick "${dbAccount.xuid}" You have been on this realm on too many device. (0xc1)`, 0);
+					if (!config.debug) {
+						if (config.deviceChecks.deviceCheck3.punishment === "kick") {
+							client.sendCommand(`kick "${dbAccount.xuid}" You had too many device IDs. (0xc1)`, 0);
+							dbAccount.kickCount++
+							dbAccount.save()
+						} else if (config.deviceChecks.deviceCheck3.punishment === "ban") {
+							client.sendCommand(`kick "${dbAccount.xuid}" You had too many device IDs. (0xc1)`, 0);
+							dbAccount.banCount++
+							dbAccount.isBanned = true
+							dbAccount.save()
+						} else if (config.deviceChecks.deviceCheck3.punishment === "clubKick" && realm.isOwner) {
+							realm.kick(dbAccount.xuid);
+							dbAccount.clubKickCount++
+							dbAccount.save()
+						} else if (config.deviceChecks.deviceCheck3.punishment === "clubBan" && realm.isOwner) {
+							realm.ban(dbAccount.xuid);
+							dbAccount.clubBanCount++
+							dbAccount.save()
+						} else if (config.deviceChecks.deviceCheck3.punishment === "warning") {
+							client.sendCommand(`say "${dbAccount.xuid}" You had too many device IDs. (0xc1)`, 0);
+							dbAccount.warningCount++
+							dbAccount.save()
+						}
+					}
 				}
 
 				linkedDeviceIds.forEach(linkedDeviceId => {
@@ -143,22 +350,91 @@ async function deviceVaildate(packet, dbAccount, client, packetType) {
 						if (lastGamertag === packet.username) return;
 
 						console.log(`[${dbAccount.xuid}] Had a duplicate Device ID(s). Last account was: ${lastGamertag}. [T4]`);
-						if (!config.debug) client.sendCommand(`kick "${dbAccount.xuid}" You had a account joined already. (Last Account: §b${lastGamertag}§r) (0xc2)`, 0);
+						if (!config.debug) {
+							if (config.deviceChecks.deviceCheck4.punishment === "kick") {
+								client.sendCommand(`kick "${dbAccount.xuid}" You had a duplicate device ID. (0xc2)`, 0);
+								dbAccount.kickCount++
+								dbAccount.save()
+							} else if (config.deviceChecks.deviceCheck4.punishment === "ban") {
+								client.sendCommand(`kick "${dbAccount.xuid}" You had a duplicate device ID. (0xc2)`, 0);
+								dbAccount.banCount++
+								dbAccount.isBanned = true
+								dbAccount.save()
+							} else if (config.deviceChecks.deviceCheck4.punishment === "clubKick" && realm.isOwner) {
+								realm.kick(dbAccount.xuid);
+								dbAccount.clubKickCount++
+								dbAccount.save()
+							} else if (config.deviceChecks.deviceCheck4.punishment === "clubBan" && realm.isOwner) {
+								realm.ban(dbAccount.xuid);
+								dbAccount.clubBanCount++
+								dbAccount.save()
+							} else if (config.deviceChecks.deviceCheck4.punishment === "warning") {
+								client.sendCommand(`say "${dbAccount.xuid}" You had a duplicate device ID. (0xc2)`, 0);
+								dbAccount.warningCount++
+								dbAccount.save()
+							}
+						}
 					}
 				});
 			}
 		});
 
-		if (config.deviceChecks.deviceCheck5.enabled && dbAccount.deviceOs.length > 4) {
+		if (config.deviceChecks.deviceCheck5.enabled && dbAccount.deviceOs.length > config.deviceChecks.deviceCheck5.count) {
 			console.log(`[${dbAccount.xuid}] Had too many device types in the database. [T5]`);
-			if (!config.debug) client.sendCommand(`kick "${dbAccount.xuid}" You have been on this realm on too many devices. (0xc3)`, 0);
+			if (!config.debug) {
+				if (config.deviceChecks.deviceCheck5.punishment === "kick") {
+					client.sendCommand(`kick "${dbAccount.xuid}" You had too many device types. (0xc3)`, 0);
+					dbAccount.kickCount++
+					dbAccount.save()
+				} else if (config.deviceChecks.deviceCheck5.punishment === "ban") {
+					client.sendCommand(`kick "${dbAccount.xuid}" You had too many device types. (0xc3)`, 0);
+					dbAccount.banCount++
+					dbAccount.isBanned = true
+					dbAccount.save()
+				} else if (config.deviceChecks.deviceCheck5.punishment === "clubKick" && realm.isOwner) {
+					realm.kick(dbAccount.xuid);
+					dbAccount.clubKickCount++
+					dbAccount.save()
+				} else if (config.deviceChecks.deviceCheck5.punishment === "clubBan" && realm.isOwner) {
+					realm.ban(dbAccount.xuid);
+					dbAccount.clubBanCount++
+					dbAccount.save()
+				} else if (config.deviceChecks.deviceCheck5.punishment === "warning") {
+					client.sendCommand(`say "${dbAccount.xuid}" You had too many device types. (0xc3)`, 0);
+					dbAccount.warningCount++
+					dbAccount.save()
+				}
+			}
 		}
 
 		switch (device_os) {
 			case "Xbox":
 				if (config.deviceChecks.deviceCheck6.enabled && !device_id.endsWith("=")) {
 					console.log(`[${dbAccount.xuid}] User on Xbox without the right Device ID. [T6]`);
-					if (!config.debug) client.sendCommand(`kick "${dbAccount.xuid}" Invalid ID. (0xc4)`, 0);
+					if (!config.debug) {
+						if (config.deviceChecks.deviceCheck6.punishment === "kick") {
+							client.sendCommand(`kick "${dbAccount.xuid}" Invalid ID. (0xc4)`, 0);
+							dbAccount.kickCount++
+							dbAccount.save()
+						} else if (config.deviceChecks.deviceCheck6.punishment === "ban") {
+							client.sendCommand(`kick "${dbAccount.xuid}" Invalid ID. (0xc4)`, 0);
+							dbAccount.banCount++
+							dbAccount.isBanned = true
+							dbAccount.save()
+						} else if (config.deviceChecks.deviceCheck6.punishment === "clubKick" && realm.isOwner) {
+							realm.kick(dbAccount.xuid);
+							dbAccount.clubKickCount++
+							dbAccount.save()
+						} else if (config.deviceChecks.deviceCheck6.punishment === "clubBan" && realm.isOwner) {
+							realm.ban(dbAccount.xuid);
+							dbAccount.clubBanCount++
+							dbAccount.save()
+						} else if (config.deviceChecks.deviceCheck6.punishment === "warning") {
+							client.sendCommand(`say "${dbAccount.xuid}" Invalid ID. (0xc4)`, 0);
+							dbAccount.warningCount++
+							dbAccount.save()
+						}
+					}
 				}
 
 				break;
@@ -166,14 +442,60 @@ async function deviceVaildate(packet, dbAccount, client, packetType) {
 			case "Android":
 				if (config.deviceChecks.deviceCheck6.enabled && !isUUIDv4WithoutDashes(device_id)) {
 					console.log(`[${dbAccount.xuid}] User on ${device_os} without the right Device ID. [T6]`);
-					if (!config.debug) client.sendCommand(`kick "${dbAccount.xuid}" Invalid ID. (0xc4)`, 0);
+					if (!config.debug) {
+						if (config.deviceChecks.deviceCheck6.punishment === "kick") {
+							client.sendCommand(`kick "${dbAccount.xuid}" Invalid ID. (0xc4)`, 0);
+							dbAccount.kickCount++
+							dbAccount.save()
+						} else if (config.deviceChecks.deviceCheck6.punishment === "ban") {
+							client.sendCommand(`kick "${dbAccount.xuid}" Invalid ID. (0xc4)`, 0);
+							dbAccount.banCount++
+							dbAccount.isBanned = true
+							dbAccount.save()
+						} else if (config.deviceChecks.deviceCheck6.punishment === "clubKick" && realm.isOwner) {
+							realm.kick(dbAccount.xuid);
+							dbAccount.clubKickCount++
+							dbAccount.save()
+						} else if (config.deviceChecks.deviceCheck6.punishment === "clubBan" && realm.isOwner) {
+							realm.ban(dbAccount.xuid);
+							dbAccount.clubBanCount++
+							dbAccount.save()
+						} else if (config.deviceChecks.deviceCheck6.punishment === "warning") {
+							client.sendCommand(`say "${dbAccount.xuid}" Invalid ID. (0xc4)`, 0);
+							dbAccount.warningCount++
+							dbAccount.save()
+						}
+					}
 				}
 
 				break;
 			case "IOS":
 				if (config.deviceChecks.deviceCheck6.enabled && !isUUIDv4WithoutDashes(device_id) && /^[A-Z0-9]{32}$/.test(device_id)) {
 					console.log(`[${dbAccount.xuid}] User on iOS without the right Device ID. [T6]`);
-					if (!config.debug) client.sendCommand(`kick "${dbAccount.xuid}" Invalid ID. (0xc4)`, 0);
+					if (!config.debug) {
+						if (config.deviceChecks.deviceCheck6.punishment === "kick") {
+							client.sendCommand(`kick "${dbAccount.xuid}" Invalid ID. (0xc4)`, 0);
+							dbAccount.kickCount++
+							dbAccount.save()
+						} else if (config.deviceChecks.deviceCheck6.punishment === "ban") {
+							client.sendCommand(`kick "${dbAccount.xuid}" Invalid ID. (0xc4)`, 0);
+							dbAccount.banCount++
+							dbAccount.isBanned = true
+							dbAccount.save()
+						} else if (config.deviceChecks.deviceCheck6.punishment === "clubKick" && realm.isOwner) {
+							realm.kick(dbAccount.xuid);
+							dbAccount.clubKickCount++
+							dbAccount.save()
+						} else if (config.deviceChecks.deviceCheck6.punishment === "clubBan" && realm.isOwner) {
+							realm.ban(dbAccount.xuid);
+							dbAccount.clubBanCount++
+							dbAccount.save()
+						} else if (config.deviceChecks.deviceCheck6.punishment === "warning") {
+							client.sendCommand(`say "${dbAccount.xuid}" Invalid ID. (0xc4)`, 0);
+							dbAccount.warningCount++
+							dbAccount.save()
+						}
+					}
 				}
 
 				break;
@@ -182,46 +504,184 @@ async function deviceVaildate(packet, dbAccount, client, packetType) {
 			case "Win32":
 				if (config.deviceChecks.deviceCheck6.enabled && !isUUIDv3(device_id)) {
 					console.log(`[${dbAccount.xuid}] User on ${device_os} with the wrong Device ID. [T6]`);
-					if (!config.debug) client.sendCommand(`kick "${dbAccount.xuid}" Invalid ID. (0xc4)`, 0);
+					if (!config.debug) {
+						if (config.deviceChecks.deviceCheck6.punishment === "kick") {
+							client.sendCommand(`kick "${dbAccount.xuid}" Invalid ID. (0xc4)`, 0);
+							dbAccount.kickCount++
+							dbAccount.save()
+						} else if (config.deviceChecks.deviceCheck6.punishment === "ban") {
+							client.sendCommand(`kick "${dbAccount.xuid}" Invalid ID. (0xc4)`, 0);
+							dbAccount.banCount++
+							dbAccount.isBanned = true
+							dbAccount.save()
+						} else if (config.deviceChecks.deviceCheck6.punishment === "clubKick" && realm.isOwner) {
+							realm.kick(dbAccount.xuid);
+							dbAccount.clubKickCount++
+							dbAccount.save()
+						} else if (config.deviceChecks.deviceCheck6.punishment === "clubBan" && realm.isOwner) {
+							realm.ban(dbAccount.xuid);
+							dbAccount.clubBanCount++
+							dbAccount.save()
+						} else if (config.deviceChecks.deviceCheck6.punishment === "warning") {
+							client.sendCommand(`say "${dbAccount.xuid}" Invalid ID. (0xc4)`, 0);
+							dbAccount.warningCount++
+							dbAccount.save()
+						}
+					}
 				}
 
 				break;
 			case "NintendoSwitch":
 				if (config.deviceChecks.deviceCheck6.enabled && !isUUIDv5(device_id)) {
 					console.log(`[${dbAccount.xuid}] User on Nintendo Switch with the wrong Device ID. [T6]`);
-					if (!config.debug) client.sendCommand(`kick "${dbAccount.xuid}" Invalid ID. (0xc4)`, 0);
+					if (!config.debug) {
+						if (config.deviceChecks.deviceCheck6.punishment === "kick") {
+							client.sendCommand(`kick "${dbAccount.xuid}" Invalid ID. (0xc4)`, 0);
+							dbAccount.kickCount++
+							dbAccount.save()
+						} else if (config.deviceChecks.deviceCheck6.punishment === "ban") {
+							client.sendCommand(`kick "${dbAccount.xuid}" Invalid ID. (0xc4)`, 0);
+							dbAccount.banCount++
+							dbAccount.isBanned = true
+							dbAccount.save()
+						} else if (config.deviceChecks.deviceCheck6.punishment === "clubKick" && realm.isOwner) {
+							realm.kick(dbAccount.xuid);
+							dbAccount.clubKickCount++
+							dbAccount.save()
+						} else if (config.deviceChecks.deviceCheck6.punishment === "clubBan" && realm.isOwner) {
+							realm.ban(dbAccount.xuid);
+							dbAccount.clubBanCount++
+							dbAccount.save()
+						} else if (config.deviceChecks.deviceCheck6.punishment === "warning") {
+							client.sendCommand(`say "${dbAccount.xuid}" Invalid ID. (0xc4)`, 0);
+							dbAccount.warningCount++
+							dbAccount.save()
+						}
+					}
 				}
 
 				if (config.deviceChecks.deviceCheck2.enabled && !isValidPlatformChatId(packet.platform_chat_id)) {
 					console.log(`[${dbAccount.xuid}] Invaild Platform Chat ID. [T2]`);
-					if (!config.debug) client.sendCommand(`kick "${dbAccount.xuid}" Invaild information sent. (0xc5)`, 0)
+					if (!config.debug) {
+						if (config.deviceChecks.deviceCheck2.punishment === "kick") {
+							client.sendCommand(`kick "${dbAccount.xuid}" Invaild Platform Chat ID. (0xc5)`, 0);
+							dbAccount.kickCount++
+							dbAccount.save()
+						} else if (config.deviceChecks.deviceCheck2.punishment === "ban") {
+							client.sendCommand(`kick "${dbAccount.xuid}" Invaild Platform Chat ID. (0xc5)`, 0);
+							dbAccount.banCount++
+							dbAccount.isBanned = true
+							dbAccount.save()
+						} else if (config.deviceChecks.deviceCheck2.punishment === "clubKick" && realm.isOwner) {
+							realm.kick(dbAccount.xuid);
+							dbAccount.clubKickCount++
+							dbAccount.save()
+						} else if (config.deviceChecks.deviceCheck2.punishment === "clubBan" && realm.isOwner) {
+							realm.ban(dbAccount.xuid);
+							dbAccount.clubBanCount++
+							dbAccount.save()
+						} else if (config.deviceChecks.deviceCheck2.punishment === "warning") {
+							client.sendCommand(`say "${dbAccount.xuid}" Invaild Platform Chat ID. (0xc5)`, 0);
+							dbAccount.warningCount++
+							dbAccount.save()
+						}
+					}
 				}
 
 				break;
 		}
 
-		if (config.deviceChecks.deviceCheck7.enabled 
-			&& device_os === "Linux" 
-			|| device_os === "WindowsPhone" 
-			|| device_os === "TVOS" 
-			|| device_os === "Dedicated" 
-			|| device_os === "Hololens" 
-			|| device_os === "GearVR" 
-			|| device_os === "OSX" 
-			|| device_os === "Undefined" 
+		if (config.deviceChecks.deviceCheck7.enabled
+			&& device_os === "Linux"
+			|| device_os === "WindowsPhone"
+			|| device_os === "TVOS"
+			|| device_os === "Dedicated"
+			|| device_os === "Hololens"
+			|| device_os === "GearVR"
+			|| device_os === "OSX"
+			|| device_os === "Undefined"
 			|| device_os === "Win32") {
 			console.log(`[${dbAccount.xuid}] Unsupported device. [T7] (addPlr)`);
-			if (!config.debug) client.sendCommand(`kick "${dbAccount.xuid}" Unsupported device. (0xc6)`, 0);
+			if (!config.debug) {
+				if (config.deviceChecks.deviceCheck7.punishment === "kick") {
+					client.sendCommand(`kick "${dbAccount.xuid}" Invaild information sent. (0xc7)`, 0);
+					dbAccount.kickCount++
+					dbAccount.save()
+				} else if (config.deviceChecks.deviceCheck7.punishment === "ban") {
+					client.sendCommand(`kick "${dbAccount.xuid}" Invaild information sent. (0xc7)`, 0);
+					dbAccount.banCount++
+					dbAccount.isBanned = true
+					dbAccount.save()
+				} else if (config.deviceChecks.deviceCheck7.punishment === "clubKick" && realm.isOwner) {
+					realm.kick(dbAccount.xuid);
+					dbAccount.clubKickCount++
+					dbAccount.save()
+				} else if (config.deviceChecks.deviceCheck7.punishment === "clubBan" && realm.isOwner) {
+					realm.ban(dbAccount.xuid);
+					dbAccount.clubBanCount++
+					dbAccount.save()
+				} else if (config.deviceChecks.deviceCheck7.punishment === "warning") {
+					client.sendCommand(`say "${dbAccount.xuid}" Invaild information sent. (0xc7)`, 0);
+					dbAccount.warningCount++
+					dbAccount.save()
+				}
+			}
 		}
 
 		if (config.deviceChecks.deviceCheck1.enabled && device_os != 'NintendoSwitch' && packet.platform_chat_id.length != 0) {
 			console.log(`[${dbAccount.xuid}] Not on NintendoSwitch & has Platform Chat ID. [T1]`);
-			if (!config.debug) client.sendCommand(`kick "${dbAccount.xuid}" Invaild information sent. (0xc7)`, 0)
+			if (!config.debug) {
+				if (config.deviceChecks.deviceCheck1.punishment === "kick") {
+					client.sendCommand(`kick "${dbAccount.xuid}" Invaild information sent. (0x3f1)`, 0);
+					dbAccount.kickCount++
+					dbAccount.save()
+				} else if (config.deviceChecks.deviceCheck1.punishment === "ban") {
+					client.sendCommand(`kick "${dbAccount.xuid}" Invaild information sent. (0x3f1)`, 0);
+					dbAccount.banCount++
+					dbAccount.isBanned = true
+					dbAccount.save()
+				} else if (config.deviceChecks.deviceCheck1.punishment === "clubKick" && realm.isOwner) {
+					realm.kick(dbAccount.xuid);
+					dbAccount.clubKickCount++
+					dbAccount.save()
+				} else if (config.deviceChecks.deviceCheck1.punishment === "clubBan" && realm.isOwner) {
+					realm.ban(dbAccount.xuid);
+					dbAccount.clubBanCount++
+					dbAccount.save()
+				} else if (config.deviceChecks.deviceCheck1.punishment === "warning") {
+					client.sendCommand(`say "${dbAccount.xuid}" Invaild information sent. (0x3f1)`, 0);
+					dbAccount.warningCount++
+					dbAccount.save()
+				}
+			}
 		}
 
 		if (config.deviceChecks.deviceCheck8.enabled && /^\d+$/.test(device_os)) {
 			console.log(`[${dbAccount.xuid}] Unsupported device. [T8]`);
-			if (!config.debug) client.sendCommand(`kick "${dbAccount.xuid}" Invaild information sent. (0xc8)`, 0);
+			if (!config.debug) {
+				if (config.deviceChecks.deviceCheck8.punishment === "kick") {
+					client.sendCommand(`kick "${dbAccount.xuid}" Invaild information sent. (0xc8)`, 0);
+					dbAccount.kickCount++
+					dbAccount.save()
+				} else if (config.deviceChecks.deviceCheck8.punishment === "ban") {
+					client.sendCommand(`kick "${dbAccount.xuid}" Invaild information sent. (0xc8)`, 0);
+					dbAccount.banCount++
+					dbAccount.isBanned = true
+					dbAccount.save()
+				} else if (config.deviceChecks.deviceCheck8.punishment === "clubKick" && realm.isOwner) {
+					realm.kick(dbAccount.xuid);
+					dbAccount.clubKickCount++
+					dbAccount.save()
+				} else if (config.deviceChecks.deviceCheck8.punishment === "clubBan" && realm.isOwner) {
+					realm.ban(dbAccount.xuid);
+					dbAccount.clubBanCount++
+					dbAccount.save()
+				} else if (config.deviceChecks.deviceCheck8.punishment === "warning") {
+					client.sendCommand(`say "${dbAccount.xuid}" Invaild information sent. (0xc8)`, 0);
+					dbAccount.warningCount++
+					dbAccount.save()
+				}
+			}
 		}
 
 		if (config.deviceChecks.deviceCheck9.enabled) {
@@ -229,7 +689,7 @@ async function deviceVaildate(packet, dbAccount, client, packetType) {
 			const titleHistory = await getTitleHistory(dbAccount.xuid);
 
 			const bannedDevices = config.deviceChecks.deviceCheck9.bannedDevices;
-			
+
 			const bannedTitleIds = {
 				"NintendoSwitch": "2047319603",
 				"Orbis": "2044456598",
@@ -256,7 +716,30 @@ async function deviceVaildate(packet, dbAccount, client, packetType) {
 
 					if (title.titleId === bannedTitleIds[device_os] && bannedDevice === device_os) {
 						console.log(`[${dbAccount.xuid}] Device banned. (titleHistory) (plrAdd) [T9]`);
-						if (!config.debug) client.sendCommand(`kick "${dbAccount.xuid}" Device banned. (0xc9)`, 0);
+						if (!config.debug) {
+							if (config.deviceChecks.deviceCheck9.punishment === "kick") {
+								client.sendCommand(`kick "${dbAccount.xuid}" Device banned. (0xc9)`, 0);
+								dbAccount.kickCount++
+								dbAccount.save()
+							} else if (config.deviceChecks.deviceCheck9.punishment === "ban") {
+								client.sendCommand(`kick "${dbAccount.xuid}" Device banned. (0xc9)`, 0);
+								dbAccount.banCount++
+								dbAccount.isBanned = true
+								dbAccount.save()
+							} else if (config.deviceChecks.deviceCheck9.punishment === "clubKick" && realm.isOwner) {
+								realm.kick(dbAccount.xuid);
+								dbAccount.clubKickCount++
+								dbAccount.save()
+							} else if (config.deviceChecks.deviceCheck9.punishment === "clubBan" && realm.isOwner) {
+								realm.ban(dbAccount.xuid);
+								dbAccount.clubBanCount++
+								dbAccount.save()
+							} else if (config.deviceChecks.deviceCheck9.punishment === "warning") {
+								client.sendCommand(`say "${dbAccount.xuid}" Device banned. (0xc9)`, 0);
+								dbAccount.warningCount++
+								dbAccount.save()
+							}
+						}
 					}
 				});
 			});
@@ -266,13 +749,59 @@ async function deviceVaildate(packet, dbAccount, client, packetType) {
 
 				if (titleIdToBannedDeviceMap[detail.TitleId] != device_os) {
 					console.log(`[${dbAccount.xuid}] Device banned. (spoofing) (presenceDetails) (plrAdd) [T9]`);
-					if (!config.debug) client.sendCommand(`kick "${dbAccount.xuid}" Device banned. (0xc9)`, 0);
+					if (!config.debug) {
+						if (config.deviceChecks.deviceCheck9.punishment === "kick") {
+							client.sendCommand(`kick "${dbAccount.xuid}" Device banned. (0xc9)`, 0);
+							dbAccount.kickCount++
+							dbAccount.save()
+						} else if (config.deviceChecks.deviceCheck9.punishment === "ban") {
+							client.sendCommand(`kick "${dbAccount.xuid}" Device banned. (0xc9)`, 0);
+							dbAccount.banCount++
+							dbAccount.isBanned = true
+							dbAccount.save()
+						} else if (config.deviceChecks.deviceCheck9.punishment === "clubKick" && realm.isOwner) {
+							realm.kick(dbAccount.xuid);
+							dbAccount.clubKickCount++
+							dbAccount.save()
+						} else if (config.deviceChecks.deviceCheck9.punishment === "clubBan" && realm.isOwner) {
+							realm.ban(dbAccount.xuid);
+							dbAccount.clubBanCount++
+							dbAccount.save()
+						} else if (config.deviceChecks.deviceCheck9.punishment === "warning") {
+							client.sendCommand(`say "${dbAccount.xuid}" Device banned. (0xc9)`, 0);
+							dbAccount.warningCount++
+							dbAccount.save()
+						}
+					}
 				}
 
 				bannedDevices.some(bannedDevice => {
 					if (detail.TitleId === bannedTitleIds[device_os] && bannedDevice === device_os) {
 						console.log(`[${dbAccount.xuid}] Device banned. (presenceDetails) (plrAdd) [T9]`);
-						if (!config.debug) client.sendCommand(`kick "${dbAccount.xuid}" Device banned. (0xc9)`, 0);
+						if (!config.debug) {
+							if (config.deviceChecks.deviceCheck9.punishment === "kick") {
+								client.sendCommand(`kick "${dbAccount.xuid}" Device banned. (0xc9)`, 0);
+								dbAccount.kickCount++
+								dbAccount.save()
+							} else if (config.deviceChecks.deviceCheck9.punishment === "ban") {
+								client.sendCommand(`kick "${dbAccount.xuid}" Device banned. (0xc9)`, 0);
+								dbAccount.banCount++
+								dbAccount.isBanned = true
+								dbAccount.save()
+							} else if (config.deviceChecks.deviceCheck9.punishment === "clubKick" && realm.isOwner) {
+								realm.kick(dbAccount.xuid);
+								dbAccount.clubKickCount++
+								dbAccount.save()
+							} else if (config.deviceChecks.deviceCheck9.punishment === "clubBan" && realm.isOwner) {
+								realm.ban(dbAccount.xuid);
+								dbAccount.clubBanCount++
+								dbAccount.save()
+							} else if (config.deviceChecks.deviceCheck9.punishment === "warning") {
+								client.sendCommand(`say "${dbAccount.xuid}" Device banned. (0xc9)`, 0);
+								dbAccount.warningCount++
+								dbAccount.save()
+							}
+						}
 					}
 				})
 			})
@@ -282,7 +811,30 @@ async function deviceVaildate(packet, dbAccount, client, packetType) {
 
 				if (device_os === bannedDevice) {
 					console.log(`[${dbAccount.xuid}] Device banned. (inGameDevice) (plrAdd) [T9]`);
-					if (!config.debug) client.sendCommand(`kick "${dbAccount.xuid}" Device banned. (0xc9)`, 0);
+					if (!config.debug) {
+						if (config.deviceChecks.deviceCheck9.punishment === "kick") {
+							client.sendCommand(`kick "${dbAccount.xuid}" Device banned. (0xc9)`, 0);
+							dbAccount.kickCount++
+							dbAccount.save()
+						} else if (config.deviceChecks.deviceCheck9.punishment === "ban") {
+							client.sendCommand(`kick "${dbAccount.xuid}" Device banned. (0xc9)`, 0);
+							dbAccount.banCount++
+							dbAccount.isBanned = true
+							dbAccount.save()
+						} else if (config.deviceChecks.deviceCheck9.punishment === "clubKick" && realm.isOwner) {
+							realm.kick(dbAccount.xuid);
+							dbAccount.clubKickCount++
+							dbAccount.save()
+						} else if (config.deviceChecks.deviceCheck9.punishment === "clubBan" && realm.isOwner) {
+							realm.ban(dbAccount.xuid);
+							dbAccount.clubBanCount++
+							dbAccount.save()
+						} else if (config.deviceChecks.deviceCheck9.punishment === "warning") {
+							client.sendCommand(`say "${dbAccount.xuid}" Device banned. (0xc9)`, 0);
+							dbAccount.warningCount++
+							dbAccount.save()
+						}
+					}
 				}
 			})
 		}

@@ -178,16 +178,48 @@ module.exports.moderate = async (realmData) => {
 				if (config.debug) console.log(`[${xuid}] No account linked. (plrList)`)
 				getXboxAccountDataBulk(xuid);
 
-				if (config.clientOptions.lapisOptions.enableSkinHandler) skinVaildate(player, null, client, "playerList");
-				if (config.clientOptions.lapisOptions.enableDeviceHandler) deviceVaildate(player, null, client, "playerList");
+				if (config.clientOptions.lapisOptions.enableSkinHandler) skinVaildate(player, null, client, realmData, "playerList");
+				if (config.clientOptions.lapisOptions.enableDeviceHandler) deviceVaildate(player, null, client, realmData, "playerList");
 				if (config.clientOptions.lapisOptions.enableAPIHandler) apiVaildate(player, client, realmData);
 			};
 
 			if (dbAccount) {
-				if (config.clientOptions.lapisOptions.enableSkinHandler) skinVaildate(player, dbAccount, client, "playerList");
-				if (config.clientOptions.lapisOptions.enableDeviceHandler) deviceVaildate(player, dbAccount, client, "playerList");
+				if (config.clientOptions.lapisOptions.enableSkinHandler) skinVaildate(player, dbAccount, client, realmData, "playerList");
+				if (config.clientOptions.lapisOptions.enableDeviceHandler) deviceVaildate(player, dbAccount, client, realmData, "playerList");
 				if (config.clientOptions.lapisOptions.enableAPIHandler) apiVaildate(player, client, realmData);
-				if (config.debug === true) console.log(`Had DB History`);
+				if (config.debug) console.log(`Had DB History`);
+
+				if (dbAccount.isBanned) {
+					client.sendCommand(`kick "${xuid}" You have been banned.`, 0);
+					dbAccount.isBanned = true;
+					dbAccount.save();
+				}
+
+				if (dbAccount.warningsCount >= config.clientOptions.lapisOptions.maxWarnings) {
+					client.sendCommand(`kick "${xuid}" You have reached the max warnings.`, 0);
+					dbAccount.kickCount++;
+					dbAccount.save();
+				}
+
+				if (dbAccount.kickCount >= config.clientOptions.lapisOptions.maxKicks) {
+					client.sendCommand(`kick "${xuid}" You have reached the max kicks. You have been banned`, 0);
+					dbAccount.isBanned = true;
+					dbAccount.save();
+				}
+
+				if (dbAccount.clubKickCount >= config.clientOptions.lapisOptions.maxClubKicks && realmData.isOwner) {
+					client.sendCommand(`kick "${xuid}" You have reached the max club kicks. You have been club banned`, 0);
+					if (realmData.isOwner) realmData.ban(xuid)
+					dbAccount.isClubBanned = true;
+					dbAccount.save();
+				}
+
+				if (dbAccount.clubBanCount >= config.clientOptions.lapisOptions.maxClubBans && realmData.isOwner) {
+					client.sendCommand(`kick "${xuid}" You have been club banned.`, 0);
+					if (realmData.isOwner) realmData.ban(xuid)
+					dbAccount.isClubBanned = true;
+					dbAccount.save();
+				}
 			}
 		}
 	});
@@ -221,7 +253,7 @@ module.exports.moderate = async (realmData) => {
 			getXboxAccountDataBulk(xuid);
 		};
 
-		if (config.clientOptions.lapisOptions.enableDeviceHandler) await deviceVaildate(packet, dbAccount, client, "playerAdd");
+		if (config.clientOptions.lapisOptions.enableDeviceHandler) await deviceVaildate(packet, dbAccount, client, realmData, "playerAdd");
 
 		if (!dbAccount.deviceOs) dbAccount.deviceOs = [];
 
@@ -240,6 +272,20 @@ module.exports.moderate = async (realmData) => {
 		if (!dbAccount.currentGamemode) dbAccount.currentGamemode = gamemode;
 
 		if (!dbAccount.currentDevice) dbAccount.currentDevice = device_os;
+
+		if (!dbAccount.warningsCount) dbAccount.warningsCount = 0;
+
+		if (!dbAccount.kickCount) dbAccount.kickCount = 0;
+
+		if (!dbAccount.clubKickCount) dbAccount.clubKickCount = 0;
+
+		if (!dbAccount.banCount) dbAccount.banCount = 0;
+
+		if (!dbAccount.clubBanCount) dbAccount.clubBanCount = 0;
+
+		if (!dbAccount.isBanned) dbAccount.isBanned = false;
+
+		if (!dbAccount.isClubBanned) dbAccount.isClubBanned = false;
 
 		// These will need automatic updating...
 		dbAccount.runtimeID = runtime_id;
@@ -284,7 +330,7 @@ module.exports.moderate = async (realmData) => {
 				return;
 			};
 
-			if (dbAccount) skinVaildate(packet, dbAccount, client, "playerSkin");
+			if (dbAccount) skinVaildate(packet, dbAccount, client, realmData, "playerSkin");
 		})
 	} else {
 		return;
@@ -301,7 +347,7 @@ module.exports.moderate = async (realmData) => {
 				return;
 			};
 
-			if (dbAccount) emoteVaildate(packet, dbAccount, client);
+			if (dbAccount) emoteVaildate(packet, dbAccount, client, realmData);
 		})
 	} else {
 		return;
@@ -318,7 +364,7 @@ module.exports.moderate = async (realmData) => {
 				return;
 			};
 
-			if (dbAccount) textVaildate(packet, dbAccount, client);
+			if (dbAccount) textVaildate(packet, dbAccount, client, realmData);
 		})
 	} else {
 		return;
@@ -334,7 +380,7 @@ module.exports.moderate = async (realmData) => {
 
 					if (!dbAccount) return;
 
-					animateVaildate(packet, dbAccount, client);
+					animateVaildate(packet, dbAccount, client, realmData);
 				}
 			}
 		});
@@ -352,7 +398,7 @@ module.exports.moderate = async (realmData) => {
 
 					if (!dbAccount) return;
 
-					equipmentVaildate(packet, dbAccount, client);
+					equipmentVaildate(packet, dbAccount, client, realmData);
 				}
 			}
 		})

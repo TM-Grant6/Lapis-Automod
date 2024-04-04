@@ -23,7 +23,21 @@ const accountSchema = new mongoose.Schema({
 	// Current Gamemode
 	currentGamemode: String,
 	// Current Device
-	currentDevice: String
+	currentDevice: String,
+	// Warning Count
+	warningsCount: Number,
+	// Kick count
+	kickCount: Number,
+	// Club kick count
+	clubKickCount: Number,
+	// Ban count
+	banCount: Number,
+	// Club ban count
+	clubBanCount: Number,
+	// Ban check
+	isBanned: Boolean,
+	// Club ban check
+	isClubBanned: Boolean
 });
 
 const account = mongoose.model("Account", accountSchema);
@@ -50,7 +64,14 @@ function createAccountDefaults(data) {
 		permission: data.permission ?? "N/A",
 		currentGamertag: data.currentGamertag ?? "N/A",
 		currentGamemode: data.currentGamemode ?? "N/A",
-		currentDevice: data.currentDevice ?? "N/A"
+		currentDevice: data.currentDevice ?? "N/A",
+		warningsCount: data.warningsCount ?? 0,
+		kickCount: data.kickCount ?? 0,
+		clubKickCount: data.clubKickCount ?? 0,
+		banCount: data.banCount ?? 0,
+		clubBanCount: data.clubBanCount ?? 0,
+		isBanned: data.isBanned ?? false,
+		isClubBanned: data.isClubBanned ?? false
 	});
 }
 

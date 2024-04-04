@@ -20,71 +20,86 @@
             "enableAPIHandler": true,
             "enableDeviceHandler": true,
             "enableEmoteHandler": true,
-            "enableTextHandler": true
+            "enableTextHandler": true,
+            "maxWarnings": 15,
+            "maxKicks": 6,
+            "maxBans": 1,
+            "maxClubKicks": 6,
+            "maxClubBans": 1
         }
     },
     "skinChecks": {
         "skinCheck1": {
-            "enabled": false
+            "enabled": true,
+            "punishment": "kick"
         },
         "skinCheck2": {
-            "enabled": false
+            "enabled": true,
+            "punishment": "kick"
         },
         "skinCheck3": {
-            "enabled": true
+            "enabled": true,
+            "punishment": "kick"
         },
         "skinCheck4": {
-            "enabled": true
+            "enabled": true,
+            "punishment": "kick"
         },
         "skinCheck5": {
-            "enabled": false
+            "enabled": false,
+            "punishment": "warning"
         },
         "skinCheck6": {
-            "enabled": true
+            "enabled": true,
+            "punishment": "kick"
         },
         "skinCheck7": {
-            "enabled": true
+            "enabled": true,
+            "punishment": "kick"
         },
         "skinCheck8": {
-            "enabled": false
-        },
-        "skinCheck9": {
-            "enabled": true
-        },
-        "skinCheck10": {
-            "enabled": true
-        },
-        "skinCheck11": {
-            "enabled": true
+            "enabled": true,
+            "punishment": "kick"
         }
     },
     "deviceChecks": {
         "deviceCheck1": {
-            "enabled": true
+            "enabled": true,
+            "punishment": "kick"
         },
         "deviceCheck2": {
-            "enabled": true
+            "enabled": true,
+            "punishment": "warning"
         },
         "deviceCheck3": {
-            "enabled": true
+            "enabled": true,
+            "punishment": "warning",
+            "count": 5
         },
         "deviceCheck4": {
-            "enabled": true
+            "enabled": true,
+            "punishment": "kick"
         },
         "deviceCheck5": {
-            "enabled": true
+            "enabled": true,
+            "punishment": "warning",
+            "count": 5
         },
         "deviceCheck6": {
-            "enabled": true
+            "enabled": true,
+            "punishment": "kick"
         },
         "deviceCheck7": {
-            "enabled": true
+            "enabled": true,
+            "punishment": "warning"
         },
         "deviceCheck8": {
-            "enabled": false
+            "enabled": false,
+            "punishment": "kick"
         },
         "deviceCheck9": {
             "enabled": true,
+            "punishment": "kick",
             "bannedDevices": [
                 "Win10",
                 "Android",
@@ -94,28 +109,34 @@
     },
     "emoteChecks": {
         "emoteCheck1": {
-            "enabled": true
+            "enabled": true,
+            "punishment": "kick"
         },
         "emoteCheck2": {
-            "enabled": true
+            "enabled": true,
+            "punishment": "kick"
         }
     },
     "animateChecks": {
         "animateCheck1": {
-            "enabled": true
+            "enabled": true,
+            "punishment": "kick"
         },
         "animateCheck2": {
-            "enabled": true
+            "enabled": true,
+            "punishment": "kick"
         }
     },
     "equipmentChecks": {
         "equipmentCheck1": {
-            "enabled": true
+            "enabled": true,
+            "punishment": "kick"
         }
     },
     "apiChecks": {
         "apiCheck1": {
             "enabled": true,
+            "punishment": "kick",
             "overallValue": 50,
             "followerValue": 0,
             "followingValue": 0,
@@ -123,34 +144,39 @@
             "createdValue": 7
         },
         "apiCheck2": {
-            "enabled": false,
-            "cooldown": 6
+            "enabled": true,
+            "punishment": "warning",
+            "cooldown": 6.5
         },
         "apiCheck3": {
-            "enabled": true
+            "enabled": true,
+            "punishment": "kick"
         },
         "apiCheck4": {
-            "enabled": true
+            "enabled": true,
+            "punishment": "kick"
         },
         "apiCheck5": {
-            "enabled": true
+            "enabled": true,
+            "punishment": "kick"
         },
         "apiCheck6": {
-            "enabled": true
+            "enabled": true,
+            "punishment": "kick"
         }
     },
     "textChecks": {
         "textCheck1": {
-            "enabled": true
+            "enabled": true,
+            "punishment": "kick"
         },
         "textCheck2": {
-            "enabled": true
+            "enabled": true,
+            "punishment": "kick"
         },
         "textCheck3": {
-            "enabled": true
-        },
-        "textCheck4": {
-            "enabled": true
+            "enabled": true,
+            "punishment": "warning"
         }
     }
 }

@@ -29,6 +29,7 @@ async function main(realm) {
     if (!xboxToken) return 'Failed to get xbox auth token';
 
     if (realm.ownerUUID === xboxToken.userXUID) {
+        realm.isOwner = true;
         realm.ban = async (xuid) => { 
             await realmBan(realm, xuid);
         }
