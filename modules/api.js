@@ -12,7 +12,8 @@ async function apiVaildate(packet, client, realm) {
     const titles = await getTitleHistory(packet.xbox_user_id);
 
     // We do not check their PlayFabId by Player List because it can be spoofed.
-    const playFabId = await getUserPlayFabId(packet.xbox_user_id);
+    
+    let playFabId = await getUserPlayFabId(packet.xbox_user_id);
     const accountInfo = await getAccountInfo(playFabId.Data[0].PlayFabId);
     const playerProfile = await getPlayerProfile(playFabId.Data[0].PlayFabId);
 
@@ -95,7 +96,7 @@ async function apiVaildate(packet, client, realm) {
 
             if (Array.isArray(presence.clubPresence)) {
                 for (const plr of presence.clubPresence) {
-                    if (packet.xbox_user_id.includes(plr.xuid) && plr.lastSeenState !== "InGame") {
+                    if (plr.xuid === packet.xbox_user_id && plr.lastSeenState != "InGame") {
                         console.log(`[${packet.xbox_user_id}] API detection [T2]`);
                         if (!config.debug) {
                             if (config.apiChecks.apiCheck2.punishment === "kick") {

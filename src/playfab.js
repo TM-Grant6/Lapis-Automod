@@ -170,7 +170,7 @@ async function getUserPlayFabId(xuid) {
 	const body = JSON.stringify({
 		XboxLiveAccountIds: [xuid],
         SANDBOX: "RETAIL"
-	}, null, 2);
+	}, null);
 
 	const response = await fetch(`${apiUrl}/Client/GetPlayFabIDsFromXboxLiveIDs`, {
 		method: "POST",

@@ -46,7 +46,7 @@
             "punishment": "kick"
         },
         "skinCheck5": {
-            "enabled": false,
+            "enabled": true,
             "punishment": "warning"
         },
         "skinCheck6": {
@@ -146,7 +146,7 @@
         "apiCheck2": {
             "enabled": true,
             "punishment": "warning",
-            "cooldown": 6.5
+            "cooldown": 10.5
         },
         "apiCheck3": {
             "enabled": true,

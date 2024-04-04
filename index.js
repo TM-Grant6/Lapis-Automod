@@ -105,7 +105,7 @@ const realm_api_headers = {
 				}
 		
 				if (response.status === 503) {
-					console.log(chalk.red("---> Retry again later"));
+					console.log(chalk.red("---> Retrying..."));
 					realmIP = await response.text();
 				}
 			} catch (err) {

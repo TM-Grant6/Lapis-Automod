@@ -189,32 +189,39 @@ module.exports.moderate = async (realmData) => {
 				if (config.clientOptions.lapisOptions.enableAPIHandler) apiVaildate(player, client, realmData);
 				if (config.debug) console.log(`Had DB History`);
 
-				if (dbAccount.isBanned) {
-					client.sendCommand(`kick "${xuid}" You have been banned.`, 0);
+				if (dbAccount.isBanned && !config.debug) {
+					if (!config.debug) client.sendCommand(`kick "${xuid}" You have been banned.`, 0);
 					dbAccount.isBanned = true;
 					dbAccount.save();
 				}
 
-				if (dbAccount.warningsCount >= config.clientOptions.lapisOptions.maxWarnings) {
+				if (dbAccount.isClubBanned && !config.debug) {
+					if (!config.debug) realmData.ban(xuid)
+					dbAccount.isClubBanned = true;
+					dbAccount.save();
+				}
+
+				if (dbAccount.warningsCount >= config.clientOptions.lapisOptions.maxWarnings && !config.debug) {
 					client.sendCommand(`kick "${xuid}" You have reached the max warnings.`, 0);
 					dbAccount.kickCount++;
 					dbAccount.save();
 				}
 
-				if (dbAccount.kickCount >= config.clientOptions.lapisOptions.maxKicks) {
+				if (dbAccount.kickCount >= config.clientOptions.lapisOptions.maxKicks && !config.debug) {
 					client.sendCommand(`kick "${xuid}" You have reached the max kicks. You have been banned`, 0);
+
 					dbAccount.isBanned = true;
 					dbAccount.save();
 				}
 
-				if (dbAccount.clubKickCount >= config.clientOptions.lapisOptions.maxClubKicks && realmData.isOwner) {
+				if (dbAccount.clubKickCount >= config.clientOptions.lapisOptions.maxClubKicks && realmData.isOwner && !config.debug) {
 					client.sendCommand(`kick "${xuid}" You have reached the max club kicks. You have been club banned`, 0);
 					if (realmData.isOwner) realmData.ban(xuid)
 					dbAccount.isClubBanned = true;
 					dbAccount.save();
 				}
 
-				if (dbAccount.clubBanCount >= config.clientOptions.lapisOptions.maxClubBans && realmData.isOwner) {
+				if (dbAccount.clubBanCount >= config.clientOptions.lapisOptions.maxClubBans && realmData.isOwner && !config.debug) {
 					client.sendCommand(`kick "${xuid}" You have been club banned.`, 0);
 					if (realmData.isOwner) realmData.ban(xuid)
 					dbAccount.isClubBanned = true;
