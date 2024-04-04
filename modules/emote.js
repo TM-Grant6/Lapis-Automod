@@ -5,6 +5,8 @@ const {
 const config = require("../config.json");
 
 function emoteVaildate(packet, dbAccount, client) {
+    if (!packet || !dbAccount || !client) return;
+    
     if (config.debug) console.log(`Emote Vaildate`);
 
     if (config.emoteChecks.emoteCheck1.enabled && packet.flags === 'mute_chat') {

@@ -1,6 +1,8 @@
 const config = require("../config.json");
 
 function equipmentVaildate(packet, dbAccount, client) {
+	if (!packet || !dbAccount || !client) return;
+
 	if (config.debug) console.log(`Equipment Vaildate`);
 
 	if (config.equipmentChecks.equipmentCheck1.enabled && packet.slot > 8 || packet.selected_slot > 8) {

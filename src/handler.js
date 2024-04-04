@@ -1,4 +1,8 @@
 const { getRealmToken } = require("./xbox.js");
+const { main } = require("./realms.js");
+const { moderate } = require("./moderate.js");
+
+const config = require("../config.json");
 
 const realm_api_headers = {
 	"Accept": "*/*",
@@ -28,53 +32,83 @@ async function handleFunctions(client) {
 			version: 72
 		});
 	};
+
+	client.sendMessage = (message) => {
+		client.write("text", {
+			type: "chat",
+			needs_translation: false,
+			source_name: client.username,
+			message: message,
+			xuid: client.profile.xuid,
+			platform_chat_id: client.options.skinData.PlatformOnlineId
+		});
+	};
 }
 
 async function handleRejoin(realm) {
+	if (!realm) return 'Not specified.';
+
+	// This is very dumb, but needed for it to work
 	const { moderate } = require("./moderate.js");
+	const chalk = require("chalk");
+	const config = require("../config.json");
 
-	const authToken = await getRealmToken();
+    const authToken = await getRealmToken();
 
-	if (!authToken) {
-		console.log(chalk.red("Failed to get auth token"));
-		process.exit(1);
-	}
+    if (!authToken) {
+        console.log(chalk.red("Failed to get auth token"));
+        process.exit(1);
+    }
 
-	realm_api_headers.authorization = `XBL3.0 x=${authToken.userHash};${authToken.XSTSToken}`;
+    realm_api_headers.authorization = `XBL3.0 x=${authToken.userHash};${authToken.XSTSToken}`;
 
-	const response = await fetch(`https://pocket.realms.minecraft.net/worlds/${realm.id}/join`, {
-		method: "GET",
-		headers: realm_api_headers
-	}).catch(() => { });
+    let realmIP;
+    let retryCount = 0;
 
-	if (!response || (response.status !== 200 && response.status !== 403 && response.status !== 503)) {
-		console.log(response?.status);
-		console.log(await response?.text());
-		process.exit(0);
-	}
+    const maxRetries = config.clientOptions.maxIPRetries;
 
-	let realmIP;
+    try {
+        while (true) {
+            if (retryCount >= maxRetries) {
+                console.log(chalk.red("Max retries reached, exiting."));
+                break;
+            }
 
-	try {
-		realmIP = await response.json();
-	} catch (err) {
-		if (response.status === 503) {
-			console.log(chalk.red("---> Retry again later"));
-			process.exit(1);
-		}
+            const response = await fetch(`https://pocket.realms.minecraft.net/worlds/${realm.id}/join`, {
+                method: "GET",
+                headers: realm_api_headers
+            }).catch((error) => {
+                console.error('Fetch failed:', error);
+            });
 
-		throw err;
-	}
+            if (!response || (response.status !== 200 && response.status !== 503)) {
+                console.log(response?.status);
+                console.log(await response?.text());
+                await new Promise(r => setTimeout(r, config.clientOptions.retryIPtimeout));
+                retryCount++;
+                continue;
+            }
 
-	if (realmIP.errorMsg) {
-		console.log(realmIP.errorMsg);
-		process.exit(0);
-	}
+            if (response.status === 200) {
+                console.log(chalk.green(`--> Joining ${realm.name}...`));
+                realmIP = await response.json();
+                realm.ip = realmIP.address.substring(0, realmIP.address.indexOf(':'));
+                realm.port = Number(realmIP.address.substring(realmIP.address.indexOf(':') + 1));
+                main(realm);
+                moderate(realm);
+                break;
+            } else if (response.status === 503) {
+                console.log(chalk.red("---> Retry again later"));
+                realmIP = await response.text();
+            }
 
-	realm.ip = realmIP.address.substring(0, realmIP.address.indexOf(':'));
-	realm.port = Number(realmIP.address.substring(realmIP.address.indexOf(':') + 1));
-
-	moderate(realm);
+            await new Promise(r => setTimeout(r, config.clientOptions.retryIPtimeout));
+            retryCount++;
+        }
+    } catch (err) {
+        console.error('Caught an exception:', err);
+        process.exit(1);
+    }
 }
 
 module.exports = {

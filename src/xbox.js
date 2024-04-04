@@ -56,6 +56,8 @@ async function getPlayFabToken() {
 }
 
 async function getXboxUserData(xuid) {
+	if (!xuid) return;
+	
 	const authToken = await getXboxLiveToken();
 
 	if (authToken.errorMsg) return authToken;
@@ -89,6 +91,8 @@ async function getXboxUserData(xuid) {
 }
 
 async function getTitleHistory(xuid) {
+	if (!xuid) return;
+
 	const authToken = await getXboxLiveToken();
 
 	if (authToken.errorMsg) return authToken;
@@ -179,6 +183,8 @@ async function logXboxUserData(user, source) {
 }
 
 async function getClubData(clubID) {
+	if (!clubID) return;
+
 	const authToken = await getXboxLiveToken();
 
 	const response = await fetch(`https://clubhub.xboxlive.com/clubs/Ids(${clubID})/decoration/clubPresence`, {
@@ -219,5 +225,6 @@ module.exports = {
 	getXboxAccountDataBulk,
 	getClubData,
 	getRealmToken,
-	getPlayFabToken
+	getPlayFabToken,
+	getXboxLiveToken
 }

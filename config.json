@@ -1,15 +1,17 @@
 {
-    "debug": false,
+    "debug": true,
     "clientOptions": {
         "deviceOS": 13,
         "protocolVersion": 662,
         "getLatestProtocolVersion": true,
         "automaticRealmRejoining": true,
         "rejoinTimeout": 6000,
+        "retryIPtimeout": 2200,
+        "maxIPRetries": 120,
         "skipRealmPicking": false,
         "realmOptions": {
             "realmId": 0,
-            "realmCode": ""
+            "realmCode": "2MVRswKLAsU"
         },
         "lapisOptions": {
             "enableAnimateHandler": true,

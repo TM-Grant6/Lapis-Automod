@@ -12,8 +12,6 @@ const {
 
 // File Imports
 const config = require("../config.json");
-
-const fs = require('fs');
 const chalk = require("chalk");
 
 const {
@@ -105,8 +103,13 @@ module.exports.moderate = async (realmData) => {
 
 		console.log(chalk.red(`+--> Triggered! ${JSON.stringify(data)}`));
 
-		if (config.clientOptions.automaticRealmRejoining === true) setTimeout(async () => {
-			await handleRejoin(realmData);
+		if (config.clientOptions.automaticRealmRejoining) setTimeout(async () => {
+			const { handleRejoin } = require("./handler.js");
+
+			handleRejoin(realmData)
+				.catch(error => {
+					console.error('An error occurred:', error);
+				});
 		}, config.clientOptions.rejoinTimeout);
 	});
 
@@ -118,10 +121,6 @@ module.exports.moderate = async (realmData) => {
 		client.emit("kick", {
 			message: String(error)
 		});
-
-		if (config.clientOptions.automaticRealmRejoining === true) setTimeout(async () => {
-			await handleRejoin(realmData);
-		}, config.clientOptions.rejoinTimeout);
 	});
 
 	client.on("close", async () => {
@@ -130,10 +129,6 @@ module.exports.moderate = async (realmData) => {
 		client.emit("kick", {
 			message: "+--> Lost connection to server"
 		});
-
-		if (config.clientOptions.automaticRealmRejoining === true) setTimeout(async () => {
-			await handleRejoin(realmData);
-		}, config.clientOptions.rejoinTimeout);
 	});
 
 	process.on("warning", (warning) => {
@@ -323,7 +318,7 @@ module.exports.moderate = async (realmData) => {
 				return;
 			};
 
-			if (dbAccount) textVaildate(packet, dbAccount, client);
+			if (dbAccount) textVaildate(packet, dbAccount, client, realmData);
 		})
 	} else {
 		return;
@@ -376,6 +371,6 @@ module.exports.moderate = async (realmData) => {
 		setInterval(() => {
 			client.sendCommand(`effect @s health_boost 30 255 true`, 0);
 			client.sendCommand(`effect @s instant_health 30 255 true`, 0)
-		}, 5000)
+		}, 25000)
 	})
 }

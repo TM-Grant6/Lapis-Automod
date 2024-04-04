@@ -1,6 +1,8 @@
 const config = require("../config.json");
 
 function skinVaildate(packet, dbAccount, client, packetType) {
+	if (!packet || !client) return;
+
 	if (config.debug) console.log(`Skin Vaildate`);
 
 	if (packetType === "playerList") {

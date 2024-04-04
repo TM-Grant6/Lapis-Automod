@@ -4,29 +4,41 @@ const cheerio = require('cheerio');
 
 // Check for UUID version 3
 function isUUIDv3(uuid) {
+	if (!uuid) return;
+
 	return /^[0-9a-f]{8}-[0-9a-f]{4}-3[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(uuid);
 }
 
 // Check for UUID version 4
 function isUUIDv4(uuid) {
+	if (!uuid) return;
+
 	return /^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(uuid);
 }
 
 // Check for UUID version 4 without dashes
 function isUUIDv4WithoutDashes(uuid) {
+	if (!uuid) return;
+
 	return /^[0-9a-fA-F]{8}[0-9a-fA-F]{4}4[0-9a-fA-F]{3}[89abAB][0-9a-fA-F]{3}[0-9a-fA-F]{12}$/.test(uuid);
 }
 
 // Check for UUID version 5
 function isUUIDv5(uuid) {
+	if (!uuid) return;
+
 	return /^[0-9a-f]{8}-[0-9a-f]{4}-5[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(uuid);
 }
 
 function isValidPlatformChatId(platformChatId) {
+	if (!platformChatId) return false;
+
 	return typeof platformChatId === 'string' && /^\d{19}$/.test(platformChatId);
 }
 
 function generateRandomString(length, characters = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz1234567890_-") {
+	if (!length) return;
+
 	const charArray = Array.from(characters);
 
 	let result = "";
@@ -39,6 +51,8 @@ function generateRandomString(length, characters = "ABCDEFGHIJKLMNOPQRSTUVWXYZab
 }
 
 function getDeviceId(deviceOS) {
+	if (!deviceOS) return;
+
 	const deviceIdMap = {
 		1: uuidv4().replace(/-/g, ""),
 		2: uuidv4().replace(/-/g, "").toUpperCase(),
@@ -53,6 +67,8 @@ function getDeviceId(deviceOS) {
 }
 
 async function getInputMode(deviceOS) {
+	if (!deviceOS) return;
+	
 	switch (deviceOS) {
 		case 10:
 		case 11:

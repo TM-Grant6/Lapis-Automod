@@ -1,6 +1,8 @@
 const config = require("../config.json");
 
 function animateVaildate(packet, dbAccount, client) {
+  if (!packet || !dbAccount || !client) return;
+  
   if (config.debug) console.log(`Animate Vaildate`);
 
   if (config.animateChecks.animateCheck1.enabled && (packet.action_id !== "row_left" && packet.action_id !== "row_right") && typeof packet.boat_rowing_time === 'number') {

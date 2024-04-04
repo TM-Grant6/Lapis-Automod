@@ -1,24 +1,18 @@
 const fetch = require("node-fetch");
 const chalk = require("chalk");
 const prompt = require("prompt-sync")();
-const { Authflow, Titles } = require("prismarine-auth");
-
-const { moderate } = require("./src/moderate.js");
 const config = require("./config.json");
 
-const flow = new Authflow(undefined, "./authCache", {
-	flow: "live",
-	authTitle: Titles.MinecraftNintendoSwitch,
-	deviceType: "Nintendo",
-	doSisuAuth: true
-});
+const { moderate } = require("./src/moderate.js");
+const { getRealmToken } = require("./src/xbox.js");
+const { main } = require("./src/realms.js");
 
 const realm_api_headers = {
 	"Accept": "*/*",
 	"authorization": "",
 	"charset": "utf-8",
 	"client-ref": "42039c71c23561e02d99b28a8bfb34091a61cadf",
-	"client-version": "1.20.71",
+	"client-version": "1.20.73",
 	"x-clientplatform": "Windows",
 	"content-type": "application/json",
 	"user-agent": "MCPE/UWP",
@@ -30,11 +24,7 @@ const realm_api_headers = {
 
 (async () => {
 	try {
-		const xboxToken = await flow.getXboxToken("https://pocket.realms.minecraft.net/")
-			.catch((err) => {
-				console.log(err);
-				process.exit(0);
-			});
+		const xboxToken = await getRealmToken();
 
 		realm_api_headers.authorization = `XBL3.0 x=${xboxToken.userHash};${xboxToken.XSTSToken}`;
 
@@ -49,6 +39,12 @@ const realm_api_headers = {
 					method: "POST",
 					headers: realm_api_headers
 				});
+
+				if (joinRealm.status === 200) {
+					console.log(chalk.green(`Joined ${config.clientOptions.realmOptions.realmCode} successfully.`));
+				} else {
+					console.log(chalk.red(`Failed to join ${config.clientOptions.realmOptions.realmCode}`));
+				}
 			}
 		}
 
@@ -82,48 +78,52 @@ const realm_api_headers = {
 
 		if (!realm) {
 			console.log(chalk.red(`---> Invalid number choice`));
-			process.exit(0);
+			process.exit(1);
 		}
 
 		let realmIP;
-		
-		// Loop still in development
-		while (!realmIP?.address) {
+
+		while (true) {
 			const response = await fetch(`https://pocket.realms.minecraft.net/worlds/${realm.id}/join`, {
 				method: "GET",
 				headers: realm_api_headers
 			}).catch(() => { });
 
-			if (!response || (response.status !== 200 && response.status !== 403 && response.status !== 503)) {
+			if (!response || (response.status !== 200 && response.status !== 503)) {
 				console.log(response?.status);
 				console.log(await response?.text());
-				process.exit(1);
-			}
-
-			try {
-				realmIP = await response.json();
-			} catch (err) {
-				if (response.status === 503) {
-					console.log(chalk.red("---> Retry again later"));
-					process.exit(1);
-				}
-
-				throw err;
-			}
-
-			if (!realmIP?.address) {
+				await new Promise(r => setTimeout(r, config.clientOptions.retryIPtimeout));
 				continue;
 			}
 
-			realm.ip = realmIP.address.substring(0, realmIP.address.indexOf(':'));
-			realm.port = Number(realmIP.address.substring(realmIP.address.indexOf(':') + 1));
-		}
+			try {
+				if (response.status === 200) {
+					console.log(chalk.green(`--> Joining ${realm.name}...`));
+					realmIP = await response.json();
+					realm.ip = realmIP.address.substring(0, realmIP.address.indexOf(':'));
+					realm.port = Number(realmIP.address.substring(realmIP.address.indexOf(':') + 1));
+				}
+		
+				if (response.status === 503) {
+					console.log(chalk.red("---> Retry again later"));
+					realmIP = await response.text();
+				}
+			} catch (err) {
+				throw err;
+			}
 
-		moderate(realm);
+			if (response.status === 200) {
+				main(realm);
+				moderate(realm);
+				break;
+			}
+
+			await new Promise(r => setTimeout(r, config.clientOptions.retryIPtimeout));
+		}
 	} catch (err) {
 		if (!err.type === 'invalid-json') {
 			console.log(err);
-			process.exit(0);
+			process.exit(1);
 		}
 	}
 })();

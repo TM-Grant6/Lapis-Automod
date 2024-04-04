@@ -4,6 +4,8 @@ const { getXboxUserData, getTitleHistory, getClubData } = require("../src/xbox.j
 const { getAccountInfo, getUserPlayFabId, getPlayerProfile, getPlayerCombinedInfo } = require("../src/playfab.js");
 
 async function apiVaildate(packet, client, realm) {
+    if (!packet || !client || !realm) return;
+    
     if (config.debug) console.log(`API Vaildate`);
 
     const profile = await getXboxUserData(packet.xbox_user_id);
@@ -60,7 +62,7 @@ async function apiVaildate(packet, client, realm) {
 
         if (isAlt) {
             console.log(`[${packet.xbox_user_id}] API detection [T1] - ${totalPercent}% - Created: ${accountInfo.AccountInfo.Created}`);
-            if (!config.debug) client.sendCommand(`kick "${packet.xbox_user_id}" Failed to meet requirements. (${totalPercent}%%) (0xFFF1)`);
+            if (!config.debug) client.sendCommand(`kick "${packet.xbox_user_id}" Failed to meet requirements. (${totalPercent}%) (0xFFF1)`);
         }
     }
 

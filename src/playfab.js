@@ -64,6 +64,8 @@ async function loginWithXbox() {
 }
 
 async function getAccountInfo(playFabId) {
+	if (!playFabId) return;
+
 	const authData = await loginWithXbox();
 	if (authData.errorMsg) return authData;
 
@@ -89,6 +91,8 @@ async function getAccountInfo(playFabId) {
 }
 
 async function getPlayerProfile(playFabId) {
+	if (!playFabId) return;
+
 	const authData = await loginWithXbox();
 	if (authData.errorMsg) return authData;
 
@@ -114,6 +118,8 @@ async function getPlayerProfile(playFabId) {
 }
 
 async function getPlayerCombinedInfo(playFabId) {
+	if (!playFabId) return;
+
 	const authData = await loginWithXbox();
 	if (authData.errorMsg) return authData;
 
@@ -156,6 +162,8 @@ async function getPlayerCombinedInfo(playFabId) {
 }
 
 async function getUserPlayFabId(xuid) {
+	if (!xuid) return;
+	
 	const authData = await loginWithXbox();
 	if (authData.errorMsg) return authData;
 

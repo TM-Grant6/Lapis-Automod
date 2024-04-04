@@ -16,6 +16,8 @@ const config = require("../config.json");
 async function deviceVaildate(packet, dbAccount, client, packetType) {
 	if (config.debug) console.log(`Device Vaildate | Packet Type: ${packetType}`);
 
+	if (!packet || !client) return;
+
 	if (packetType === "playerList") {
 		if (config.deviceChecks.deviceCheck1.enabled && packet.build_platform != 12 && packet.platform_chat_id.length != 0) {
 			console.log(`[${packet.xbox_user_id}] Not on NintendoSwitch & has Platform Chat ID. [T1]`);
