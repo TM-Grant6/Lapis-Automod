@@ -2,7 +2,7 @@ const config = require("../config.json");
 
 const { isValidPlatformChatId } = require("../src/util.js");
 
-async function textVaildate(packet, dbAccount, client, realm) {
+async function textVaildate(packet, dbAccount, client) {
     if (packet.type === 'translation') return;
 	if (config.debug) console.log(`Text Vaildate`);
 

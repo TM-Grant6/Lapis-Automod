@@ -318,7 +318,7 @@ module.exports.moderate = async (realmData) => {
 				return;
 			};
 
-			if (dbAccount) textVaildate(packet, dbAccount, client, realmData);
+			if (dbAccount) textVaildate(packet, dbAccount, client);
 		})
 	} else {
 		return;
