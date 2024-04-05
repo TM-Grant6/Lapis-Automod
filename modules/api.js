@@ -1,8 +1,8 @@
 const config = require("../config.json");
 
-const { getXboxUserData, getTitleHistory, getClubData } = require("../src/xbox.js");
-const { getAccountInfo, getUserPlayFabId, getPlayerProfile, getPlayerCombinedInfo } = require("../src/playfab.js");
-const { getAccountInfoA667, getUserPlayFabIdA667, getPlayerProfileA667, getPlayerCombinedInfoA667 } = require("../src/xboxPlayfab.js");
+const { getXboxUserData, getTitleHistory } = require("../src/xbox.js");
+const { getAccountInfo, getUserPlayFabId, getPlayerProfile } = require("../src/playfab.js");
+const { getAccountInfoA667, getUserPlayFabIdA667 } = require("../src/xboxPlayfab.js");
 
 async function apiVaildate(packet, client, realm) {
     if (!packet || !client || !realm) return;
@@ -13,14 +13,12 @@ async function apiVaildate(packet, client, realm) {
     const titles = await getTitleHistory(packet.xbox_user_id);
 
     // We do not check their PlayFabId by Player List because it can be spoofed.
-    
     const playFabId = await getUserPlayFabId(packet.xbox_user_id);
     const accountInfo = await getAccountInfo(playFabId.Data[0].PlayFabId);
     const playerProfile = await getPlayerProfile(playFabId.Data[0].PlayFabId);
 
     const playFabIdXbox = await getUserPlayFabIdA667(packet.xbox_user_id);
     const accountInfoXbox = await getAccountInfoA667(playFabIdXbox.Data[0].PlayFabId);
-    const playerProfileXbox = await getPlayerProfileA667(playFabIdXbox.Data[0].PlayFabId);
 
     if (config.apiChecks.apiCheck1.enabled) {
         let isAlt;
@@ -46,10 +44,10 @@ async function apiVaildate(packet, client, realm) {
         const titlesPercent = (titles[0].length === 0 ? 10 : 0) +
             (titles[0].length === 1 ? 8 : titles.length === 2 ? 6 : titles.length === 3 ? 4 : titles.length === 4 ? 2 : 0);
         const presenceDetailsPercent = profile.presenceDetails[0].length === 0 ? 10 : 0;
-        const createdPercent = diffDaysMC < config.apiChecks.apiCheck1.createdValue || !accountInfo.AccountInfo.created ? 20 : 0;
-        const createdPercent2 = diffDaysXbox < config.apiChecks.apiCheck1.createdValue || !accountInfoXbox.AccountInfo.created ? 20 : 0;
+        const createdPercentMC = diffDaysMC < config.apiChecks.apiCheck1.createdValue || !accountInfo.AccountInfo?.Created ? 30 : 0;
+        const createdPercentXbox = diffDaysXbox < config.apiChecks.apiCheck1.createdValue || !accountInfoXbox.AccountInfo?.Created ? 30 : 0;
 
-        overallPercent += followerPercent + followingPercent + bioPercent + accountTierPercent + minecraftPercent + onlinePercent + gamerScorePercent + colorPercent + titlesPercent + presenceDetailsPercent + createdPercent + createdPercent2;
+        overallPercent += followerPercent + followingPercent + bioPercent + accountTierPercent + minecraftPercent + onlinePercent + gamerScorePercent + colorPercent + titlesPercent + presenceDetailsPercent + createdPercentMC + createdPercentXbox;
 
         const convertToPercent = (number) => {
             return (number / 100).toFixed(2) * 100;
@@ -70,27 +68,39 @@ async function apiVaildate(packet, client, realm) {
         if (isAlt) {
             console.log(`[${packet.xbox_user_id}] API detection [T1] - ${totalPercent}% - Created: ${accountInfo.AccountInfo.Created}`);
             if (!config.debug) {
-                if (config.apiChecks.apiCheck1.punishment === "kick") {
-                    client.sendCommand(`kick "${packet.xbox_user_id}" Failed to meet requirements. (${totalPercent}%) (0xFFF1)`);
-                    dbAccount.kickCount++;
-                    dbAccount.save();
-                } else if (config.apiChecks.apiCheck1.punishment === "ban") {
-                    client.sendCommand(`kick "${packet.xbox_user_id}" Failed to meet requirements. (${totalPercent}%) (0xFFF1)`);
-                    dbAccount.banCount++;
-                    dbAccount.isBanned = true;
-                    dbAccount.save();
-                } else if (config.apiChecks.apiCheck1.punishment === "clubKick" && realm.isOwner) {
-                    realm.kick(packet.xbox_user_id);
-                    dbAccount.clubKickCount++;
-                    dbAccount.save();
-                } else if (config.apiChecks.apiCheck1.punishment === "clubBan" && realm.isOwner) {
-                    realm.ban(packet.xbox_user_id);
-                    dbAccount.clubBanCount++;
-                    dbAccount.save();
-                } else if (config.apiChecks.apiCheck1.punishment === "warning") {
-                    client.sendCommand(`say "${packet.xbox_user_id}" You failed to meet requirements. (${totalPercent}%) (0xFFF1)`);
-                    dbAccount.warningCount++;
-                    dbAccount.save();
+                const punishment = config.apiChecks.apiCheck1.punishment;
+
+                switch (punishment) {
+                    case "kick":
+                        client.sendCommand(`kick "${packet.xbox_user_id}" Failed to meet requirements. (${totalPercent}%) (0xFFF1)`);
+                        dbAccount.kickCount++;
+                        dbAccount.save();
+                        break;
+                    case "ban":
+                        client.sendCommand(`kick "${packet.xbox_user_id}" Failed to meet requirements. (${totalPercent}%) (0xFFF1)`);
+                        dbAccount.banCount++;
+                        dbAccount.isBanned = true;
+                        dbAccount.save();
+                        break;
+                    case "clubKick":
+                        if (realm.isOwner) {
+                            realm.kick(packet.xbox_user_id);
+                            dbAccount.clubKickCount++;
+                            dbAccount.save();
+                        }
+                        break;
+                    case "clubBan":
+                        if (realm.isOwner) {
+                            realm.ban(packet.xbox_user_id);
+                            dbAccount.clubBanCount++;
+                            dbAccount.save();
+                        }
+                        break;
+                    case "warning":
+                        client.sendCommand(`say "${packet.xbox_user_id}" You failed to meet requirements. (${totalPercent}%) (0xFFF1)`);
+                        dbAccount.warningCount++;
+                        dbAccount.save();
+                        break;
                 }
             }
         }
@@ -99,27 +109,39 @@ async function apiVaildate(packet, client, realm) {
     if (config.apiChecks.apiCheck2.enabled && playerProfile.PlayerProfile?.DisplayName) {
         console.log(`[${packet.xbox_user_id}] API detection [T3]`);
         if (!config.debug) {
-            if (config.apiChecks.apiCheck2.punishment === "kick") {
-                client.sendCommand(`kick "${packet.xbox_user_id}" Failed to meet requirements. (0xFFF3)`);
-                dbAccount.kickCount++;
-                dbAccount.save();
-            } else if (config.apiChecks.apiCheck2.punishment === "ban") {
-                client.sendCommand(`kick "${packet.xbox_user_id}" Failed to meet requirements. (0xFFF3)`);
-                dbAccount.banCount++;
-                dbAccount.isBanned = true;
-                dbAccount.save();
-            } else if (config.apiChecks.apiCheck2.punishment === "warning") {
-                client.sendCommand(`say "${packet.xbox_user_id}" You failed to meet requirements. (0xFFF3)`);
-                dbAccount.warningCount++;
-                dbAccount.save();
-            } else if (config.apiChecks.apiCheck2.punishment === "clubKick" && realm.isOwner) {
-                realm.kick(packet.xbox_user_id);
-                dbAccount.clubKickCount++;
-                dbAccount.save();
-            } else if (config.apiChecks.apiCheck2.punishment === "clubBan" && realm.isOwner) {
-                realm.ban(packet.xbox_user_id);
-                dbAccount.clubBanCount++;
-                dbAccount.save();
+            const punishment = config.apiChecks.apiCheck2.punishment;
+
+            switch (punishment) {
+                case "kick":
+                    client.sendCommand(`kick "${packet.xbox_user_id}" Failed to meet requirements. (0xFFF3)`);
+                    dbAccount.kickCount++;
+                    dbAccount.save();
+                    break;
+                case "ban":
+                    client.sendCommand(`kick "${packet.xbox_user_id}" Failed to meet requirements. (0xFFF3)`);
+                    dbAccount.banCount++;
+                    dbAccount.isBanned = true;
+                    dbAccount.save();
+                    break;
+                case "warning":
+                    client.sendCommand(`say "${packet.xbox_user_id}" You failed to meet requirements. (0xFFF3)`);
+                    dbAccount.warningCount++;
+                    dbAccount.save();
+                    break;
+                case "clubKick":
+                    if (realm.isOwner) {
+                        realm.kick(packet.xbox_user_id);
+                        dbAccount.clubKickCount++;
+                        dbAccount.save();
+                    }
+                    break;
+                case "clubBan":
+                    if (realm.isOwner) {
+                        realm.ban(packet.xbox_user_id);
+                        dbAccount.clubBanCount++;
+                        dbAccount.save();
+                    }
+                    break;
             }
         }
     }
@@ -127,27 +149,37 @@ async function apiVaildate(packet, client, realm) {
     if (config.apiChecks.apiCheck3.enabled && packet.skin_data.play_fab_id !== playerProfile.PlayerProfile.PlayerId.toLowerCase()) {
         console.log(`[${packet.xbox_user_id}] API detection [T4]`);
         if (!config.debug) {
-            if (config.apiChecks.apiCheck3.punishment === "kick") {
-                client.sendCommand(`kick "${packet.xbox_user_id}" Failed to meet requirements. (0xFFF4)`);
-                dbAccount.kickCount++;
-                dbAccount.save();
-            } else if (config.apiChecks.apiCheck3.punishment === "ban") {
-                client.sendCommand(`kick "${packet.xbox_user_id}" Failed to meet requirements. (0xFFF4)`);
-                dbAccount.banCount++;
-                dbAccount.isBanned = true;
-                dbAccount.save();
-            } else if (config.apiChecks.apiCheck3.punishment === "warning") {
-                client.sendCommand(`say "${packet.xbox_user_id}" You failed to meet requirements. (0xFFF4)`);
-                dbAccount.warningCount++;
-                dbAccount.save();
-            } else if (config.apiChecks.apiCheck3.punishment === "clubKick" && realm.isOwner) {
-                realm.kick(packet.xbox_user_id);
-                dbAccount.clubKickCount++;
-                dbAccount.save();
-            } else if (config.apiChecks.apiCheck3.punishment === "clubBan" && realm.isOwner) {
-                realm.ban(packet.xbox_user_id);
-                dbAccount.clubBanCount++;
-                dbAccount.save();
+            switch (config.apiChecks.apiCheck3.punishment) {
+                case "kick":
+                    client.sendCommand(`kick "${packet.xbox_user_id}" Failed to meet requirements. (0xFFF4)`);
+                    dbAccount.kickCount++;
+                    dbAccount.save();
+                    break;
+                case "ban":
+                    client.sendCommand(`kick "${packet.xbox_user_id}" Failed to meet requirements. (0xFFF4)`);
+                    dbAccount.banCount++;
+                    dbAccount.isBanned = true;
+                    dbAccount.save();
+                    break;
+                case "warning":
+                    client.sendCommand(`say "${packet.xbox_user_id}" You failed to meet requirements. (0xFFF4)`);
+                    dbAccount.warningCount++;
+                    dbAccount.save();
+                    break;
+                case "clubKick":
+                    if (realm.isOwner) {
+                        realm.kick(packet.xbox_user_id);
+                        dbAccount.clubKickCount++;
+                        dbAccount.save();
+                    }
+                    break;
+                case "clubBan":
+                    if (realm.isOwner) {
+                        realm.ban(packet.xbox_user_id);
+                        dbAccount.clubBanCount++;
+                        dbAccount.save();
+                    }
+                    break;
             }
         }
     }
@@ -155,27 +187,37 @@ async function apiVaildate(packet, client, realm) {
     if (config.apiChecks.apiCheck4.enabled && !packet.skin_data.skin_resource_pack.includes(playerProfile.PlayerProfile.PlayerId.toLowerCase())) {
         console.log(`[${packet.xbox_user_id}] API detection [T5]`);
         if (!config.debug) {
-            if (config.apiChecks.apiCheck4.punishment === "kick") {
-                client.sendCommand(`kick "${packet.xbox_user_id}" Failed to meet requirements. (0xFFF5)`);
-                dbAccount.kickCount++;
-                dbAccount.save();
-            } else if (config.apiChecks.apiCheck4.punishment === "ban") {
-                client.sendCommand(`kick "${packet.xbox_user_id}" Failed to meet requirements. (0xFFF5)`);
-                dbAccount.banCount++;
-                dbAccount.isBanned = true;
-                dbAccount.save();
-            } else if (config.apiChecks.apiCheck4.punishment === "warning") {
-                client.sendCommand(`say "${packet.xbox_user_id}" You failed to meet requirements. (0xFFF5)`);
-                dbAccount.warningCount++;
-                dbAccount.save();
-            } else if (config.apiChecks.apiCheck4.punishment === "clubKick" && realm.isOwner) {
-                realm.kick(packet.xbox_user_id);
-                dbAccount.clubKickCount++;
-                dbAccount.save();
-            } else if (config.apiChecks.apiCheck4.punishment === "clubBan" && realm.isOwner) {
-                realm.ban(packet.xbox_user_id);
-                dbAccount.clubBanCount++;
-                dbAccount.save();
+            switch (config.apiChecks.apiCheck4.punishment) {
+                case "kick":
+                    client.sendCommand(`kick "${packet.xbox_user_id}" Failed to meet requirements. (0xFFF5)`);
+                    dbAccount.kickCount++;
+                    dbAccount.save();
+                    break;
+                case "ban":
+                    client.sendCommand(`kick "${packet.xbox_user_id}" Failed to meet requirements. (0xFFF5)`);
+                    dbAccount.banCount++;
+                    dbAccount.isBanned = true;
+                    dbAccount.save();
+                    break;
+                case "warning":
+                    client.sendCommand(`say "${packet.xbox_user_id}" You failed to meet requirements. (0xFFF5)`);
+                    dbAccount.warningCount++;
+                    dbAccount.save();
+                    break;
+                case "clubKick":
+                    if (realm.isOwner) {
+                        realm.kick(packet.xbox_user_id);
+                        dbAccount.clubKickCount++;
+                        dbAccount.save();
+                    }
+                    break;
+                case "clubBan":
+                    if (realm.isOwner) {
+                        realm.ban(packet.xbox_user_id);
+                        dbAccount.clubBanCount++;
+                        dbAccount.save();
+                    }
+                    break;
             }
         }
     }
@@ -183,27 +225,37 @@ async function apiVaildate(packet, client, realm) {
     if (config.apiChecks.apiCheck5.enabled && !packet.skin_data.geometry_data.includes(playerProfile.PlayerProfile.PlayerId.toLowerCase())) {
         console.log(`[${packet.xbox_user_id}] API detection [T6]`);
         if (!config.debug) {
-            if (config.apiChecks.apiCheck5.punishment === "kick") {
-                client.sendCommand(`kick "${packet.xbox_user_id}" Failed to meet requirements. (0xFFF6)`);
-                dbAccount.kickCount++;
-                dbAccount.save();
-            } else if (config.apiChecks.apiCheck5.punishment === "ban") {
-                client.sendCommand(`kick "${packet.xbox_user_id}" Failed to meet requirements. (0xFFF6)`);
-                dbAccount.banCount++;
-                dbAccount.isBanned = true;
-                dbAccount.save();
-            } else if (config.apiChecks.apiCheck5.punishment === "warning") {
-                client.sendCommand(`say "${packet.xbox_user_id}" You failed to meet requirements. (0xFFF6)`);
-                dbAccount.warningCount++;
-                dbAccount.save();
-            } else if (config.apiChecks.apiCheck5.punishment === "clubKick" && realm.isOwner) {
-                realm.kick(packet.xbox_user_id);
-                dbAccount.clubKickCount++;
-                dbAccount.save();
-            } else if (config.apiChecks.apiCheck5.punishment === "clubBan" && realm.isOwner) {
-                realm.ban(packet.xbox_user_id);
-                dbAccount.clubBanCount++;
-                dbAccount.save();
+            switch (config.apiChecks.apiCheck5.punishment) {
+                case "kick":
+                    client.sendCommand(`kick "${packet.xbox_user_id}" Failed to meet requirements. (0xFFF6)`);
+                    dbAccount.kickCount++;
+                    dbAccount.save();
+                    break;
+                case "ban":
+                    client.sendCommand(`kick "${packet.xbox_user_id}" Failed to meet requirements. (0xFFF6)`);
+                    dbAccount.banCount++;
+                    dbAccount.isBanned = true;
+                    dbAccount.save();
+                    break;
+                case "warning":
+                    client.sendCommand(`say "${packet.xbox_user_id}" You failed to meet requirements. (0xFFF6)`);
+                    dbAccount.warningCount++;
+                    dbAccount.save();
+                    break;
+                case "clubKick":
+                    if (realm.isOwner) {
+                        realm.kick(packet.xbox_user_id);
+                        dbAccount.clubKickCount++;
+                        dbAccount.save();
+                    }
+                    break;
+                case "clubBan":
+                    if (realm.isOwner) {
+                        realm.ban(packet.xbox_user_id);
+                        dbAccount.clubBanCount++;
+                        dbAccount.save();
+                    }
+                    break;
             }
         }
     }

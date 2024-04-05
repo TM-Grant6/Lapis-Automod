@@ -9,27 +9,37 @@ function skinVaildate(packet, dbAccount, client, realm, packetType) {
 		if (config.skinChecks.skinCheck1.enabled && packet.skin_data.skin_data.width > 512 || packet.skin_data.skin_data.width < 64) {
 			console.log(`[${packet.xbox_user_id}] Bad skin information [T1]`);
 			if (!config.debug) {
-				if (config.skinChecks.skinCheck1.punishment === "kick") {
-					client.sendCommand(`kick "${packet.xbox_user_id}" Invaild skin information sent. (0x3f5)`, 0)
-					dbAccount.kickCount++
-					dbAccount.save()
-				} else if (config.skinChecks.skinCheck1.punishment === "ban") {
-					client.sendCommand(`kick "${packet.xbox_user_id}" Invaild skin information sent. (0x3f5)`, 0)
-					dbAccount.banCount++
-					dbAccount.isBanned = true
-					dbAccount.save()
-				} else if (config.skinChecks.skinCheck1.punishment === "clubKick" && realm.isOwner) {
-					realm.kick(packet.xbox_user_id);
-					dbAccount.clubKickCount++
-					dbAccount.save()
-				} else if (config.skinChecks.skinCheck1.punishment === "clubBan" && realm.isOwner) {
-					realm.ban(packet.xbox_user_id);
-					dbAccount.clubBanCount++
-					dbAccount.save()
-				} else if (config.skinChecks.skinCheck1.punishment === "warning") {
-					client.sendCommand(`say "${packet.xbox_user_id}" You sent invaild skin information. (0x3f5)`, 0)
-					dbAccount.warningCount++
-					dbAccount.save()
+				switch (config.skinChecks.skinCheck1.punishment) {
+					case "kick":
+						client.sendCommand(`kick "${packet.xbox_user_id}" Invaild skin information sent. (0x3f5)`, 0)
+						dbAccount.kickCount++
+						dbAccount.save()
+						break
+					case "ban":
+						client.sendCommand(`kick "${packet.xbox_user_id}" Invaild skin information sent. (0x3f5)`, 0)
+						dbAccount.banCount++
+						dbAccount.isBanned = true
+						dbAccount.save()
+						break
+					case "clubKick":
+						if (realm.isOwner) {
+							realm.kick(packet.xbox_user_id);
+							dbAccount.clubKickCount++
+							dbAccount.save()
+						}
+						break
+					case "clubBan":
+						if (realm.isOwner) {
+							realm.ban(packet.xbox_user_id);
+							dbAccount.clubBanCount++
+							dbAccount.save()
+						}
+						break
+					case "warning":
+						client.sendCommand(`say "${packet.xbox_user_id}" You sent invaild skin information. (0x3f5)`, 0)
+						dbAccount.warningCount++
+						dbAccount.save()
+						break
 				}
 			}
 		}
@@ -37,27 +47,37 @@ function skinVaildate(packet, dbAccount, client, realm, packetType) {
 		if (config.skinChecks.skinCheck2.enabled && packet.skin_data.skin_data.height > 512 || packet.skin_data.skin_data.height < 64) {
 			console.log(`[${packet.xbox_user_id}] Bad skin information [T2]`);
 			if (!config.debug) {
-				if (config.skinChecks.skinCheck2.punishment === "kick") {
-					client.sendCommand(`kick "${packet.xbox_user_id}" Invaild skin information sent. (0x3f6)`, 0)
-					dbAccount.kickCount++
-					dbAccount.save()
-				} else if (config.skinChecks.skinCheck2.punishment === "ban") {
-					client.sendCommand(`kick "${packet.xbox_user_id}" Invaild skin information sent. (0x3f6)`, 0)
-					dbAccount.banCount++
-					dbAccount.isBanned = true
-					dbAccount.save()
-				} else if (config.skinChecks.skinCheck2.punishment === "clubKick" && realm.isOwner) {
-					realm.kick(packet.xbox_user_id);
-					dbAccount.clubKickCount++
-					dbAccount.save()
-				} else if (config.skinChecks.skinCheck2.punishment === "clubBan" && realm.isOwner) {
-					realm.ban(packet.xbox_user_id);
-					dbAccount.clubBanCount++
-					dbAccount.save()
-				} else if (config.skinChecks.skinCheck2.punishment === "warning") {
-					client.sendCommand(`say "${packet.xbox_user_id}" You sent invaild skin information. (0x3f6)`, 0)
-					dbAccount.warningCount++
-					dbAccount.save()
+				switch (config.skinChecks.skinCheck2.punishment) {
+					case "kick":
+						client.sendCommand(`kick "${packet.xbox_user_id}" Invaild skin information sent. (0x3f6)`, 0)
+						dbAccount.kickCount++
+						dbAccount.save()
+						break
+					case "ban":
+						client.sendCommand(`kick "${packet.xbox_user_id}" Invaild skin information sent. (0x3f6)`, 0)
+						dbAccount.banCount++
+						dbAccount.isBanned = true
+						dbAccount.save()
+						break
+					case "clubKick":
+						if (realm.isOwner) {
+							realm.kick(packet.xbox_user_id);
+							dbAccount.clubKickCount++
+							dbAccount.save()
+						}
+						break
+					case "clubBan":
+						if (realm.isOwner) {
+							realm.ban(packet.xbox_user_id);
+							dbAccount.clubBanCount++
+							dbAccount.save()
+						}
+						break
+					case "warning":
+						client.sendCommand(`say "${packet.xbox_user_id}" You sent invaild skin information. (0x3f6)`, 0)
+						dbAccount.warningCount++
+						dbAccount.save()
+						break
 				}
 			}
 		}
@@ -93,27 +113,37 @@ function skinVaildate(packet, dbAccount, client, realm, packetType) {
 		if (config.skinChecks.skinCheck4.enabled && packet.skin_data.premium && packet.skin_data.skin_resource_pack.includes('"default" : "geometry.n3"\n') || packet.skin_data.skin_id.includes('#')) {
 			console.log(`[${packet.xbox_user_id}] Bad skin information [T4]`);
 			if (!config.debug) {
-				if (config.skinChecks.skinCheck4.punishment === "kick") {
-					client.sendCommand(`kick "${packet.xbox_user_id}" Invaild skin information sent. (0x3f9)`, 0)
-					dbAccount.kickCount++
-					dbAccount.save()
-				} else if (config.skinChecks.skinCheck4.punishment === "ban") {
-					client.sendCommand(`kick "${packet.xbox_user_id}" Invaild skin information sent. (0x3f9)`, 0)
-					dbAccount.banCount++
-					dbAccount.isBanned = true
-					dbAccount.save()
-				} else if (config.skinChecks.skinCheck4.punishment === "clubKick" && realm.isOwner) {
-					realm.kick(packet.xbox_user_id);
-					dbAccount.clubKickCount++
-					dbAccount.save()
-				} else if (config.skinChecks.skinCheck4.punishment === "clubBan" && realm.isOwner) {
-					realm.ban(packet.xbox_user_id);
-					dbAccount.clubBanCount++
-					dbAccount.save()
-				} else if (config.skinChecks.skinCheck4.punishment === "warning") {
-					client.sendCommand(`say "${packet.xbox_user_id}" You sent invaild skin information. (0x3f9)`, 0)
-					dbAccount.warningCount++
-					dbAccount.save()
+				switch (config.skinChecks.skinCheck4.punishment) {
+					case "kick":
+						client.sendCommand(`kick "${packet.xbox_user_id}" Invaild skin information sent. (0x3f9)`, 0)
+						dbAccount.kickCount++
+						dbAccount.save()
+						break
+					case "ban":
+						client.sendCommand(`kick "${packet.xbox_user_id}" Invaild skin information sent. (0x3f9)`, 0)
+						dbAccount.banCount++
+						dbAccount.isBanned = true
+						dbAccount.save()
+						break
+					case "clubKick":
+						if (realm.isOwner) {
+							realm.kick(packet.xbox_user_id);
+							dbAccount.clubKickCount++
+							dbAccount.save()
+						}
+						break
+					case "clubBan":
+						if (realm.isOwner) {
+							realm.ban(packet.xbox_user_id);
+							dbAccount.clubBanCount++
+							dbAccount.save()
+						}
+						break
+					case "warning":
+						client.sendCommand(`say "${packet.xbox_user_id}" You sent invaild skin information. (0x3f9)`, 0)
+						dbAccount.warningCount++
+						dbAccount.save()
+						break
 				}
 			}
 		}
@@ -126,27 +156,37 @@ function skinVaildate(packet, dbAccount, client, realm, packetType) {
 				!packet.skin_data.geometry_data.includes(packet.skin_data.play_fab_id)) {
 				console.log(`[${packet.xbox_user_id}] Bad skin information [T5]`);
 				if (!config.debug) {
-					if (config.skinChecks.skinCheck5.punishment === "kick") {
-						client.sendCommand(`kick "${packet.xbox_user_id}" Invaild skin information sent. (0x3f10)`, 0)
-						dbAccount.kickCount++
-						dbAccount.save()
-					} else if (config.skinChecks.skinCheck5.punishment === "ban") {
-						client.sendCommand(`kick "${packet.xbox_user_id}" Invaild skin information sent. (0x3f10)`, 0)
-						dbAccount.banCount++
-						dbAccount.isBanned = true
-						dbAccount.save()
-					} else if (config.skinChecks.skinCheck5.punishment === "clubKick" && realm.isOwner) {
-						realm.kick(packet.xbox_user_id);
-						dbAccount.clubKickCount++
-						dbAccount.save()
-					} else if (config.skinChecks.skinCheck5.punishment === "clubBan" && realm.isOwner) {
-						realm.ban(packet.xbox_user_id);
-						dbAccount.clubBanCount++
-						dbAccount.save()
-					} else if (config.skinChecks.skinCheck5.punishment === "warning") {
-						client.sendCommand(`say "${packet.xbox_user_id}" You sent invaild skin information. (0x3f10)`, 0)
-						dbAccount.warningCount++
-						dbAccount.save()
+					switch (config.skinChecks.skinCheck5.punishment) {
+						case "kick":
+							client.sendCommand(`kick "${packet.xbox_user_id}" Invaild skin information sent. (0x3f10)`, 0)
+							dbAccount.kickCount++
+							dbAccount.save()
+							break
+						case "ban":
+							client.sendCommand(`kick "${packet.xbox_user_id}" Invaild skin information sent. (0x3f10)`, 0)
+							dbAccount.banCount++
+							dbAccount.isBanned = true
+							dbAccount.save()
+							break
+						case "clubKick":
+							if (realm.isOwner) {
+								realm.kick(packet.xbox_user_id);
+								dbAccount.clubKickCount++
+								dbAccount.save()
+							}
+							break
+						case "clubBan":
+							if (realm.isOwner) {
+								realm.ban(packet.xbox_user_id);
+								dbAccount.clubBanCount++
+								dbAccount.save()
+							}
+							break
+						case "warning":
+							client.sendCommand(`say "${packet.xbox_user_id}" You sent invaild skin information. (0x3f10)`, 0)
+							dbAccount.warningCount++
+							dbAccount.save()
+							break
 					}
 				}
 			}
@@ -154,27 +194,37 @@ function skinVaildate(packet, dbAccount, client, realm, packetType) {
 		if (config.skinChecks.skinCheck6.enabled && packet.skin_data.geometry_data_version.length < 5 || packet.skin_data.geometry_data_version.length > 6) {
 			console.log(`[${packet.xbox_user_id}] Bad skin information [T6]`);
 			if (!config.debug) {
-				if (config.skinChecks.skinCheck6.punishment === "kick") {
-					client.sendCommand(`kick "${packet.xbox_user_id}" Invaild skin information sent. (0x3f11)`, 0)
-					dbAccount.kickCount++
-					dbAccount.save()
-				} else if (config.skinChecks.skinCheck6.punishment === "ban") {
-					client.sendCommand(`kick "${packet.xbox_user_id}" Invaild skin information sent. (0x3f11)`, 0)
-					dbAccount.banCount++
-					dbAccount.isBanned = true
-					dbAccount.save()
-				} else if (config.skinChecks.skinCheck6.punishment === "clubKick" && realm.isOwner) {
-					realm.kick(packet.xbox_user_id);
-					dbAccount.clubKickCount++
-					dbAccount.save()
-				} else if (config.skinChecks.skinCheck6.punishment === "clubBan" && realm.isOwner) {
-					realm.ban(packet.xbox_user_id);
-					dbAccount.clubBanCount++
-					dbAccount.save()
-				} else if (config.skinChecks.skinCheck6.punishment === "warning") {
-					client.sendCommand(`say "${packet.xbox_user_id}" You sent invaild skin information. (0x3f11)`, 0)
-					dbAccount.warningCount++
-					dbAccount.save()
+				switch (config.skinChecks.skinCheck6.punishment) {
+					case "kick":
+						client.sendCommand(`kick "${packet.xbox_user_id}" Invaild skin information sent. (0x3f11)`, 0)
+						dbAccount.kickCount++
+						dbAccount.save()
+						break
+					case "ban":
+						client.sendCommand(`kick "${packet.xbox_user_id}" Invaild skin information sent. (0x3f11)`, 0)
+						dbAccount.banCount++
+						dbAccount.isBanned = true
+						dbAccount.save()
+						break
+					case "clubKick":
+						if (realm.isOwner) {
+							realm.kick(packet.xbox_user_id);
+							dbAccount.clubKickCount++
+							dbAccount.save()
+						}
+						break
+					case "clubBan":
+						if (realm.isOwner) {
+							realm.ban(packet.xbox_user_id);
+							dbAccount.clubBanCount++
+							dbAccount.save()
+						}
+						break
+					case "warning":
+						client.sendCommand(`say "${packet.xbox_user_id}" You sent invaild skin information. (0x3f11)`, 0)
+						dbAccount.warningCount++
+						dbAccount.save()
+						break
 				}
 			}
 		}
@@ -182,27 +232,37 @@ function skinVaildate(packet, dbAccount, client, realm, packetType) {
 		if (config.skinChecks.skinCheck7.enabled && packet.skin_data.skin_resource_pack.includes(' "default" : "geometry.humanoid"\n')) {
 			console.log(`[${packet.xbox_user_id}] Bad skin information [T7]`);
 			if (!config.debug) {
-				if (config.skinChecks.skinCheck7.punishment === "kick") {
-					client.sendCommand(`kick "${packet.xbox_user_id}" Invaild skin information sent. (0x3f12)`, 0)
-					dbAccount.kickCount++
-					dbAccount.save()
-				} else if (config.skinChecks.skinCheck7.punishment === "ban") {
-					client.sendCommand(`kick "${packet.xbox_user_id}" Invaild skin information sent. (0x3f12)`, 0)
-					dbAccount.banCount++
-					dbAccount.isBanned = true
-					dbAccount.save()
-				} else if (config.skinChecks.skinCheck7.punishment === "clubKick" && realm.isOwner) {
-					realm.kick(packet.xbox_user_id);
-					dbAccount.clubKickCount++
-					dbAccount.save()
-				} else if (config.skinChecks.skinCheck7.punishment === "clubBan" && realm.isOwner) {
-					realm.ban(packet.xbox_user_id);
-					dbAccount.clubBanCount++
-					dbAccount.save()
-				} else if (config.skinChecks.skinCheck7.punishment === "warning") {
-					client.sendCommand(`say "${packet.xbox_user_id}" You sent invaild skin information. (0x3f12)`, 0)
-					dbAccount.warningCount++
-					dbAccount.save()
+				switch (config.skinChecks.skinCheck7.punishment) {
+					case "kick":
+						client.sendCommand(`kick "${packet.xbox_user_id}" Invaild skin information sent. (0x3f12)`, 0)
+						dbAccount.kickCount++
+						dbAccount.save()
+						break
+					case "ban":
+						client.sendCommand(`kick "${packet.xbox_user_id}" Invaild skin information sent. (0x3f12)`, 0)
+						dbAccount.banCount++
+						dbAccount.isBanned = true
+						dbAccount.save()
+						break
+					case "clubKick":
+						if (realm.isOwner) {
+							realm.kick(packet.xbox_user_id);
+							dbAccount.clubKickCount++
+							dbAccount.save()
+						}
+						break
+					case "clubBan":
+						if (realm.isOwner) {
+							realm.ban(packet.xbox_user_id);
+							dbAccount.clubBanCount++
+							dbAccount.save()
+						}
+						break
+					case "warning":
+						client.sendCommand(`say "${packet.xbox_user_id}" You sent invaild skin information. (0x3f12)`, 0)
+						dbAccount.warningCount++
+						dbAccount.save()
+						break
 				}
 			}
 		}
@@ -210,27 +270,37 @@ function skinVaildate(packet, dbAccount, client, realm, packetType) {
 		if (config.skinChecks.skinCheck8.enabled && !packet.skin_data.skin_resource_pack.includes("default")) {
 			console.log(`[${packet.xbox_user_id}] Bad skin information [T8]`);
 			if (!config.debug) {
-				if (config.skinChecks.skinCheck8.punishment === "kick") {
-					client.sendCommand(`kick "${packet.xbox_user_id}" Invaild skin information sent. (0x3f13)`, 0)
-					dbAccount.kickCount++
-					dbAccount.save()
-				} else if (config.skinChecks.skinCheck8.punishment === "ban") {
-					client.sendCommand(`kick "${packet.xbox_user_id}" Invaild skin information sent. (0x3f13)`, 0)
-					dbAccount.banCount++
-					dbAccount.isBanned = true
-					dbAccount.save()
-				} else if (config.skinChecks.skinCheck8.punishment === "clubKick" && realm.isOwner) {
-					realm.kick(packet.xbox_user_id);
-					dbAccount.clubKickCount++
-					dbAccount.save()
-				} else if (config.skinChecks.skinCheck8.punishment === "clubBan" && realm.isOwner) {
-					realm.ban(packet.xbox_user_id);
-					dbAccount.clubBanCount++
-					dbAccount.save()
-				} else if (config.skinChecks.skinCheck8.punishment === "warning") {
-					client.sendCommand(`say "${packet.xbox_user_id}" You sent invaild skin information. (0x3f13)`, 0)
-					dbAccount.warningCount++
-					dbAccount.save()
+				switch (config.skinChecks.skinCheck8.punishment) {
+					case "kick":
+						client.sendCommand(`kick "${packet.xbox_user_id}" Invaild skin information sent. (0x3f13)`, 0)
+						dbAccount.kickCount++
+						dbAccount.save()
+						break
+					case "ban":
+						client.sendCommand(`kick "${packet.xbox_user_id}" Invaild skin information sent. (0x3f13)`, 0)
+						dbAccount.banCount++
+						dbAccount.isBanned = true
+						dbAccount.save()
+						break
+					case "clubKick":
+						if (realm.isOwner) {
+							realm.kick(packet.xbox_user_id);
+							dbAccount.clubKickCount++
+							dbAccount.save()
+						}
+						break
+					case "clubBan":
+						if (realm.isOwner) {
+							realm.ban(packet.xbox_user_id);
+							dbAccount.clubBanCount++
+							dbAccount.save()
+						}
+						break
+					case "warning":
+						client.sendCommand(`say "${packet.xbox_user_id}" You sent invaild skin information. (0x3f13)`, 0)
+						dbAccount.warningCount++
+						dbAccount.save()
+						break
 				}
 			}
 		}
@@ -238,27 +308,37 @@ function skinVaildate(packet, dbAccount, client, realm, packetType) {
 		if (config.skinChecks.skinCheck1.enabled && packet.skin.skin_data.width > 512 || packet.skin.skin_data.width < 64) {
 			console.log(`[${dbAccount.xuid}] Bad skin information [T1]`);
 			if (!config.debug) {
-				if (config.skinChecks.skinCheck1.punishment === "kick") {
-					client.sendCommand(`kick "${dbAccount.xuid}" Invaild skin information sent. (0x5d3)`, 0)
-					dbAccount.kickCount++
-					dbAccount.save()
-				} else if (config.skinChecks.skinCheck1.punishment === "ban") {
-					client.sendCommand(`kick "${dbAccount.xuid}" Invaild skin information sent. (0x5d3)`, 0)
-					dbAccount.banCount++
-					dbAccount.isBanned = true
-					dbAccount.save()
-				} else if (config.skinChecks.skinCheck1.punishment === "clubKick" && realm.isOwner) {
-					realm.kick(dbAccount.xuid);
-					dbAccount.clubKickCount++
-					dbAccount.save()
-				} else if (config.skinChecks.skinCheck1.punishment === "clubBan" && realm.isOwner) {
-					realm.ban(dbAccount.xuid);
-					dbAccount.clubBanCount++
-					dbAccount.save()
-				} else if (config.skinChecks.skinCheck1.punishment === "warning") {
-					client.sendCommand(`say "${dbAccount.xuid}" You sent invaild skin information. (0x5d3)`, 0)
-					dbAccount.warningCount++
-					dbAccount.save()
+				switch (config.skinChecks.skinCheck1.punishment) {
+					case "kick":
+						client.sendCommand(`kick "${dbAccount.xuid}" Invaild skin information sent. (0x5d3)`, 0)
+						dbAccount.kickCount++
+						dbAccount.save()
+						break
+					case "ban":
+						client.sendCommand(`kick "${dbAccount.xuid}" Invaild skin information sent. (0x5d3)`, 0)
+						dbAccount.banCount++
+						dbAccount.isBanned = true
+						dbAccount.save()
+						break
+					case "clubKick":
+						if (realm.isOwner) {
+							realm.kick(dbAccount.xuid);
+							dbAccount.clubKickCount++
+							dbAccount.save()
+						}
+						break
+					case "clubBan":
+						if (realm.isOwner) {
+							realm.ban(dbAccount.xuid);
+							dbAccount.clubBanCount++
+							dbAccount.save()
+						}
+						break
+					case "warning":
+						client.sendCommand(`say "${dbAccount.xuid}" You sent invaild skin information. (0x5d3)`, 0)
+						dbAccount.warningCount++
+						dbAccount.save()
+						break
 				}
 			}
 		}
@@ -266,27 +346,37 @@ function skinVaildate(packet, dbAccount, client, realm, packetType) {
 		if (config.skinChecks.skinCheck3.enabled && packet.skin.play_fab_id > 16 || packet.skin.play_fab_id < 16) {
 			console.log(`[${dbAccount.xuid}] Bad skin information [T3]`);
 			if (!config.debug) {
-				if (config.skinChecks.skinCheck3.punishment === "kick") {
-					client.sendCommand(`kick "${dbAccount.xuid}" Invaild skin information sent. (0x5d6)`, 0)
-					dbAccount.kickCount++
-					dbAccount.save()
-				} else if (config.skinChecks.skinCheck3.punishment === "ban") {
-					client.sendCommand(`kick "${dbAccount.xuid}" Invaild skin information sent. (0x5d6)`, 0)
-					dbAccount.banCount++
-					dbAccount.isBanned = true
-					dbAccount.save()
-				} else if (config.skinChecks.skinCheck3.punishment === "clubKick" && realm.isOwner) {
-					realm.kick(dbAccount.xuid);
-					dbAccount.clubKickCount++
-					dbAccount.save()
-				} else if (config.skinChecks.skinCheck3.punishment === "clubBan" && realm.isOwner) {
-					realm.ban(dbAccount.xuid);
-					dbAccount.clubBanCount++
-					dbAccount.save()
-				} else if (config.skinChecks.skinCheck3.punishment === "warning") {
-					client.sendCommand(`say "${dbAccount.xuid}" You sent invaild skin information. (0x5d6)`, 0)
-					dbAccount.warningCount++
-					dbAccount.save()
+				switch (config.skinChecks.skinCheck3.punishment) {
+					case "kick":
+						client.sendCommand(`kick "${dbAccount.xuid}" Invaild skin information sent. (0x5d6)`, 0)
+						dbAccount.kickCount++
+						dbAccount.save()
+						break
+					case "ban":
+						client.sendCommand(`kick "${dbAccount.xuid}" Invaild skin information sent. (0x5d6)`, 0)
+						dbAccount.banCount++
+						dbAccount.isBanned = true
+						dbAccount.save()
+						break
+					case "clubKick":
+						if (realm.isOwner) {
+							realm.kick(dbAccount.xuid);
+							dbAccount.clubKickCount++
+							dbAccount.save()
+						}
+						break
+					case "clubBan":
+						if (realm.isOwner) {
+							realm.ban(dbAccount.xuid);
+							dbAccount.clubBanCount++
+							dbAccount.save()
+						}
+						break
+					case "warning":
+						client.sendCommand(`say "${dbAccount.xuid}" You sent invaild skin information. (0x5d6)`, 0)
+						dbAccount.warningCount++
+						dbAccount.save()
+						break
 				}
 			}
 		}
@@ -294,27 +384,37 @@ function skinVaildate(packet, dbAccount, client, realm, packetType) {
 		if (config.skinChecks.skinCheck4.enabled && packet.skin.premium && packet.skin.skin_resource_pack.includes('"default" : "geometry.n3"\n') || packet.skin.skin_id.includes('#')) {
 			console.log(`[${dbAccount.xuid}] Bad skin information [T4]`);
 			if (!config.debug) {
-				if (config.skinChecks.skinCheck4.punishment === "kick") {
-					client.sendCommand(`kick "${dbAccount.xuid}" Invaild skin information sent. (0x5d7)`, 0)
-					dbAccount.kickCount++
-					dbAccount.save()
-				} else if (config.skinChecks.skinCheck4.punishment === "ban") {
-					client.sendCommand(`kick "${dbAccount.xuid}" Invaild skin information sent. (0x5d7)`, 0)
-					dbAccount.banCount++
-					dbAccount.isBanned = true
-					dbAccount.save()
-				} else if (config.skinChecks.skinCheck4.punishment === "clubKick" && realm.isOwner) {
-					realm.kick(dbAccount.xuid);
-					dbAccount.clubKickCount++
-					dbAccount.save()
-				} else if (config.skinChecks.skinCheck4.punishment === "clubBan" && realm.isOwner) {
-					realm.ban(dbAccount.xuid);
-					dbAccount.clubBanCount++
-					dbAccount.save()
-				} else if (config.skinChecks.skinCheck4.punishment === "warning") {
-					client.sendCommand(`say "${dbAccount.xuid}" You sent invaild skin information. (0x5d7)`, 0)
-					dbAccount.warningCount++
-					dbAccount.save()
+				switch (config.skinChecks.skinCheck4.punishment) {
+					case "kick":
+						client.sendCommand(`kick "${dbAccount.xuid}" Invaild skin information sent. (0x5d7)`, 0)
+						dbAccount.kickCount++
+						dbAccount.save()
+						break
+					case "ban":
+						client.sendCommand(`kick "${dbAccount.xuid}" Invaild skin information sent. (0x5d7)`, 0)
+						dbAccount.banCount++
+						dbAccount.isBanned = true
+						dbAccount.save()
+						break
+					case "clubKick":
+						if (realm.isOwner) {
+							realm.kick(dbAccount.xuid);
+							dbAccount.clubKickCount++
+							dbAccount.save()
+						}
+						break
+					case "clubBan":
+						if (realm.isOwner) {
+							realm.ban(dbAccount.xuid);
+							dbAccount.clubBanCount++
+							dbAccount.save()
+						}
+						break
+					case "warning":
+						client.sendCommand(`say "${dbAccount.xuid}" You sent invaild skin information. (0x5d7)`, 0)
+						dbAccount.warningCount++
+						dbAccount.save()
+						break
 				}
 			}
 		}
@@ -327,55 +427,76 @@ function skinVaildate(packet, dbAccount, client, realm, packetType) {
 				!packet.skin.geometry_data.includes(packet.skin.play_fab_id)) {
 				console.log(`[${dbAccount.xuid}] Bad skin information [T5]`);
 				if (!config.debug) {
-					if (config.skinChecks.skinCheck5.punishment === "kick") {
-						client.sendCommand(`kick "${dbAccount.xuid}" Invaild skin information sent. (0x5d8)`, 0)
-						dbAccount.kickCount++
-						dbAccount.save()
-					} else if (config.skinChecks.skinCheck5.punishment === "ban") {
-						client.sendCommand(`kick "${dbAccount.xuid}" Invaild skin information sent. (0x5d8)`, 0)
-						dbAccount.banCount++
-						dbAccount.isBanned = true
-						dbAccount.save()
-					} else if (config.skinChecks.skinCheck5.punishment === "clubKick" && realm.isOwner) {
-						realm.kick(dbAccount.xuid);
-						dbAccount.clubKickCount++
-						dbAccount.save()
-					} else if (config.skinChecks.skinCheck5.punishment === "clubBan" && realm.isOwner) {
-						realm.ban(dbAccount.xuid);
-						dbAccount.clubBanCount++
-						dbAccount.save()
-					} else if (config.skinChecks.skinCheck5.punishment === "warning") {
-						client.sendCommand(`say "${dbAccount.xuid}" You sent invaild skin information. (0x5d8)`, 0)
-						dbAccount.warningCount++
-						dbAccount.save()	
+					switch (config.skinChecks.skinCheck5.punishment) {
+						case "kick":
+							client.sendCommand(`kick "${dbAccount.xuid}" Invaild skin information sent. (0x5d8)`, 0)
+							dbAccount.kickCount++
+							dbAccount.save()
+							break
+						case "ban":
+							client.sendCommand(`kick "${dbAccount.xuid}" Invaild skin information sent. (0x5d8)`, 0)
+							dbAccount.banCount++
+							dbAccount.isBanned = true
+							dbAccount.save()
+							break
+						case "clubKick":
+							if (realm.isOwner) {
+								realm.kick(dbAccount.xuid);
+								dbAccount.clubKickCount++
+								dbAccount.save()
+							}
+							break
+						case "clubBan":
+							if (realm.isOwner) {
+								realm.ban(dbAccount.xuid);
+								dbAccount.clubBanCount++
+								dbAccount.save()
+							}
+							break
+						case "warning":
+							client.sendCommand(`say "${dbAccount.xuid}" You sent invaild skin information. (0x5d8)`, 0)
+							dbAccount.warningCount++
+							dbAccount.save()	
+							break
 					}
+
 				}
 			}
 
 		if (config.skinChecks.skinCheck7.enabled && packet.skin.skin_resource_pack.includes(' "default" : "geometry.humanoid"\n')) {
 			console.log(`[${dbAccount.xuid}] Bad skin information [T7]`);
 			if (!config.debug) {
-				if (config.skinChecks.skinCheck6.punishment === "kick") {
-					client.sendCommand(`kick "${dbAccount.xuid}" Invaild skin information sent. (0x5d10)`, 0)
-					dbAccount.kickCount++
-					dbAccount.save()
-				} else if (config.skinChecks.skinCheck6.punishment === "ban") {
-					client.sendCommand(`kick "${dbAccount.xuid}" Invaild skin information sent. (0x5d10)`, 0)
-					dbAccount.banCount++
-					dbAccount.isBanned = true
-					dbAccount.save()
-				} else if (config.skinChecks.skinCheck6.punishment === "clubKick" && realm.isOwner) {
-					realm.kick(dbAccount.xuid);
-					dbAccount.clubKickCount++
-					dbAccount.save()
-				} else if (config.skinChecks.skinCheck6.punishment === "clubBan" && realm.isOwner) {
-					realm.ban(dbAccount.xuid);
-					dbAccount.clubBanCount++
-					dbAccount.save()
-				} else if (config.skinChecks.skinCheck6.punishment === "warning") {
-					client.sendCommand(`say "${dbAccount.xuid}" You sent invaild skin information. (0x5d10)`, 0)
-					dbAccount.warningCount++
-					dbAccount.save()
+				switch (config.skinChecks.skinCheck6.punishment) {
+					case "kick":
+						client.sendCommand(`kick "${dbAccount.xuid}" Invaild skin information sent. (0x5d10)`, 0)
+						dbAccount.kickCount++
+						dbAccount.save()
+						break
+					case "ban":
+						client.sendCommand(`kick "${dbAccount.xuid}" Invaild skin information sent. (0x5d10)`, 0)
+						dbAccount.banCount++
+						dbAccount.isBanned = true
+						dbAccount.save()
+						break
+					case "clubKick":
+						if (realm.isOwner) {
+							realm.kick(dbAccount.xuid);
+							dbAccount.clubKickCount++
+							dbAccount.save()
+						}
+						break
+					case "clubBan":
+						if (realm.isOwner) {
+							realm.ban(dbAccount.xuid);
+							dbAccount.clubBanCount++
+							dbAccount.save()
+						}
+						break
+					case "warning":
+						client.sendCommand(`say "${dbAccount.xuid}" You sent invaild skin information. (0x5d10)`, 0)
+						dbAccount.warningCount++
+						dbAccount.save()
+						break
 				}
 			}
 		}
@@ -383,27 +504,37 @@ function skinVaildate(packet, dbAccount, client, realm, packetType) {
 		if (config.skinChecks.skinCheck8.enabled && !packet.skin.skin_resource_pack.includes("default")) {
 			console.log(`[${dbAccount.xuid}] Bad skin information [T8]`);
 			if (!config.debug) {
-				if (config.skinChecks.skinCheck7.punishment === "kick") {
-					client.sendCommand(`kick "${dbAccount.xuid}" Invaild skin information sent. (0x5d11)`, 0)
-					dbAccount.kickCount++
-					dbAccount.save()
-				} else if (config.skinChecks.skinCheck7.punishment === "ban") {
-					client.sendCommand(`kick "${dbAccount.xuid}" Invaild skin information sent. (0x5d11)`, 0)
-					dbAccount.banCount++
-					dbAccount.isBanned = true
-					dbAccount.save()
-				} else if (config.skinChecks.skinCheck7.punishment === "clubKick" && realm.isOwner) {
-					realm.kick(dbAccount.xuid);
-					dbAccount.clubKickCount++
-					dbAccount.save()
-				} else if (config.skinChecks.skinCheck7.punishment === "clubBan" && realm.isOwner) {
-					realm.ban(dbAccount.xuid);
-					dbAccount.clubBanCount++
-					dbAccount.save()
-				} else if (config.skinChecks.skinCheck7.punishment === "warning") {
-					client.sendCommand(`say "${dbAccount.xuid}" You sent invaild skin information. (0x5d11)`, 0)
-					dbAccount.warningCount++
-					dbAccount.save()
+				switch (config.skinChecks.skinCheck7.punishment) {
+					case "kick":
+						client.sendCommand(`kick "${dbAccount.xuid}" Invaild skin information sent. (0x5d11)`, 0)
+						dbAccount.kickCount++
+						dbAccount.save()
+						break
+					case "ban":
+						client.sendCommand(`kick "${dbAccount.xuid}" Invaild skin information sent. (0x5d11)`, 0)
+						dbAccount.banCount++
+						dbAccount.isBanned = true
+						dbAccount.save()
+						break
+					case "clubKick":
+						if (realm.isOwner) {
+							realm.kick(dbAccount.xuid);
+							dbAccount.clubKickCount++
+							dbAccount.save()
+						}
+						break
+					case "clubBan":
+						if (realm.isOwner) {
+							realm.ban(dbAccount.xuid);
+							dbAccount.clubBanCount++
+							dbAccount.save()
+						}
+						break
+					case "warning":
+						client.sendCommand(`say "${dbAccount.xuid}" You sent invaild skin information. (0x5d11)`, 0)
+						dbAccount.warningCount++
+						dbAccount.save()
+						break
 				}
 			}
 		}
