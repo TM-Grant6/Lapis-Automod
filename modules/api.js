@@ -10,15 +10,39 @@ async function apiVaildate(packet, client, realm) {
     if (config.debug) console.log(`API Vaildate`);
 
     const profile = await getXboxUserData(packet.xbox_user_id);
+
     const titles = await getTitleHistory(packet.xbox_user_id);
 
     // We do not check their PlayFabId by Player List because it can be spoofed.
     const playFabId = await getUserPlayFabId(packet.xbox_user_id);
+
+    if (playFabId?.errorMsg && !config.debug) {
+        console.log(`[${packet.xbox_user_id}] Failed to get PlayFab ID (Not bad, for now)`, playFabId?.errorMsg);
+        client.sendCommand(`kick "${packet.xbox_user_id}" Rejoin. (0xf0)`);
+    }
+
     const accountInfo = await getAccountInfo(playFabId.Data[0].PlayFabId);
+
+    if (accountInfo?.errorMsg.includes("User not found") && !config.debug) {
+        console.log (`[${packet.xbox_user_id}] doesn't exist.`);
+        client.sendCommand(`kick "${packet.xbox_user_id}" You don't exist. (0xf0)`);
+    }
+
     const playerProfile = await getPlayerProfile(playFabId.Data[0].PlayFabId);
 
+    if (playerProfile?.errorMsg.includes("player has not played this title") && !config.debug) {
+        console.log(`[${packet.xbox_user_id}] hasn't played Minecraft to have his own PlayFab ID.`);
+        client.sendCommand(`kick "${packet.xbox_user_id}" NO PFID For MC. (0xf0)`);
+    }
+
     const playFabIdXbox = await getUserPlayFabIdA667(packet.xbox_user_id);
+
     const accountInfoXbox = await getAccountInfoA667(playFabIdXbox.Data[0].PlayFabId);
+    
+    if (typeof playFabIdXbox.Data[0]?.PlayFabId === "undefined" && !config.debug) {
+        console.log(`[${packet.xbox_user_id}] No PlayFab ID for the Xbox PlayFab API.`);
+        client.sendCommand(`kick "${packet.xbox_user_id}" NO PFID For Xbox. (0xf0)`);
+    }
 
     if (config.apiChecks.apiCheck1.enabled) {
         let isAlt;
@@ -201,44 +225,6 @@ async function apiVaildate(packet, client, realm) {
                     break;
                 case "warning":
                     client.sendCommand(`say "${packet.xbox_user_id}" You failed to meet requirements. (0xFFF5)`);
-                    dbAccount.warningCount++;
-                    dbAccount.save();
-                    break;
-                case "clubKick":
-                    if (realm.isOwner) {
-                        realm.kick(packet.xbox_user_id);
-                        dbAccount.clubKickCount++;
-                        dbAccount.save();
-                    }
-                    break;
-                case "clubBan":
-                    if (realm.isOwner) {
-                        realm.ban(packet.xbox_user_id);
-                        dbAccount.clubBanCount++;
-                        dbAccount.save();
-                    }
-                    break;
-            }
-        }
-    }
-
-    if (config.apiChecks.apiCheck5.enabled && !packet.skin_data.geometry_data.includes(playerProfile.PlayerProfile.PlayerId.toLowerCase())) {
-        console.log(`[${packet.xbox_user_id}] API detection [T6]`);
-        if (!config.debug) {
-            switch (config.apiChecks.apiCheck5.punishment) {
-                case "kick":
-                    client.sendCommand(`kick "${packet.xbox_user_id}" Failed to meet requirements. (0xFFF6)`);
-                    dbAccount.kickCount++;
-                    dbAccount.save();
-                    break;
-                case "ban":
-                    client.sendCommand(`kick "${packet.xbox_user_id}" Failed to meet requirements. (0xFFF6)`);
-                    dbAccount.banCount++;
-                    dbAccount.isBanned = true;
-                    dbAccount.save();
-                    break;
-                case "warning":
-                    client.sendCommand(`say "${packet.xbox_user_id}" You failed to meet requirements. (0xFFF6)`);
                     dbAccount.warningCount++;
                     dbAccount.save();
                     break;
