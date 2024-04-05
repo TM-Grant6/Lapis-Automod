@@ -39,10 +39,10 @@ async function apiVaildate(packet, client, realm) {
 
     const accountInfoXbox = await getAccountInfoA667(playFabIdXbox.Data[0].PlayFabId);
     
-    if (typeof playFabIdXbox.Data[0]?.PlayFabId === "undefined" && !config.debug) {
+    /* if (typeof playFabIdXbox.Data[0]?.PlayFabId === "undefined" && !config.debug) {
         console.log(`[${packet.xbox_user_id}] No PlayFab ID for the Xbox PlayFab API.`);
         client.sendCommand(`kick "${packet.xbox_user_id}" NO PFID For Xbox. (0xf0)`);
-    }
+    } */ // This can false flag some users, but you can enable it here if your smart enough lol
 
     if (config.apiChecks.apiCheck1.enabled) {
         let isAlt;
