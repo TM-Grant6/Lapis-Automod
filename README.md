@@ -52,7 +52,6 @@ Lapis Automod helps protect your Minecraft realm by moderating actions.
 ### API Handler
 - The API Handler processes the incoming API data from Xbox and or other links to perform the following checks:
   - Checks if it is a alt, it determines if it is or not, this is up to **YOUR** config. It's not a great idea to have follower/following checks, but the option is there and 0 by default.
-  - Checks if they are presence "inGame" or not. This can false detect if a user's internet is slow and or device. You can modify the cooldown to be faster but not recommended due to false flags. The cooldown is in seconds.
   - Checks if they have a display name in their PlayFab Request.
   - Checks if their PlayFabID to vaild or not between the server and API.
 

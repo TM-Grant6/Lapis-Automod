@@ -145,8 +145,7 @@
         },
         "apiCheck2": {
             "enabled": true,
-            "punishment": "warning",
-            "cooldown": 10.5
+            "punishment": "kick"
         },
         "apiCheck3": {
             "enabled": true,
@@ -157,10 +156,6 @@
             "punishment": "kick"
         },
         "apiCheck5": {
-            "enabled": true,
-            "punishment": "kick"
-        },
-        "apiCheck6": {
             "enabled": true,
             "punishment": "kick"
         }
