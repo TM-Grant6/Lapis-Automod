@@ -1,5 +1,5 @@
 {
-    "debug": true,
+    "debug": false,
     "clientOptions": {
         "deviceOS": 13,
         "protocolVersion": 662,
@@ -148,14 +148,6 @@
             "punishment": "kick"
         },
         "apiCheck3": {
-            "enabled": true,
-            "punishment": "kick"
-        },
-        "apiCheck4": {
-            "enabled": true,
-            "punishment": "kick"
-        },
-        "apiCheck5": {
             "enabled": true,
             "punishment": "kick"
         }

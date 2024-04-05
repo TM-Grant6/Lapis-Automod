@@ -110,7 +110,13 @@ function skinVaildate(packet, dbAccount, client, realm, packetType) {
 			}
 		}
 
-		if (config.skinChecks.skinCheck4.enabled && packet.skin_data.premium && packet.skin_data.skin_resource_pack.includes('"default" : "geometry.n3"\n') || packet.skin_data.skin_id.includes('#')) {
+		if (config.skinChecks.skinCheck4.enabled && 
+			packet.skin_data.premium && !packet.skin_data.skin_resource_pack.includes("geometry.humanoid.customSlim") &&
+			(packet.skin_data.skin_resource_pack.includes('geometry.n3') ||
+			packet.skin_data.skin_resource_pack.includes('geometry.humanoid.custom') || 
+			packet.skin_data.skin_id.includes('#') || 
+			packet.skin_data.full_skin_id.includes('#') ||
+			packet.skin_data.geometry_data.includes('null\n'))) {
 			console.log(`[${packet.xbox_user_id}] Bad skin information [T4]`);
 			if (!config.debug) {
 				switch (config.skinChecks.skinCheck4.punishment) {
@@ -150,9 +156,10 @@ function skinVaildate(packet, dbAccount, client, realm, packetType) {
 
 		if (config.skinChecks.skinCheck5.enabled)
 			if (
-				!packet.skin_data.skin_resource_pack.includes(packet.skin_data.play_fab_id) ||
-				!packet.skin_data.skin_id.includes(packet.skin_data.play_fab_id) ||
-				!packet.skin_data.full_skin_id.includes(packet.skin_data.play_fab_id) ||
+				!packet.skin_data.skin_resource_pack.includes("geometry.humanoid.custom") &&
+				!packet.skin_data.skin_resource_pack.includes(packet.skin_data.play_fab_id) &&
+				!packet.skin_data.skin_id.includes(packet.skin_data.play_fab_id) &&
+				!packet.skin_data.full_skin_id.includes(packet.skin_data.play_fab_id) &&
 				!packet.skin_data.geometry_data.includes(packet.skin_data.play_fab_id)) {
 				console.log(`[${packet.xbox_user_id}] Bad skin information [T5]`);
 				if (!config.debug) {
@@ -191,7 +198,7 @@ function skinVaildate(packet, dbAccount, client, realm, packetType) {
 				}
 			}
 
-		if (config.skinChecks.skinCheck6.enabled && packet.skin_data.geometry_data_version.length < 5 || packet.skin_data.geometry_data_version.length > 6) {
+		if (config.skinChecks.skinCheck6.enabled && packet.skin_data.geometry_data_version != "1.14.0" && packet.skin_data.geometry_data_version != "0.0.0") {
 			console.log(`[${packet.xbox_user_id}] Bad skin information [T6]`);
 			if (!config.debug) {
 				switch (config.skinChecks.skinCheck6.punishment) {
@@ -381,8 +388,17 @@ function skinVaildate(packet, dbAccount, client, realm, packetType) {
 			}
 		}
 
-		if (config.skinChecks.skinCheck4.enabled && packet.skin.premium && packet.skin.skin_resource_pack.includes('"default" : "geometry.n3"\n') || packet.skin.skin_id.includes('#')) {
+		if (config.skinChecks.skinCheck4.enabled && 
+			packet.skin_data.premium &&
+			packet.skin_data.skin_resource_pack.includes('geometry.n3') ||
+			packet.skin_data.skin_resource_pack.includes('geometry.humanoid.custom') || 
+			packet.skin_data.skin_id.includes('#') || 
+			packet.skin_data.full_skin_id.includes('#') ||
+			packet.skin_data.geometry_data.includes('null\n')) {
+			
+			if (packet.skin_data.skin_resource_pack.includes("geometry.humanoid.customSlim") && packet.skin_data.premium) return;
 			console.log(`[${dbAccount.xuid}] Bad skin information [T4]`);
+
 			if (!config.debug) {
 				switch (config.skinChecks.skinCheck4.punishment) {
 					case "kick":
