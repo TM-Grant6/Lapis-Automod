@@ -191,24 +191,39 @@ module.exports.moderate = async (realmData) => {
 
 				if (dbAccount.isBanned && !config.debug) {
 					if (!config.debug) client.sendCommand(`kick "${xuid}" You have been banned.`, 0);
+
+					console.log(`[${xuid}] is banned.`);
+
 					dbAccount.isBanned = true;
 					dbAccount.save();
 				}
 
 				if (dbAccount.isClubBanned && !config.debug) {
 					if (!config.debug) realmData.ban(xuid)
+
+					console.log(`[${xuid}] Is club banned.`);
+
 					dbAccount.isClubBanned = true;
 					dbAccount.save();
 				}
 
 				if (dbAccount.warningsCount >= config.clientOptions.lapisOptions.maxWarnings && !config.debug) {
 					client.sendCommand(`kick "${xuid}" You have reached the max warnings.`, 0);
+
+					console.log(`[${xuid}] has reached the max warnings.`);
+
+					dbAccount.warningsCount = 0;
+
 					dbAccount.kickCount++;
 					dbAccount.save();
 				}
 
 				if (dbAccount.kickCount >= config.clientOptions.lapisOptions.maxKicks && !config.debug) {
 					client.sendCommand(`kick "${xuid}" You have reached the max kicks. You have been banned`, 0);
+
+					console.log(`[${xuid}] has reached the max kicks.`);
+
+					dbAccount.kickCount = 0;
 
 					dbAccount.isBanned = true;
 					dbAccount.save();
@@ -217,6 +232,11 @@ module.exports.moderate = async (realmData) => {
 				if (dbAccount.clubKickCount >= config.clientOptions.lapisOptions.maxClubKicks && realmData.isOwner && !config.debug) {
 					client.sendCommand(`kick "${xuid}" You have reached the max club kicks. You have been club banned`, 0);
 					if (realmData.isOwner) realmData.ban(xuid)
+
+					console.log(`[${xuid}] has reached the max club kicks.`);
+
+					dbAccount.clubKickCount = 0;
+
 					dbAccount.isClubBanned = true;
 					dbAccount.save();
 				}
@@ -224,6 +244,11 @@ module.exports.moderate = async (realmData) => {
 				if (dbAccount.clubBanCount >= config.clientOptions.lapisOptions.maxClubBans && realmData.isOwner && !config.debug) {
 					client.sendCommand(`kick "${xuid}" You have been club banned.`, 0);
 					if (realmData.isOwner) realmData.ban(xuid)
+
+					console.log(`[${xuid}] has reached the max club bans.`);
+
+					dbAccount.clubBanCount = 0;
+
 					dbAccount.isClubBanned = true;
 					dbAccount.save();
 				}
