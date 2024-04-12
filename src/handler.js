@@ -1,6 +1,5 @@
 const { getRealmToken } = require("./xbox.js");
 const { main } = require("./realms.js");
-const { moderate } = require("./moderate.js");
 
 const config = require("../config.json");
 
@@ -9,7 +8,7 @@ const realm_api_headers = {
 	"authorization": "",
 	"charset": "utf-8",
 	"client-ref": "08bdb049f310d03aeabda3748f857640eb62a733",
-	"client-version": "1.20.71",
+	"client-version": "1.20.73",
 	"x-clientplatform": "Windows",
 	"content-type": "application/json",
 	"user-agent": "MCPE/UWP",

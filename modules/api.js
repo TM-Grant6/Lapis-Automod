@@ -151,8 +151,6 @@ async function apiVaildate(packet, client, realm) {
         }
     }
 
-    console.log(packet.skin_data)
-
     if (config.apiChecks.apiCheck3.enabled 
         && !packet.skin_data.skin_resource_pack.includes("geometry.humanoid.custom")
         && !packet.skin_data.skin_resource_pack.includes("geometry.humanoid.customSlim")

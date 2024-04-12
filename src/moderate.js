@@ -260,39 +260,39 @@ module.exports.moderate = async (realmData) => {
 			getXboxAccountDataBulk(xuid);
 		};
 
-		if (config.clientOptions.lapisOptions.enableDeviceHandler) await deviceVaildate(packet, dbAccount, client, realmData, "playerAdd");
+		if (config.clientOptions.lapisOptions.enableDeviceHandler) deviceVaildate(packet, dbAccount, client, realmData, "playerAdd");
 
-		if (!dbAccount.deviceOs) dbAccount.deviceOs = [];
+		if (!dbAccount?.deviceOs) dbAccount.deviceOs = [];
 
-		if (!dbAccount.deviceIds.includes(device_id)) dbAccount.deviceIds.push(device_id);
+		if (!dbAccount?.deviceIds.includes(device_id)) dbAccount.deviceIds.push(device_id);
 
-		if (!dbAccount.deviceOs.includes(device_os) && /^[a-zA-Z]+$/.test(device_os)) dbAccount.deviceOs.push(device_os);
+		if (!dbAccount?.deviceOs.includes(device_os) && /^[a-zA-Z]+$/.test(device_os)) dbAccount?.deviceOs.push(device_os);
 
-		if (!dbAccount.xboxUUID) dbAccount.xboxUUID = uuid;
+		if (!dbAccount?.xboxUUID || dbAccount?.xboxUUID === "N/A") dbAccount.xboxUUID = uuid;
 
-		if (!dbAccount.runtimeID) dbAccount.runtimeID = 0n;
+		if (!dbAccount?.runtimeID) dbAccount.runtimeID = 0n;
 
-		if (!dbAccount.permission) dbAccount.permission = 'member';
+		if (!dbAccount?.permission || dbAccount?.permission === "N/A") dbAccount.permission = 'member';
 
-		if (!dbAccount.currentGamertag) dbAccount.currentGamertag = username;
+		if (!dbAccount?.currentGamertag || dbAccount?.currentGamertag === "N/A") dbAccount.currentGamertag = username;
 
-		if (!dbAccount.currentGamemode) dbAccount.currentGamemode = gamemode;
+		if (!dbAccount?.currentGamemode || dbAccount?.currentGamemode === "N/A") dbAccount.currentGamemode = gamemode;
 
-		if (!dbAccount.currentDevice) dbAccount.currentDevice = device_os;
+		if (!dbAccount?.currentDevice || dbAccount?.currentDevice === "N/A") dbAccount.currentDevice = device_os;
 
-		if (!dbAccount.warningsCount) dbAccount.warningsCount = 0;
+		if (!dbAccount?.warningsCount) dbAccount.warningsCount = 0;
 
-		if (!dbAccount.kickCount) dbAccount.kickCount = 0;
+		if (!dbAccount?.kickCount) dbAccount.kickCount = 0;
 
-		if (!dbAccount.clubKickCount) dbAccount.clubKickCount = 0;
+		if (!dbAccount?.clubKickCount) dbAccount.clubKickCount = 0;
 
-		if (!dbAccount.banCount) dbAccount.banCount = 0;
+		if (!dbAccount?.banCount) dbAccount.banCount = 0;
 
-		if (!dbAccount.clubBanCount) dbAccount.clubBanCount = 0;
+		if (!dbAccount?.clubBanCount) dbAccount.clubBanCount = 0;
 
-		if (!dbAccount.isBanned) dbAccount.isBanned = false;
+		if (!dbAccount?.isBanned) dbAccount.isBanned = false;
 
-		if (!dbAccount.isClubBanned) dbAccount.isClubBanned = false;
+		if (!dbAccount?.isClubBanned) dbAccount.isClubBanned = false;
 
 		// These will need automatic updating...
 		dbAccount.runtimeID = runtime_id;

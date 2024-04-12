@@ -1,5 +1,5 @@
 {
-    "debug": false,
+    "debug": true,
     "clientOptions": {
         "deviceOS": 13,
         "protocolVersion": 662,
@@ -43,21 +43,17 @@
         },
         "skinCheck4": {
             "enabled": true,
-            "punishment": "kick"
+            "punishment": "warning"
         },
         "skinCheck5": {
             "enabled": true,
-            "punishment": "warning"
+            "punishment": "kick"
         },
         "skinCheck6": {
             "enabled": true,
             "punishment": "kick"
         },
         "skinCheck7": {
-            "enabled": true,
-            "punishment": "kick"
-        },
-        "skinCheck8": {
             "enabled": true,
             "punishment": "kick"
         }
