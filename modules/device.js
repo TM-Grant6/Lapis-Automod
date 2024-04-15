@@ -1089,5 +1089,5 @@ async function deviceVaildate(packet, dbAccount, client, realm, packetType) {
 }
 
 module.exports = {
-	deviceVaildate: deviceVaildate
+	deviceVaildate
 };

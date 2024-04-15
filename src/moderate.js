@@ -54,8 +54,11 @@ const {
 } = require("../modules/text.js");
 
 const {
-	handleFunctions,
-	handleRejoin
+	entityEventVaildate
+} = require("../modules/entityEvent.js")
+
+const {
+	handleFunctions
 } = require("./handler.js");
 
 module.exports.moderate = async (realmData) => {
@@ -431,6 +434,24 @@ module.exports.moderate = async (realmData) => {
 					if (!dbAccount) return;
 
 					equipmentVaildate(packet, dbAccount, client, realmData);
+				}
+			}
+		})
+	} else {
+		return;
+	}
+
+	if (config.clientOptions.lapisOptions.enableEntityEventHandler) {
+		client.on('entity_event', async (packet) => {
+			for (let id of runtimeIds) {
+				if (id.runtime_id === packet.runtime_entity_id && id.type === "player") {
+					const dbAccount = await accountsModel.findOne({
+						runtimeID: packet.runtime_entity_id
+					});
+
+					if (!dbAccount) return;
+
+					entityEventVaildate(packet, dbAccount, client, id, realmData);
 				}
 			}
 		})

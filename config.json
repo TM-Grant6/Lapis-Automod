@@ -1,5 +1,5 @@
 {
-    "debug": false,
+    "debug": true,
     "clientOptions": {
         "deviceOS": 13,
         "protocolVersion": 662,
@@ -21,6 +21,7 @@
             "enableDeviceHandler": true,
             "enableEmoteHandler": true,
             "enableTextHandler": true,
+            "enableEntityEventHandler": true,
             "maxWarnings": 15,
             "maxKicks": 6,
             "maxBans": 1,
@@ -160,6 +161,12 @@
         "textCheck3": {
             "enabled": true,
             "punishment": "warning"
+        }
+    },
+    "entityEventChecks": {
+        "eventCheck1": {
+            "enabled": true,
+            "punishment": "none"
         }
     }
 }

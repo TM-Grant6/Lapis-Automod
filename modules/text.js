@@ -4,6 +4,7 @@ const { isValidPlatformChatId } = require("../src/util.js");
 
 async function textVaildate(packet, dbAccount, client, realm) {
 	if (!packet || !dbAccount || !client || !realm) return;
+	
     if (packet.type === 'translation') return;
 	if (config.debug) console.log(`Text Vaildate`);
 
@@ -23,14 +24,14 @@ async function textVaildate(packet, dbAccount, client, realm) {
 					dbAccount.save()
 					break
 				case "clubKick":
-					if (client.realm.isOwner) {
+					if (realm.isOwner) {
 						realm.kick(packet.xuid);
 						dbAccount.clubKickCount++
 						dbAccount.save()
 					}
 					break
 				case "clubBan":
-					if (client.realm.isOwner) {
+					if (realm.isOwner) {
 						realm.ban(packet.xuid);
 						dbAccount.clubBanCount++
 						dbAccount.save()
@@ -61,14 +62,14 @@ async function textVaildate(packet, dbAccount, client, realm) {
 					dbAccount.save()
 					break
 				case "clubKick":
-					if (client.realm.isOwner) {
+					if (realm.isOwner) {
 						realm.kick(packet.xuid);
 						dbAccount.clubKickCount++
 						dbAccount.save()
 					}
 					break
 				case "clubBan":
-					if (client.realm.isOwner) {
+					if (realm.isOwner) {
 						realm.ban(packet.xuid);
 						dbAccount.clubBanCount++
 						dbAccount.save()
@@ -99,14 +100,14 @@ async function textVaildate(packet, dbAccount, client, realm) {
 					dbAccount.save()
 					break
 				case "clubKick":
-					if (client.realm.isOwner) {
+					if (realm.isOwner) {
 						realm.kick(packet.xuid);
 						dbAccount.clubKickCount++
 						dbAccount.save()
 					}
 					break
 				case "clubBan":
-					if (client.realm.isOwner) {
+					if (realm.isOwner) {
 						realm.ban(packet.xuid);
 						dbAccount.clubBanCount++
 						dbAccount.save()
@@ -123,5 +124,5 @@ async function textVaildate(packet, dbAccount, client, realm) {
 }
 
 module.exports = {
-	textVaildate: textVaildate
+	textVaildate
 };

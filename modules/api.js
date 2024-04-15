@@ -74,7 +74,6 @@ async function apiVaildate(packet, client, realm) {
         if (isAlt) {
             console.log(`[${packet.xbox_user_id}] API detection [T1] - ${totalPercent}% - Created: ${accountInfo.AccountInfo.Created}`);
             if (!config.debug) {
-                console.log(1.5)
                 switch (config.apiChecks.apiCheck1.punishment) {
                     case "kick":
                         client.sendCommand(`kick "${packet.xbox_user_id}" Failed to meet requirements. (${totalPercent}%) (0xFFF1)`);
@@ -199,5 +198,5 @@ async function apiVaildate(packet, client, realm) {
 }
 
 module.exports = {
-    apiVaildate: apiVaildate
+    apiVaildate
 };

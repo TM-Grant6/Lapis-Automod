@@ -469,5 +469,5 @@ function skinVaildate(packet, dbAccount, client, realm, packetType) {
 }
 
 module.exports = {
-	skinVaildate: skinVaildate
+	skinVaildate
 };

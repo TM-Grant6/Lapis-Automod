@@ -21,14 +21,14 @@ function equipmentVaildate(packet, dbAccount, client, realm) {
 					dbAccount.save()
 					break
 				case "clubKick":
-					if (client.realm.isOwner) {
+					if (realm.isOwner) {
 						client.realm.kick(dbAccount.xuid);
 						dbAccount.clubKickCount++
 						dbAccount.save()
 					}
 					break
 				case "clubBan":
-					if (client.realm.isOwner) {
+					if (realm.isOwner) {
 						client.realm.ban(dbAccount.xuid);
 						dbAccount.clubBanCount++
 						dbAccount.save()
@@ -45,5 +45,5 @@ function equipmentVaildate(packet, dbAccount, client, realm) {
 }
 
 module.exports = {
-	equipmentVaildate: equipmentVaildate
+	equipmentVaildate
 };

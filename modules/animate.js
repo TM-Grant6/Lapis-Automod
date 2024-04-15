@@ -86,5 +86,5 @@ function animateVaildate(packet, dbAccount, client, realm) {
 }
 
 module.exports = {
-  animateVaildate: animateVaildate
+  animateVaildate
 };

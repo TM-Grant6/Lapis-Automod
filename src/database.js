@@ -77,5 +77,5 @@ function createAccountDefaults(data) {
 
 module.exports = {
 	accountsModel: account,
-	createAccountDefaults: createAccountDefaults
+	createAccountDefaults
 };
