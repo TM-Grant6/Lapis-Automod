@@ -61,7 +61,7 @@ const {
 	handleFunctions
 } = require("./handler.js");
 
-module.exports.moderate = async (realmData) => {
+module.exports.moderate = async (realmData, discordClient) => {
 	if (config.debug) console.log(chalk.yellow(`---> Debug mode is enabled. \n+--> No players will be kicked or punished.\n+--> Debugging logs are enabled`));
 
 	if (!config.debug) {
@@ -400,6 +400,8 @@ module.exports.moderate = async (realmData) => {
 			};
 
 			if (dbAccount) textVaildate(packet, dbAccount, client, realmData);
+			if (packet.type === `chat`) sendChatEmbed(packet.source_name, packet.message)
+			if (packet.type === `json_whisper`) sendChatEmbed(packet.message.split(` |_-/\-_-/\-_| `)[0], packet.message.split(` |_-/\-_-/\-_| `)[1]);
 		})
 	} else {
 		return;

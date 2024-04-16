@@ -6,6 +6,8 @@ require('dotenv').config();
 
 const accountSchema = new mongoose.Schema({
 	xuid: String,
+	// known user profile pictures
+	profilePictures: Array,
 	// list of gamertags ever used with the string
 	gamertags: Array,
 	// known user device IDs

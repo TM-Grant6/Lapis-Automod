@@ -1,3 +1,4 @@
+const discord = require(`discord.js`)
 const fetch = require("node-fetch");
 const chalk = require("chalk");
 const prompt = require("prompt-sync")();
@@ -22,7 +23,13 @@ const realm_api_headers = {
 	"Connection": "Keep-Alive"
 };
 
-(async () => {
+const discordClient = discord.Client({
+	intents: [
+		discord.intentBitFields.Flags.Guilds
+	]
+})
+
+discordClient.on(`ready`, (async () => {
 	try {
 		const xboxToken = await getRealmToken();
 
@@ -103,7 +110,7 @@ const realm_api_headers = {
 					realm.ip = realmIP.address.substring(0, realmIP.address.indexOf(':'));
 					realm.port = Number(realmIP.address.substring(realmIP.address.indexOf(':') + 1));
 				}
-		
+
 				if (response.status === 503) {
 					console.log(chalk.red("---> Retrying..."));
 					realmIP = await response.text();
@@ -114,7 +121,7 @@ const realm_api_headers = {
 
 			if (response.status === 200) {
 				main(realm);
-				moderate(realm);
+				moderate(realm, discordClient);
 				break;
 			}
 
@@ -126,4 +133,6 @@ const realm_api_headers = {
 			process.exit(1);
 		}
 	}
-})();
+}));
+
+module.exports = discordClient

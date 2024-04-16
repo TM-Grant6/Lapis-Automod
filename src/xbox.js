@@ -151,6 +151,7 @@ async function getXboxAccountDataBulk(xuids = []) {
 	// collect all sorts of user data
 	for (const user of users) {
 		logXboxUserData(user, "get bulk xbox data");
+		console.log(user);
 	}
 
 	return users;

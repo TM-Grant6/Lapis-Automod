@@ -27,6 +27,9 @@
             "maxBans": 1,
             "maxClubKicks": 6,
             "maxClubBans": 1
+        },
+        "discordChannels": {
+            "text": true
         }
     },
     "skinChecks": {
@@ -168,5 +171,6 @@
             "enabled": true,
             "punishment": "none"
         }
-    }
+    },
+    "logoUrl": "https://avatars.githubusercontent.com/u/158105643?s=200&v=4"
 }
